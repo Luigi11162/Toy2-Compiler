@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>bacco-valletta_es5</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <miaCondizione>true</miaCondizione>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+        <dependencies>
+            <dependency>
+                <groupId>com.github.vbmacher</groupId>
+                <artifactId>java-cup-runtime</artifactId>
+                <version>11b-20160615-1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.abrarsyed.jastyle</groupId>
+                <artifactId>jAstyle</artifactId>
+                <version>1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jflex</groupId>
+                <artifactId>maven-jflex-plugin</artifactId>
+                <version>1.4.3-r1</version>
+            </dependency>
+        </dependencies>
+
+        <build>
+            <sourceDirectory>
+                src
+            </sourceDirectory>
+
+            <plugins>
+                <plugin>
+                    <groupId>de.jflex</groupId>
+                    <artifactId>jflex-maven-plugin</artifactId>
+                    <version>1.8.2</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>src</outputDirectory>
+                                <lexDefinitions>
+                                    <lexDefinition>srcjflexcup</lexDefinition>
+                                </lexDefinitions>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.vbmacher</groupId>
+                    <artifactId>cup-maven-plugin</artifactId>
+                    <version>11b-20160615</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <cupDefinition>srcjflexcup/Toy2.cup</cupDefinition>
+                        <outputDirectory>src</outputDirectory>
+                        <packageName>esercitazione5</packageName>
+                        <dumpGrammar>${miaCondizione}</dumpGrammar>
+                        <dumpStates>${miaCondizione}</dumpStates>
+                        <dumpTables>${miaCondizione}</dumpTables>
+                        <expectedConflicts>0</expectedConflicts>
+                    </configuration>
+                </plugin>
+
+            </plugins>
+        </build>
+
+
+</project>
