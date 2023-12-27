@@ -2,11 +2,13 @@ package esercitazione5.Nodes.Stat;
 
 import esercitazione5.Nodes.Expr.Expr;
 import esercitazione5.Nodes.Expr.ID;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
-public class ProcCallOp extends Stat {
+public class ProcCallOp extends Stat implements NodeVisitor {
 
     private ID id;
     private ArrayList<Expr> exprList;
@@ -42,4 +44,8 @@ public class ProcCallOp extends Stat {
         this.exprList.addAll(exprList);
     }
 
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
+    }
 }

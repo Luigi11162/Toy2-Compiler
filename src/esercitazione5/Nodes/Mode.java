@@ -1,8 +1,11 @@
 package esercitazione5.Nodes;
 
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public class Mode extends DefaultMutableTreeNode {
+public class Mode extends DefaultMutableTreeNode implements NodeVisitor {
     private String name;
 
     public Mode(String name) {
@@ -16,5 +19,9 @@ public class Mode extends DefaultMutableTreeNode {
 
     public void setName(String name) {
         this.name = name;
+    }
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 }

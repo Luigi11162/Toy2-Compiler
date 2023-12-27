@@ -1,13 +1,15 @@
 package esercitazione5.Nodes.Stat;
 
 import esercitazione5.Nodes.Expr.Expr;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
 import java.util.ArrayList;
 
-public class ReturnOp extends Stat{
+public class ReturnOp extends Stat implements NodeVisitor {
     private ArrayList<Expr> exprList;
 
-    public ReturnOp( ArrayList<Expr> exprList) {
+    public ReturnOp(ArrayList<Expr> exprList) {
         super("ReturnOp");
         exprList.forEach(super::add);
 
@@ -27,5 +29,11 @@ public class ReturnOp extends Stat{
 
         this.exprList.addAll(exprList);
     }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
+    }
+
 
 }

@@ -1,6 +1,9 @@
 package esercitazione5.Nodes.Expr;
 
-public class UOp extends Expr {
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
+
+public class UOp extends Expr implements NodeVisitor {
 
     private Expr value;
 
@@ -17,5 +20,10 @@ public class UOp extends Expr {
 
     public void setValue(Expr value) {
         this.value = value;
+    }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 }

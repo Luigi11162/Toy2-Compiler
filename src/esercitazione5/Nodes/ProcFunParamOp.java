@@ -1,10 +1,12 @@
 package esercitazione5.Nodes;
 
 import esercitazione5.Nodes.Expr.ID;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public class ProcFunParamOp extends DefaultMutableTreeNode {
+public class ProcFunParamOp extends DefaultMutableTreeNode implements NodeVisitor {
     private Mode mode;
     private ID id;
     private Type type;
@@ -42,5 +44,9 @@ public class ProcFunParamOp extends DefaultMutableTreeNode {
 
     public void setType(Type type) {
         this.type = type;
+    }
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 }

@@ -1,12 +1,14 @@
 package esercitazione5.Nodes;
 
 import esercitazione5.Nodes.Expr.Expr;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 import java_cup.runtime.SyntaxTreeDFS;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
-public class ElifOp extends DefaultMutableTreeNode {
+public class ElifOp extends DefaultMutableTreeNode implements NodeVisitor {
 
     private Expr expr;
     private BodyOp bodyOp;
@@ -34,5 +36,9 @@ public class ElifOp extends DefaultMutableTreeNode {
 
     public void setBodyOp(BodyOp bodyOp) {
         this.bodyOp = bodyOp;
+    }
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 }

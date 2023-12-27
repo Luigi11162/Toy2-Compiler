@@ -1,6 +1,9 @@
 package esercitazione5.Nodes.Expr;
 
-public class Op extends Expr {
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
+
+public class Op extends Expr implements NodeVisitor {
 
     private Expr valueL;
     private Expr valueR;
@@ -28,5 +31,10 @@ public class Op extends Expr {
 
     public void setValueR(Expr valueR) {
         this.valueR = valueR;
+    }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 }

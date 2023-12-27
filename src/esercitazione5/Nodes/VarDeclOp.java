@@ -2,11 +2,13 @@ package esercitazione5.Nodes;
 
 import esercitazione5.Nodes.Expr.Const;
 import esercitazione5.Nodes.Expr.ID;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
-public class VarDeclOp extends DefaultMutableTreeNode {
+public class VarDeclOp extends DefaultMutableTreeNode implements NodeVisitor {
     private ArrayList<ID> idList;
     private ArrayList<Const> constList;
     private Type type;
@@ -70,4 +72,8 @@ public class VarDeclOp extends DefaultMutableTreeNode {
         this.constList.addAll(constList);
     }
 
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
+    }
 }

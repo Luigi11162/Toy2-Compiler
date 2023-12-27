@@ -1,17 +1,18 @@
 package esercitazione5.SymbolTable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SymbolTable extends HashMap<String, SymbolRow> {
+public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
 
     String name;
-    SymbolRow symbolRow;
+    ArrayList<SymbolRow> symbolRowList;
 
-    public SymbolTable(String name, SymbolRow symbolRow) {
-        super.put(name, symbolRow);
+    public SymbolTable(String name, ArrayList<SymbolRow> symbolRowList) {
+        super.put(name, symbolRowList);
 
         this.name = name;
-        this.symbolRow = symbolRow;
+        this.symbolRowList = symbolRowList;
     }
 
     public String getName() {
@@ -22,11 +23,19 @@ public class SymbolTable extends HashMap<String, SymbolRow> {
         this.name = name;
     }
 
-    public SymbolRow getSymbolRow() {
-        return symbolRow;
+    public ArrayList<SymbolRow> getSymbolRowList() {
+        return symbolRowList;
     }
 
-    public void setSymbolRow(SymbolRow symbolRow) {
-        this.symbolRow = symbolRow;
+    public void setSymbolRowList(ArrayList<SymbolRow> symbolRowList) {
+        this.symbolRowList = symbolRowList;
+    }
+
+    public void addSymbolRow(SymbolRow symbolRow) {
+        this.symbolRowList.add(symbolRow);
+    }
+
+    public boolean probe(){
+
     }
 }

@@ -2,11 +2,13 @@ package esercitazione5.Nodes;
 
 import esercitazione5.Nodes.Expr.ID;
 import esercitazione5.SymbolTable.SymbolTable;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
-    public class ProcOp extends DefaultMutableTreeNode {
+    public class ProcOp extends DefaultMutableTreeNode implements NodeVisitor {
         private ID id;
         private ArrayList<ProcFunParamOp> procFunParamOpList;
         private BodyOp bodyOp;
@@ -61,5 +63,9 @@ import java.util.ArrayList;
 
         public void setSymbolTable(SymbolTable symbolTable) {
             this.symbolTable = symbolTable;
+        }
+        @Override
+        public Object accept(Visitor visitor) {
+            return visitor.visit(this);
         }
     }

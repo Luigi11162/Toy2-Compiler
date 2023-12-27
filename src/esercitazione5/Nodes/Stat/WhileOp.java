@@ -2,8 +2,10 @@ package esercitazione5.Nodes.Stat;
 
 import esercitazione5.Nodes.BodyOp;
 import esercitazione5.Nodes.Expr.Expr;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
-public class WhileOp extends  Stat{
+public class WhileOp extends Stat implements NodeVisitor {
     private Expr expr;
     private BodyOp bodyOp;
 
@@ -31,4 +33,10 @@ public class WhileOp extends  Stat{
     public void setBodyOp(BodyOp bodyOp) {
         this.bodyOp = bodyOp;
     }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
+    }
+
 }

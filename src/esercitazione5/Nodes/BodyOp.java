@@ -2,11 +2,13 @@ package esercitazione5.Nodes;
 
 import esercitazione5.Nodes.Stat.Stat;
 import esercitazione5.SymbolTable.SymbolTable;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
-public class BodyOp extends DefaultMutableTreeNode {
+public class BodyOp extends DefaultMutableTreeNode implements NodeVisitor {
     private ArrayList<VarDeclOp> varDeclOpList;
     private ArrayList<Stat> statList;
     private SymbolTable symbolTable;
@@ -54,5 +56,9 @@ public class BodyOp extends DefaultMutableTreeNode {
 
     public void setSymbolTable(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
+    }
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 }

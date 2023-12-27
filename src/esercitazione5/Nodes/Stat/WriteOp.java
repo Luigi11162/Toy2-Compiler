@@ -2,10 +2,12 @@ package esercitazione5.Nodes.Stat;
 
 import esercitazione5.Nodes.Expr.Expr;
 import esercitazione5.Nodes.Mode;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
 import java.util.ArrayList;
 
-public class WriteOp extends Stat {
+public class WriteOp extends Stat implements NodeVisitor {
     private Mode mode;
     private ArrayList<Expr> exprList;
 
@@ -38,5 +40,10 @@ public class WriteOp extends Stat {
         exprList.forEach(super::add);
 
         this.exprList.addAll(exprList);
+    }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 }

@@ -3,10 +3,12 @@ package esercitazione5.Nodes.Stat;
 import esercitazione5.Nodes.BodyOp;
 import esercitazione5.Nodes.ElifOp;
 import esercitazione5.Nodes.Expr.Expr;
+import esercitazione5.Visitors.NodeVisitor;
+import esercitazione5.Visitors.Visitor;
 
 import java.util.ArrayList;
 
-public class IfStatOp extends Stat {
+public class IfStatOp extends Stat implements NodeVisitor {
 
     private Expr expr;
     private BodyOp bodyOp;
@@ -66,6 +68,11 @@ public class IfStatOp extends Stat {
         elifOpList.forEach(super::add);
 
         this.elifOpList.addAll(elifOpList);
+    }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
     }
 
 }
