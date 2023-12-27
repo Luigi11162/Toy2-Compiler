@@ -34,8 +34,4 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
     public void addSymbolRow(SymbolRow symbolRow) {
         this.symbolRowList.add(symbolRow);
     }
-
-    public boolean probe(){
-
-    }
 }

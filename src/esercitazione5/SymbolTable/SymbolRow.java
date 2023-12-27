@@ -38,10 +38,10 @@ public class SymbolRow {
     }
 
     public String getProperties() {
-        return Properties;
+        return this.properties;
     }
 
     public void setProperties(String properties) {
-        Properties = properties;
+        this.properties = properties;
     }
 }
