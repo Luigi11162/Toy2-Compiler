@@ -69,4 +69,5 @@ public class VarDeclOp extends DefaultMutableTreeNode {
 
         this.constList.addAll(constList);
     }
+
 }
