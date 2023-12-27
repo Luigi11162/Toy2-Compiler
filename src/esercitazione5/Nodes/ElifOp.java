@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 public class ElifOp extends DefaultMutableTreeNode {
 
-    Expr expr;
-    BodyOp bodyOp;
+    private Expr expr;
+    private BodyOp bodyOp;
 
     public ElifOp(Expr expr, BodyOp bodyOp) {
         super("ElifOp");

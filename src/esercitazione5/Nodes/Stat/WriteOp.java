@@ -6,8 +6,8 @@ import esercitazione5.Nodes.Mode;
 import java.util.ArrayList;
 
 public class WriteOp extends Stat {
-    Mode mode;
-    ArrayList<Expr> exprList;
+    private Mode mode;
+    private ArrayList<Expr> exprList;
 
     public WriteOp(Mode mode, ArrayList<Expr> exprList) {
         super("WriteOp");

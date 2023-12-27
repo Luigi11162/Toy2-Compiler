@@ -4,7 +4,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class Type extends DefaultMutableTreeNode {
 
-    String name;
+    private String name;
 
     public Type(String name) {
         super(name);

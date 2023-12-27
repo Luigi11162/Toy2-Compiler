@@ -1,15 +1,17 @@
 package esercitazione5.Nodes;
 
 import esercitazione5.Nodes.Expr.ID;
+import esercitazione5.SymbolTable.SymbolTable;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
 public class FunOp extends DefaultMutableTreeNode {
-    ID id;
-    ArrayList<ProcFunParamOp> procFunParamOpList;
-    ArrayList<Type> typeList;
-    BodyOp bodyOp;
+    private ID id;
+    private ArrayList<ProcFunParamOp> procFunParamOpList;
+    private ArrayList<Type> typeList;
+    private BodyOp bodyOp;
+    private SymbolTable symbolTable;
 
     public FunOp(ID idNode, ArrayList<ProcFunParamOp> procFunParamOpList, ArrayList<Type> typeList, BodyOp bodyOp) {
         super("FunOp");
@@ -26,11 +28,11 @@ public class FunOp extends DefaultMutableTreeNode {
         this.bodyOp = bodyOp;
     }
 
-    public ID getIdNode() {
+    public ID getId() {
         return id;
     }
 
-    public void setIdNode(ID idNode) {
+    public void setId(ID idNode) {
         this.id = idNode;
     }
 
@@ -68,5 +70,13 @@ public class FunOp extends DefaultMutableTreeNode {
         typeList.forEach(super::add);
 
         this.typeList.addAll(typeList);
+    }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
+    public void setSymbolTable(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
     }
 }

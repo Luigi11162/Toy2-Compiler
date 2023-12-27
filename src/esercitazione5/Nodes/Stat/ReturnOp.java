@@ -5,7 +5,7 @@ import esercitazione5.Nodes.Expr.Expr;
 import java.util.ArrayList;
 
 public class ReturnOp extends Stat{
-    ArrayList<Expr> exprList;
+    private ArrayList<Expr> exprList;
 
     public ReturnOp( ArrayList<Expr> exprList) {
         super("ReturnOp");

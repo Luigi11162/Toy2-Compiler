@@ -7,9 +7,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
 public class VarDeclOp extends DefaultMutableTreeNode {
-    ArrayList<ID> idList;
-    ArrayList<Const> constList;
-    Type type;
+    private ArrayList<ID> idList;
+    private ArrayList<Const> constList;
+    private Type type;
 
     public VarDeclOp(ArrayList<ID> idList, ArrayList<Const> constList, Type type) {
         super("VarDeclOp");

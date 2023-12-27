@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 public class IfStatOp extends Stat {
 
-    Expr expr;
-    BodyOp bodyOp;
-    ArrayList<ElifOp> elifOpList;
-    BodyOp bodyOp2;
+    private Expr expr;
+    private BodyOp bodyOp;
+    private ArrayList<ElifOp> elifOpList;
+    private BodyOp bodyOp2;
 
     public IfStatOp(Expr expr, BodyOp bodyOp, ArrayList<ElifOp> elifOpList, BodyOp bodyOp2) {
         super("IfStatOp");

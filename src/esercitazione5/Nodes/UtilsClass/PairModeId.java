@@ -5,8 +5,8 @@ import esercitazione5.Nodes.Mode;
 
 public class PairModeId {
 
-    Mode mode;
-    ID id;
+    private Mode mode;
+    private ID id;
 
     public PairModeId(Mode mode, ID id) {
         this.mode = mode;

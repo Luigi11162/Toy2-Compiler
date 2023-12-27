@@ -6,8 +6,8 @@ import esercitazione5.Nodes.Expr.ID;
 import java.util.ArrayList;
 
 public class AssignOp extends Stat{
-    ArrayList<ID> idList;
-    ArrayList<Expr> exprList;
+    private ArrayList<ID> idList;
+    private ArrayList<Expr> exprList;
 
     public AssignOp(ArrayList<ID> idList, ArrayList<Expr> exprList) {
         super("AssignOp");

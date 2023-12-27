@@ -2,7 +2,7 @@ package esercitazione5.Nodes.Expr;
 
 public class Const extends Expr {
 
-    String value;
+    private String value;
 
     public Const(String name, String value) {
         super(name+": " + value);

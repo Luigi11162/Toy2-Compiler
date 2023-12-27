@@ -3,7 +3,7 @@ package esercitazione5.Nodes;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class Mode extends DefaultMutableTreeNode {
-    String name;
+    private String name;
 
     public Mode(String name) {
         super(name);

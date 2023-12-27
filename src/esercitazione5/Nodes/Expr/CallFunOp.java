@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class CallFunOp extends Expr{
 
-    ID id;
-    ArrayList<Expr> exprList;
+    private ID id;
+    private ArrayList<Expr> exprList;
 
     public CallFunOp(ID id, ArrayList<Expr> exprList) {
         super("CallFunOp");

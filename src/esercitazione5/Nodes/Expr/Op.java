@@ -2,10 +2,10 @@ package esercitazione5.Nodes.Expr;
 
 public class Op extends Expr {
 
-    Expr valueL;
-    Expr valueR;
+    private Expr valueL;
+    private Expr valueR;
 
-    public Op(String name, Expr valueL, Expr valueR){
+    public Op(String name, Expr valueL, Expr valueR) {
         super(name);
         super.add(valueL);
         super.add(valueR);

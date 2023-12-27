@@ -5,7 +5,7 @@ import esercitazione5.Nodes.Expr.Expr;
 import java.util.ArrayList;
 
 public class ReadOp extends Stat {
-    ArrayList<Expr> exprList;
+    private ArrayList<Expr> exprList;
 
     public ReadOp( ArrayList<Expr> exprList) {
         super("ReadOp");

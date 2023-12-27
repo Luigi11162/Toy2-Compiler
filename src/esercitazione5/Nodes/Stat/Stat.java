@@ -4,7 +4,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class Stat extends DefaultMutableTreeNode {
 
-    String name;
+    private String name;
     public Stat(String name) {
         super(name);
         this.name=name;

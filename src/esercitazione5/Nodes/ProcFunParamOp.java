@@ -5,9 +5,9 @@ import esercitazione5.Nodes.Expr.ID;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class ProcFunParamOp extends DefaultMutableTreeNode {
-    Mode mode;
-    ID id;
-    Type type;
+    private Mode mode;
+    private ID id;
+    private Type type;
 
     public ProcFunParamOp(Mode mode, ID id, Type type) {
         super("ProcFunParamOp");

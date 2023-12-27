@@ -2,13 +2,13 @@ package esercitazione5.Nodes.Expr;
 
 public class UOp extends Expr {
 
-    Expr value;
+    private Expr value;
 
-    public UOp(String name, Expr value){
+    public UOp(String name, Expr value) {
         super(name);
         super.add(value);
 
-        this.value=value;
+        this.value = value;
     }
 
     public Expr getValue() {

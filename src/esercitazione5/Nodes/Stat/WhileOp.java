@@ -4,8 +4,8 @@ import esercitazione5.Nodes.BodyOp;
 import esercitazione5.Nodes.Expr.Expr;
 
 public class WhileOp extends  Stat{
-    Expr expr;
-    BodyOp bodyOp;
+    private Expr expr;
+    private BodyOp bodyOp;
 
     public WhileOp(Expr expr, BodyOp bodyOp) {
         super("WhileOp");

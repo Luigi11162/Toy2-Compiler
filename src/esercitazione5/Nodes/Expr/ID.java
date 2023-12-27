@@ -2,11 +2,11 @@ package esercitazione5.Nodes.Expr;
 
 
 public class ID extends Expr {
-    String value;
+    private String value;
 
-    public ID(String value){
-        super("ID: "+value);
-        
+    public ID(String value) {
+        super("ID: " + value);
+
         this.value = value;
     }
 

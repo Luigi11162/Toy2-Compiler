@@ -1,13 +1,15 @@
 package esercitazione5.Nodes;
 
 import esercitazione5.Nodes.Stat.Stat;
+import esercitazione5.SymbolTable.SymbolTable;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
 public class BodyOp extends DefaultMutableTreeNode {
-    ArrayList<VarDeclOp> varDeclOpList;
-    ArrayList<Stat> statList;
+    private ArrayList<VarDeclOp> varDeclOpList;
+    private ArrayList<Stat> statList;
+    private SymbolTable symbolTable;
 
     public BodyOp(ArrayList<VarDeclOp> varDeclOpList, ArrayList<Stat> statList) {
         super("BodyOp");
@@ -44,5 +46,13 @@ public class BodyOp extends DefaultMutableTreeNode {
         statList.forEach(super::add);
 
         this.statList.addAll(statList);
+    }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
+    public void setSymbolTable(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
     }
 }

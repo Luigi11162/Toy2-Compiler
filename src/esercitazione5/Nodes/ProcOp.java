@@ -1,13 +1,16 @@
 package esercitazione5.Nodes;
 
 import esercitazione5.Nodes.Expr.ID;
+import esercitazione5.SymbolTable.SymbolTable;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
     public class ProcOp extends DefaultMutableTreeNode {
-        ID id;
-        ArrayList<ProcFunParamOp> procFunParamOpList;
-        BodyOp bodyOp;
+        private ID id;
+        private ArrayList<ProcFunParamOp> procFunParamOpList;
+        private BodyOp bodyOp;
+        private SymbolTable symbolTable;
 
         public ProcOp(ID idNode, ArrayList<ProcFunParamOp> procFunParamOpList, BodyOp bodyOp) {
             super("ProcOp");
@@ -20,14 +23,6 @@ import java.util.ArrayList;
             this.id = idNode;
             this.procFunParamOpList = procFunParamOpList;
             this.bodyOp = bodyOp;
-        }
-
-        public ID getIdNode() {
-            return id;
-        }
-
-        public void setIdNode(ID idNode) {
-            this.id = idNode;
         }
 
         public ArrayList<ProcFunParamOp> getProcFunParamOpList() {
@@ -52,4 +47,19 @@ import java.util.ArrayList;
             this.procFunParamOpList.addAll(procFunParamOpList);
         }
 
-}
+        public ID getId() {
+            return id;
+        }
+
+        public void setId(ID id) {
+            this.id = id;
+        }
+
+        public SymbolTable getSymbolTable() {
+            return symbolTable;
+        }
+
+        public void setSymbolTable(SymbolTable symbolTable) {
+            this.symbolTable = symbolTable;
+        }
+    }

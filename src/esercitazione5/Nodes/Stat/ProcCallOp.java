@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 public class ProcCallOp extends Stat {
 
-    ID id;
-    ArrayList<Expr> exprList;
+    private ID id;
+    private ArrayList<Expr> exprList;
 
     public ProcCallOp(ID id, ArrayList<Expr> exprList) {
         super("ProcCallOp");

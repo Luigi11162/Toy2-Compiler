@@ -1,14 +1,18 @@
 package esercitazione5.Nodes;
 
+import esercitazione5.SymbolTable.SymbolTable;
+import esercitazione5.SymbolTable.SymbolType;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
 public class ProgramOp extends DefaultMutableTreeNode {
-    ArrayList<VarDeclOp> varDeclOpList;
-    ArrayList<ProcOp> procOpList;
-    ArrayList<FunOp> funOpList;
+    private ArrayList<VarDeclOp> varDeclOpList;
+    private ArrayList<ProcOp> procOpList;
+    private ArrayList<FunOp> funOpList;
+    private SymbolTable symbolTable;
 
     public ProgramOp(ArrayList<VarDeclOp> varDeclOpList, ArrayList<ProcOp> procOpList, ArrayList<FunOp> funOpList){
         super("ProgramOp");
@@ -68,4 +72,11 @@ public class ProgramOp extends DefaultMutableTreeNode {
         this.funOpList.addAll(funOpList);
     }
 
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
+    public void setSymbolTable(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
+    }
 }
