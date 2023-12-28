@@ -12,7 +12,10 @@ import java.nio.charset.StandardCharsets;
 public class TestScopeVisitor {
 
     public static void main(String[] args) throws Exception {
-        String filePath = "ProgramEs5.inp";
+        if (args.length != 1){
+            throw new Exception("File mancante");
+        }
+        String filePath = args[0];
         FileInputStream stream = new FileInputStream(filePath);
         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         Lexer scanner = new Lexer(reader);

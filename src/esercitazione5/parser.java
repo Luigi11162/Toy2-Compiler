@@ -673,8 +673,7 @@ class CUP$parser$actions {
 		int varDeclListleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int varDeclListright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<VarDeclOp> varDeclList = (ArrayList<VarDeclOp>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new ArrayList<VarDeclOp>();
-                        RESULT.addAll(varDeclList); 
+		 RESULT = varDeclList; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("VarDecls",31, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

@@ -15,16 +15,16 @@ public class FunOp extends DefaultMutableTreeNode implements NodeVisitor {
     private BodyOp bodyOp;
     private SymbolTable symbolTable;
 
-    public FunOp(ID idNode, ArrayList<ProcFunParamOp> procFunParamOpList, ArrayList<Type> typeList, BodyOp bodyOp) {
+    public FunOp(ID id, ArrayList<ProcFunParamOp> procFunParamOpList, ArrayList<Type> typeList, BodyOp bodyOp) {
         super("FunOp");
-        super.add(idNode);
+        super.add(id);
         if(!procFunParamOpList.isEmpty()){
             procFunParamOpList.forEach(super::add);
         }
         typeList.forEach(super::add);
         super.add(bodyOp);
 
-        this.id = idNode;
+        this.id = id;
         this.procFunParamOpList = procFunParamOpList;
         this.typeList = typeList;
         this.bodyOp = bodyOp;

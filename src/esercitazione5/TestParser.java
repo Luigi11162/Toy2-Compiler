@@ -7,18 +7,20 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
-public class Main {
+public class TestParser {
 
     public static void main(String[] args) throws Exception {
-        JTree tree;
-        String filePath = "ProgramEs5.inp";
+        if (args.length != 1){
+            throw new Exception("File mancante");
+        }
+        String filePath = args[0];
         FileInputStream stream = new FileInputStream(filePath);
         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         Lexer scanner = new Lexer(reader);
         parser p = new parser(scanner);
 
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) p.parse().value;
-        tree = new JTree(root);
+        JTree tree = new JTree(root);
 
         JFrame framePannello = new JFrame();
         framePannello.setSize(400, 400);

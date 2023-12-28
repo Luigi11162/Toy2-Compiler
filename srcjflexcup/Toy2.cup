@@ -105,8 +105,7 @@ Iter ::= VarDecls:varDeclList Iter:program {: varDeclList.addAll(program.getVarD
 VarDecls ::= VarDecl:varDeclList1 VarDecls:varDeclList2 {: RESULT = new ArrayList<VarDeclOp>();
                                                      RESULT.addAll(varDeclList1);
                                                      RESULT.addAll(varDeclList2); :}
-	|  VarDecl:varDeclList {: RESULT = new ArrayList<VarDeclOp>();
-                        RESULT.addAll(varDeclList); :};
+	|  VarDecl:varDeclList {: RESULT = varDeclList; :};
 
 VarDecl ::= VAR Decls:decl {: RESULT = decl; :};
 
@@ -184,7 +183,7 @@ Body ::= VarDecls:varDeclList Body:body {: ArrayList<VarDeclOp> varDeclListNew =
 	| Stat:stat Body:body {: ArrayList<Stat> statList = new ArrayList<>();
                             statList.add(stat);
                             statList.addAll(body.getStatList());
-                            RESULT = new BodyOp(body.getVarDeclOpList(),statList); :}
+                            RESULT = new BodyOp(body.getVarDeclOpList(), statList); :}
 	| /* empty */ {: RESULT = new BodyOp(new ArrayList<VarDeclOp>(), new ArrayList<Stat>()); :};
 
 Stat ::= Ids:idList ASSIGN Exprs:exprList SEMI {: RESULT = new AssignOp(idList, exprList); :}

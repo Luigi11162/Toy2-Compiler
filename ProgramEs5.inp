@@ -6,7 +6,6 @@ proc main():
     var flag ^= true;\
     var result : real;\
 
-
     while flag = true do
     <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)" $(operazione);
     <-- "Inserisci il primo input" $(input1);
