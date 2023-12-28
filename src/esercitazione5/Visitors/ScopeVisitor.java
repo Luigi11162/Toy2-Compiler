@@ -23,8 +23,8 @@ public class ScopeVisitor implements Visitor {
             programOp.setSymbolTable(symbolTable);
         }
         symbolTableStack.add(symbolTable);
-
         programOp.getFunOpList().forEach(funOp -> {
+
             try {
                 programOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
@@ -81,7 +81,7 @@ public class ScopeVisitor implements Visitor {
                             new SymbolRow(
                                     idIterator.next().getValue(),
                                     "Var",
-                                    new SymbolType(new Type((String)constIterator.next().accept(this))),
+                                    new SymbolType(new Type((String) constIterator.next().accept(this))),
                                     ""
                             )
                     );
@@ -96,8 +96,7 @@ public class ScopeVisitor implements Visitor {
                             new SymbolRow(
                                     id.getValue(),
                                     "Var",
-                                    new SymbolType(varDeclOp.getType()
-                                    ),
+                                    new SymbolType(varDeclOp.getType()),
                                     ""
                             )
                     );
@@ -135,7 +134,6 @@ public class ScopeVisitor implements Visitor {
 
         symbolTableStack.add(funOp.getSymbolTable());
         funOp.getBodyOp().accept(this);
-        symbolTableStack.pop();
         return null;
     }
 
@@ -178,7 +176,7 @@ public class ScopeVisitor implements Visitor {
         symbolTableStack.add(symbolTable);
         bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
         bodyOp.getStatList().forEach(stat -> stat.accept(this));
-        symbolTableStack.pop();
+
         return null;
     }
 
@@ -204,7 +202,7 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(Type type) {
-        return type.getName();
+        return null;
     }
 
     @Override
@@ -274,7 +272,7 @@ public class ScopeVisitor implements Visitor {
     @Override
     public Object visit(Const const1) {
 
-        return switch (const1.getName()) {
+        return switch (const1.getType().getName()) {
             case "RealConst" -> "Real";
             case "IntegerConst" -> "Integer";
             case "StringConst" -> "String";

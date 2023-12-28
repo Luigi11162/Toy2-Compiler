@@ -13,6 +13,7 @@ proc main():
     <-- "Inserisci il secondo input" $(input2);
 
     if operazione = "somma" then
+        var result ^= 0;\
         somma(input1, input2, @result);
     elseif operazione = "sottrazione" then
         sottrazione(input1, input2, @result);
@@ -48,7 +49,7 @@ func moltiplicazione(input1: integer, input2: integer) -> real:
     return result;
 endfunc
 
-func divisione(input1: integer, input2: integer) -> real:
+func divisione(input1: boolean, input2: integer) -> real:
     var result : real;\
     if input2 = 0 then
         --> "Errore";

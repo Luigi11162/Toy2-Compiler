@@ -568,6 +568,8 @@ class CUP$parser$actions {
 		int programright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ProgramOp program = (ProgramOp)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 ArrayList<FunOp> funList = new ArrayList<>();
+                                                   funList.add(function);
+                                                   funList.addAll(program.getFunOpList());
                                                    program.setFunOpList(funList);
                                                    RESULT = program; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IterNoProcedure",2, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -594,7 +596,7 @@ class CUP$parser$actions {
 		int programright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ProgramOp program = (ProgramOp)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 varDeclList.addAll(program.getVarDeclOpList());
-                                           program.addVarDeclOpList(varDeclList);
+                                           program.setVarDeclOpList(varDeclList);
                                            RESULT = program; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Iter",1, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -613,7 +615,7 @@ class CUP$parser$actions {
 		 ArrayList<FunOp> funList = new ArrayList<>();
                                        funList.add(function);
                                        funList.addAll(program.getFunOpList());
-                                       program.addFunOpList(funList);
+                                       program.setFunOpList(funList);
                                        RESULT = program; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Iter",1, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -632,7 +634,7 @@ class CUP$parser$actions {
 		ArrayList<ProcOp> procList = new ArrayList<>();
                                   procList.add(procedure);
                                   procList.addAll(program.getProcOpList());
-                                  program.addProcOpList(procList);
+                                  program.setProcOpList(procList);
                                   RESULT = program; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Iter",1, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }

@@ -81,22 +81,24 @@ IterNoProcedure ::= VarDecls:varDeclList IterNoProcedure:program {:varDeclList.a
                                                                 RESULT = program;
                                                                 :}
     | Function:function IterNoProcedure:program {: ArrayList<FunOp> funList = new ArrayList<>();
+                                                   funList.add(function);
+                                                   funList.addAll(program.getFunOpList());
                                                    program.setFunOpList(funList);
                                                    RESULT = program; :}
     | /* empty */ {: RESULT = new ProgramOp(new ArrayList<VarDeclOp>(), new ArrayList<ProcOp>(), new ArrayList<FunOp>()); :};
 
 Iter ::= VarDecls:varDeclList Iter:program {: varDeclList.addAll(program.getVarDeclOpList());
-                                           program.addVarDeclOpList(varDeclList);
+                                           program.setVarDeclOpList(varDeclList);
                                            RESULT = program; :}
     | Function:function Iter:program {: ArrayList<FunOp> funList = new ArrayList<>();
                                        funList.add(function);
                                        funList.addAll(program.getFunOpList());
-                                       program.addFunOpList(funList);
+                                       program.setFunOpList(funList);
                                        RESULT = program; :}
     | Procedure:procedure Iter:program {:ArrayList<ProcOp> procList = new ArrayList<>();
                                   procList.add(procedure);
                                   procList.addAll(program.getProcOpList());
-                                  program.addProcOpList(procList);
+                                  program.setProcOpList(procList);
                                   RESULT = program; :}
     | /* empty */ {: RESULT = new ProgramOp(new ArrayList<VarDeclOp>(), new ArrayList<ProcOp>(), new ArrayList<FunOp>()); :};
 
