@@ -10,6 +10,7 @@ import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
 import esercitazione5.Nodes.UtilsClass.*;
 import java.util.ArrayList;
+import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */
@@ -702,7 +703,7 @@ class CUP$parser$actions {
 		int declListright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<VarDeclOp> declList = (ArrayList<VarDeclOp>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		  RESULT = new ArrayList<VarDeclOp>();
-                                                        RESULT.add(new VarDeclOp(idList, new ArrayList<Const>(), type));
+                                                        RESULT.add(new VarDeclOp(idList, type));
                                                         RESULT.addAll(declList); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Decls",29, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -739,7 +740,7 @@ class CUP$parser$actions {
 		int typeright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		Type type = (Type)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		 RESULT = new ArrayList<VarDeclOp>();
-	                                            RESULT.add(new VarDeclOp(idList, new ArrayList<Const>())); 
+	                                            RESULT.add(new VarDeclOp(idList, type)); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Decls",29, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1401,7 +1402,7 @@ class CUP$parser$actions {
           case 63: // Else ::= 
             {
               BodyOp RESULT =null;
-		 RESULT = null; 
+		 RESULT = new BodyOp(new ArrayList<VarDeclOp>(), new ArrayList<Stat>()); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Else",17, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

@@ -1,9 +1,11 @@
+
 % programma principale %
 proc main():
     var operazione : string; \
     var input1, input2, answer : integer;\
     var flag ^= true;\
     var result : real;\
+
 
     while flag = true do
     <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)" $(operazione);
@@ -18,9 +20,6 @@ proc main():
        result ^= divisione(input1, input2);
     elseif operazione = "moltiplicazione" then
        result ^= moltiplicazione(input1, input2);
-    else
-        result ^= 0.0;
-        -->"Errore";
     endif;
 
     --> "Il risultato e':" $(risultato);

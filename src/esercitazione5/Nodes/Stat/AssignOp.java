@@ -8,8 +8,8 @@ import esercitazione5.Visitors.Visitor;
 import java.util.ArrayList;
 
 public class AssignOp extends Stat implements NodeVisitor {
-    private ArrayList<ID> idList;
-    private ArrayList<Expr> exprList;
+    private ArrayList<ID> idList = new ArrayList<>();
+    private ArrayList<Expr> exprList = new ArrayList<>();
 
     public AssignOp(ArrayList<ID> idList, ArrayList<Expr> exprList) {
         super("AssignOp");

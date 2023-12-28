@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
     public class ProcOp extends DefaultMutableTreeNode implements NodeVisitor {
         private ID id;
-        private ArrayList<ProcFunParamOp> procFunParamOpList;
+        private ArrayList<ProcFunParamOp> procFunParamOpList = new ArrayList<>();
         private BodyOp bodyOp;
         private SymbolTable symbolTable;
 

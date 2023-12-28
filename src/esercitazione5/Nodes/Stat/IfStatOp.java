@@ -12,7 +12,7 @@ public class IfStatOp extends Stat implements NodeVisitor {
 
     private Expr expr;
     private BodyOp bodyOp;
-    private ArrayList<ElifOp> elifOpList;
+    private ArrayList<ElifOp> elifOpList = new ArrayList<>();
     private BodyOp bodyOp2;
 
     public IfStatOp(Expr expr, BodyOp bodyOp, ArrayList<ElifOp> elifOpList, BodyOp bodyOp2) {

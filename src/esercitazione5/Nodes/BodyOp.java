@@ -9,8 +9,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
 public class BodyOp extends DefaultMutableTreeNode implements NodeVisitor {
-    private ArrayList<VarDeclOp> varDeclOpList;
-    private ArrayList<Stat> statList;
+    private ArrayList<VarDeclOp> varDeclOpList = new ArrayList<>();
+    private ArrayList<Stat> statList = new ArrayList<>();
     private SymbolTable symbolTable;
 
     public BodyOp(ArrayList<VarDeclOp> varDeclOpList, ArrayList<Stat> statList) {

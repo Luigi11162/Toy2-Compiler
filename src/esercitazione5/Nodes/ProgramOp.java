@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 public class ProgramOp extends DefaultMutableTreeNode implements NodeVisitor {
-    private ArrayList<VarDeclOp> varDeclOpList;
-    private ArrayList<ProcOp> procOpList;
-    private ArrayList<FunOp> funOpList;
+    private ArrayList<VarDeclOp> varDeclOpList = new ArrayList<>();
+    private ArrayList<ProcOp> procOpList = new ArrayList<>();
+    private ArrayList<FunOp> funOpList = new ArrayList<>();
     private SymbolTable symbolTable;
 
     public ProgramOp(ArrayList<VarDeclOp> varDeclOpList, ArrayList<ProcOp> procOpList, ArrayList<FunOp> funOpList){

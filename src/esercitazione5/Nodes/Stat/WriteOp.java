@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class WriteOp extends Stat implements NodeVisitor {
     private Mode mode;
-    private ArrayList<Expr> exprList;
+    private ArrayList<Expr> exprList = new ArrayList<>();
 
     public WriteOp(Mode mode, ArrayList<Expr> exprList) {
         super("WriteOp");

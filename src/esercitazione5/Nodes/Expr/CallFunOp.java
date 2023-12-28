@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class CallFunOp extends Expr implements NodeVisitor {
 
     private ID id;
-    private ArrayList<Expr> exprList;
+    private ArrayList<Expr> exprList = new ArrayList<>();
 
     public CallFunOp(ID id, ArrayList<Expr> exprList) {
         super("CallFunOp");

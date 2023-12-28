@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 public class FunOp extends DefaultMutableTreeNode implements NodeVisitor {
     private ID id;
-    private ArrayList<ProcFunParamOp> procFunParamOpList;
-    private ArrayList<Type> typeList;
+    private ArrayList<ProcFunParamOp> procFunParamOpList = new ArrayList<>();
+    private ArrayList<Type> typeList = new ArrayList<>();
     private BodyOp bodyOp;
     private SymbolTable symbolTable;
 

@@ -109,13 +109,13 @@ VarDecls ::= VarDecl:varDeclList1 VarDecls:varDeclList2 {: RESULT = new ArrayLis
 VarDecl ::= VAR Decls:decl {: RESULT = decl; :};
 
 Decls ::= Ids:idList COLON Type:type SEMI Decls:declList {:  RESULT = new ArrayList<VarDeclOp>();
-                                                        RESULT.add(new VarDeclOp(idList, new ArrayList<Const>(), type));
+                                                        RESULT.add(new VarDeclOp(idList, type));
                                                         RESULT.addAll(declList); :}
 	| Ids:idList ASSIGN Consts:constList SEMI Decls:declList {:  RESULT = new ArrayList<VarDeclOp>();
                                                                  RESULT.add(new VarDeclOp(idList, constList));
                                                                  RESULT.addAll(declList); :}
 	| Ids:idList COLON Type:type SEMI ENDVAR {: RESULT = new ArrayList<VarDeclOp>();
-	                                            RESULT.add(new VarDeclOp(idList, new ArrayList<Const>())); :}
+	                                            RESULT.add(new VarDeclOp(idList, type)); :}
 	| Ids:idList ASSIGN Consts:constList SEMI ENDVAR {: RESULT = new ArrayList<VarDeclOp>();
                                                         RESULT.add(new VarDeclOp(idList, constList)); :};
 
@@ -210,7 +210,7 @@ Elifs ::= Elif:elif Elifs:elifList {: RESULT = new ArrayList<ElifOp>();
 Elif ::= ELIF Expr:expr THEN Body:body {: RESULT = new ElifOp(expr, body); :};
 
 Else ::= ELSE Body:body {: RESULT = body; :}
-    | /* empty */ {: RESULT = null; :};
+    | /* empty */ {: RESULT = new BodyOp(new ArrayList<VarDeclOp>(), new ArrayList<Stat>()); :};
 
 WhileStat ::= WHILE Expr:expr DO Body:body ENDWHILE {: RESULT = new WhileOp(expr, body); :};
 

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class ProcCallOp extends Stat implements NodeVisitor {
 
     private ID id;
-    private ArrayList<Expr> exprList;
+    private ArrayList<Expr> exprList = new ArrayList<>();
 
     public ProcCallOp(ID id, ArrayList<Expr> exprList) {
         super("ProcCallOp");

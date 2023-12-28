@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
 
-    String name;
-    ArrayList<SymbolRow> symbolRowList;
+    private String name;
+    private ArrayList<SymbolRow> symbolRowList;
 
     public SymbolTable(String name, ArrayList<SymbolRow> symbolRowList) {
         super.put(name, symbolRowList);
@@ -31,7 +31,15 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
         this.symbolRowList = symbolRowList;
     }
 
-    public void addSymbolRow(SymbolRow symbolRow) {
-        this.symbolRowList.add(symbolRow);
+    public void addSymbolRow(SymbolRow symbolRow) throws Exception {
+        if(!probe(symbolRow.getName())) {
+            this.symbolRowList.add(symbolRow);
+        }else{
+            throw new Exception("Elemento già dichiarato");
+        }
+    }
+
+    public boolean probe(String name){
+        return this.getSymbolRowList().stream().anyMatch(symbolRow -> symbolRow.getName().equals(name));
     }
 }

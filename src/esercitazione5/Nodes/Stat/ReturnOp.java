@@ -7,7 +7,7 @@ import esercitazione5.Visitors.Visitor;
 import java.util.ArrayList;
 
 public class ReturnOp extends Stat implements NodeVisitor {
-    private ArrayList<Expr> exprList;
+    private ArrayList<Expr> exprList = new ArrayList<>();
 
     public ReturnOp(ArrayList<Expr> exprList) {
         super("ReturnOp");

@@ -9,18 +9,16 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 
 public class VarDeclOp extends DefaultMutableTreeNode implements NodeVisitor {
-    private ArrayList<ID> idList;
-    private ArrayList<Const> constList;
+    private ArrayList<ID> idList = new ArrayList<>();
+    private ArrayList<Const> constList = new ArrayList<>();
     private Type type;
 
-    public VarDeclOp(ArrayList<ID> idList, ArrayList<Const> constList, Type type) {
+    public VarDeclOp(ArrayList<ID> idList, Type type) {
         super("VarDeclOp");
         idList.forEach(super::add);
-        constList.forEach(super::add);
         super.add(type);
 
         this.idList = idList;
-        this.constList = constList;
         this.type = type;
     }
 
@@ -28,7 +26,6 @@ public class VarDeclOp extends DefaultMutableTreeNode implements NodeVisitor {
         super("VarDeclOp");
         idList.forEach(super::add);
         constList.forEach(super::add);
-
 
         this.idList = idList;
         this.constList = constList;

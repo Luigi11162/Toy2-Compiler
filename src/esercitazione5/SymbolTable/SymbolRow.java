@@ -1,10 +1,10 @@
 package esercitazione5.SymbolTable;
 
 public class SymbolRow {
-    String name;
-    String kind;
-    SymbolType symbolType;
-    String properties;
+    private String name;
+    private String kind;
+    private SymbolType symbolType;
+    private String properties;
 
     public SymbolRow(String name, String kind, SymbolType symbolType, String properties) {
         this.name = name;
