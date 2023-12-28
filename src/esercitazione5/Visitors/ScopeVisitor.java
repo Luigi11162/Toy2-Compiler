@@ -14,15 +14,15 @@ import java.util.stream.Collectors;
 
 public class ScopeVisitor implements Visitor {
 
-    Stack<SymbolTable> symbolTableStack = new Stack<>();
+    static Stack<SymbolTable> symbolTableStack = new Stack<>();
 
     @Override
     public Object visit(ProgramOp programOp) {
+        SymbolTable symbolTable = new SymbolTable("Global", new ArrayList<>());
         if (programOp.getSymbolTable() == null) {
-            SymbolTable symbolTable = new SymbolTable("Global", new ArrayList<>());
             programOp.setSymbolTable(symbolTable);
-            symbolTableStack.add(symbolTable);
         }
+        symbolTableStack.add(symbolTable);
 
         programOp.getFunOpList().forEach(funOp -> {
             try {
@@ -75,13 +75,13 @@ public class ScopeVisitor implements Visitor {
         if (!varDeclOp.getConstList().isEmpty()) {
             Iterator<ID> idIterator = varDeclOp.getidList().iterator();
             Iterator<Const> constIterator = varDeclOp.getConstList().iterator();
-            while (idIterator.hasNext() && constIterator.hasNext()){
+            while (idIterator.hasNext() && constIterator.hasNext()) {
                 try {
                     symbolTable.addSymbolRow(
                             new SymbolRow(
                                     idIterator.next().getValue(),
                                     "Var",
-                                    new SymbolType(new Type(constIterator.next().accept(this).toString())),
+                                    new SymbolType(new Type((String)constIterator.next().accept(this))),
                                     ""
                             )
                     );
@@ -89,13 +89,13 @@ public class ScopeVisitor implements Visitor {
                     throw new RuntimeException(e);
                 }
             }
-        }else if(varDeclOp.getType() != null){
+        } else if (varDeclOp.getType() != null) {
             varDeclOp.getidList().forEach(id -> {
                 try {
                     symbolTable.addSymbolRow(
                             new SymbolRow(
                                     id.getValue(),
-                                "Var",
+                                    "Var",
                                     new SymbolType(varDeclOp.getType()
                                     ),
                                     ""
@@ -106,12 +106,15 @@ public class ScopeVisitor implements Visitor {
                 }
             });
         }
+
+        symbolTableStack.push(symbolTable);
         return null;
     }
+
     @Override
     public Object visit(FunOp funOp) {
         SymbolTable symbolTable = new SymbolTable("Func", new ArrayList<>());
-        if(funOp.getSymbolTable() == null){
+        if (funOp.getSymbolTable() == null) {
             funOp.setSymbolTable(symbolTable);
         }
 
@@ -139,7 +142,7 @@ public class ScopeVisitor implements Visitor {
     @Override
     public Object visit(ProcOp procOp) {
         SymbolTable symbolTable = new SymbolTable("Proc", new ArrayList<>());
-        if(procOp.getSymbolTable() == null){
+        if (procOp.getSymbolTable() == null) {
             procOp.setSymbolTable(symbolTable);
         }
 
@@ -147,10 +150,10 @@ public class ScopeVisitor implements Visitor {
             try {
                 procOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                            procFunParamOp.getId().getValue(),
-                            "Param",
-                            new SymbolType(procFunParamOp.getType()),
-                            procFunParamOp.getMode().getName()
+                                procFunParamOp.getId().getValue(),
+                                "Param",
+                                new SymbolType(procFunParamOp.getType()),
+                                procFunParamOp.getMode().getName()
                         )
                 );
             } catch (Exception e) {
@@ -161,7 +164,6 @@ public class ScopeVisitor implements Visitor {
         symbolTableStack.add(procOp.getSymbolTable());
         procOp.getBodyOp().accept(this);
 
-        symbolTableStack.pop();
         return null;
     }
 
@@ -169,7 +171,7 @@ public class ScopeVisitor implements Visitor {
     public Object visit(BodyOp bodyOp) {
         SymbolTable symbolTable = symbolTableStack.pop();
 
-        if(bodyOp.getSymbolTable() == null){
+        if (bodyOp.getSymbolTable() == null) {
             bodyOp.setSymbolTable(symbolTable);
         }
 
@@ -247,7 +249,7 @@ public class ScopeVisitor implements Visitor {
     public Object visit(WhileOp whileOp) {
         symbolTableStack.add(new SymbolTable("While", new ArrayList<>()));
 
-        if (whileOp.getBodyOp()!= null){
+        if (whileOp.getBodyOp() != null) {
             whileOp.getBodyOp().accept(this);
         }
 

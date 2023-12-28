@@ -57,13 +57,13 @@ public class VarDeclOp extends DefaultMutableTreeNode implements NodeVisitor {
         this.type = type;
     }
 
-    public void addIdList(ArrayList<ID> idList){
+    public void addIdList(ArrayList<ID> idList) {
         idList.forEach(super::add);
 
         this.idList.addAll(idList);
     }
 
-    public void addConstList(ArrayList<Const> constList){
+    public void addConstList(ArrayList<Const> constList) {
         constList.forEach(super::add);
 
         this.constList.addAll(constList);
