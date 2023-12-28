@@ -8,6 +8,7 @@ import esercitazione5.SymbolTable.SymbolTable;
 import esercitazione5.SymbolTable.SymbolType;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -71,8 +72,40 @@ public class ScopeVisitor implements Visitor {
     @Override
     public Object visit(VarDeclOp varDeclOp) {
         SymbolTable symbolTable = symbolTableStack.pop();
-
-
+        if (!varDeclOp.getConstList().isEmpty()) {
+            Iterator<ID> idIterator = varDeclOp.getidList().iterator();
+            Iterator<Const> constIterator = varDeclOp.getConstList().iterator();
+            while (idIterator.hasNext() && constIterator.hasNext()){
+                try {
+                    symbolTable.addSymbolRow(
+                            new SymbolRow(
+                                    idIterator.next().getValue(),
+                                    "Var",
+                                    new SymbolType(new Type(constIterator.next().accept(this).toString())),
+                                    ""
+                            )
+                    );
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }else if(varDeclOp.getType() != null){
+            varDeclOp.getidList().forEach(id -> {
+                try {
+                    symbolTable.addSymbolRow(
+                            new SymbolRow(
+                                    id.getValue(),
+                                "Var",
+                                    new SymbolType(varDeclOp.getType()
+                                    ),
+                                    ""
+                            )
+                    );
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
         return null;
     }
     @Override
