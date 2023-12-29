@@ -28,7 +28,7 @@ public class ScopeVisitor implements Visitor {
             try {
                 programOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                                funOp.getId().getValue(),
+                                (String) funOp.getId().accept(this),
                                 "Method",
                                 new SymbolType(
                                         funOp.getProcFunParamOpList().stream().map(ProcFunParamOp::getType).
@@ -47,7 +47,7 @@ public class ScopeVisitor implements Visitor {
             try {
                 programOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                                procOp.getId().getValue(),
+                                (String) procOp.getId().accept(this),
                                 "Method",
                                 new SymbolType(
                                         procOp.getProcFunParamOpList().stream().map(ProcFunParamOp::getType).
@@ -79,7 +79,7 @@ public class ScopeVisitor implements Visitor {
                 try {
                     symbolTable.addSymbolRow(
                             new SymbolRow(
-                                    idIterator.next().getValue(),
+                                    (String) idIterator.next().accept(this),
                                     "Var",
                                     new SymbolType(new Type((String) constIterator.next().accept(this))),
                                     ""
@@ -94,7 +94,7 @@ public class ScopeVisitor implements Visitor {
                 try {
                     symbolTable.addSymbolRow(
                             new SymbolRow(
-                                    id.getValue(),
+                                    (String) id.accept(this),
                                     "Var",
                                     new SymbolType(varDeclOp.getType()),
                                     ""
@@ -121,10 +121,10 @@ public class ScopeVisitor implements Visitor {
             try {
                 funOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                                procFunParamOp.getId().getValue(),
+                                (String) procFunParamOp.getId().accept(this),
                                 "Param",
                                 new SymbolType(procFunParamOp.getType()),
-                                procFunParamOp.getMode().getName()
+                                (String) procFunParamOp.getMode().accept(this)
                         )
                 );
             } catch (Exception e) {
@@ -148,10 +148,10 @@ public class ScopeVisitor implements Visitor {
             try {
                 procOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                                procFunParamOp.getId().getValue(),
+                                (String) procFunParamOp.getId().accept(this),
                                 "Param",
                                 new SymbolType(procFunParamOp.getType()),
-                                procFunParamOp.getMode().getName()
+                                (String) procFunParamOp.getMode().accept(this)
                         )
                 );
             } catch (Exception e) {
@@ -197,12 +197,12 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(Mode mode) {
-        return null;
+        return mode.getName();
     }
 
     @Override
     public Object visit(Type type) {
-        return null;
+        return type.getName();
     }
 
     @Override
@@ -272,7 +272,7 @@ public class ScopeVisitor implements Visitor {
     @Override
     public Object visit(Const const1) {
 
-        return switch (const1.getType().getName()) {
+        return switch ((String) const1.getType().accept(this)) {
             case "RealConst" -> "Real";
             case "IntegerConst" -> "Integer";
             case "StringConst" -> "String";
@@ -284,7 +284,7 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(ID id) {
-        return null;
+        return id.getValue();
     }
 
     @Override

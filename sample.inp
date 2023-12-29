@@ -19,7 +19,7 @@ Ci saranno forse altre correzioni da fare per renderlo conforme alle specifiche 
 
 
 % fa somma e restituisce anche la taglia del numero, oltre che il risultato%
-proc sommac(a: integer, d: integer, b:real, out size: string, out result: real):
+proc sommac():
 
 	result  ^=  a + b + c + d;
 
