@@ -1,15 +1,16 @@
-package esercitazione5;
+package esercitazione5.Test;
 
-import esercitazione5.Nodes.ProgramOp;
-import esercitazione5.Visitors.ScopeVisitor;
+import esercitazione5.Lexer;
+import esercitazione5.parser;
 
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
-public class TestScopeVisitor {
+public class TestParser {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1){
@@ -22,13 +23,16 @@ public class TestScopeVisitor {
         parser p = new parser(scanner);
 
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) p.parse().value;
+        JTree tree = new JTree(root);
 
-        ((ProgramOp) root).accept(new ScopeVisitor());
-        int a = 0;
+        JFrame framePannello = new JFrame();
+        framePannello.setSize(400, 400);
+        JScrollPane treeView = new JScrollPane(tree);
+        framePannello.add(treeView);
+        framePannello.setVisible(true);
+
         while (!scanner.yyatEOF()) {
             p.debug_parse();
         }
     }
-
-
 }

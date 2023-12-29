@@ -120,6 +120,12 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(Op op) {
+        switch (op.getName()){
+            case "AddOp", "DiffOp","MulOp", "DivOp":
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + op.getName());
+        }
         return null;
     }
 

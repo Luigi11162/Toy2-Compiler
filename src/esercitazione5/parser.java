@@ -1158,7 +1158,7 @@ class CUP$parser$actions {
 		 ArrayList<Stat> statList = new ArrayList<>();
                             statList.add(stat);
                             statList.addAll(body.getStatList());
-                            RESULT = new BodyOp(body.getVarDeclOpList(),statList); 
+                            RESULT = new BodyOp(body.getVarDeclOpList(), statList); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Body",5, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1429,12 +1429,12 @@ class CUP$parser$actions {
               ArrayList<Expr> RESULT =null;
 		int exprList1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int exprList1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
-		ArrayList<Expr> exprList1 = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		Expr exprList1 = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int exprList2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int exprList2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<Expr> exprList2 = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		RESULT = new ArrayList<Expr>();
-                                                    RESULT.addAll(exprList1);
+                                                    RESULT.add(exprList1);
                                                     RESULT.addAll(exprList2);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IOArgs",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1469,16 +1469,14 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 68: // OtherIOArgs ::= OtherIOArgs PLUS OtherIOArgs 
             {
-              ArrayList<Expr> RESULT =null;
+              Expr RESULT =null;
 		int exprList1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int exprList1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		ArrayList<Expr> exprList1 = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Expr exprList1 = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int exprList2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int exprList2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		ArrayList<Expr> exprList2 = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT = new ArrayList<Expr>();
-                                                                 RESULT.addAll(exprList1);
-                                                                 RESULT.addAll(exprList2);
+		Expr exprList2 = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		RESULT = new Op("AddOp", exprList1, exprList2); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("OtherIOArgs",8, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1486,12 +1484,11 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 69: // OtherIOArgs ::= STRING_CONST 
             {
-              ArrayList<Expr> RESULT =null;
+              Expr RESULT =null;
 		int valueleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int valueright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String value = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new ArrayList<Expr>();
-                                RESULT.add(new Const("StringConst", value));
+		 RESULT = new Const("StringConst", value); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("OtherIOArgs",8, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

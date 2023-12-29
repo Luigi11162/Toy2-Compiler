@@ -28,7 +28,7 @@ non terminal CallFunOp FunCall;
 non terminal BodyOp Body;
 non terminal Expr Expr;
 non terminal ArrayList<Expr> IOArgs;
-non terminal ArrayList<Expr> OtherIOArgs;
+non terminal Expr OtherIOArgs;
 non terminal ArrayList<Expr> Exprs;
 non terminal ArrayList<Expr> ProcExprs;
 non terminal ArrayList<ID> Ids;
@@ -216,18 +216,15 @@ Else ::= ELSE Body:body {: RESULT = body; :}
 WhileStat ::= WHILE Expr:expr DO Body:body ENDWHILE {: RESULT = new WhileOp(expr, body); :};
 
 IOArgs ::=  OtherIOArgs:exprList1 IOArgs:exprList2 {:RESULT = new ArrayList<Expr>();
-                                                    RESULT.addAll(exprList1);
+                                                    RESULT.add(exprList1);
                                                     RESULT.addAll(exprList2);:}
        |  DOLLARSIGN LPAR Expr:expr RPAR IOArgs:exprList {:RESULT = new ArrayList<Expr>();
                                                           RESULT.add(expr);
                                                           RESULT.addAll(exprList);:}
        | /* empty */ {: RESULT = new ArrayList<Expr>(); :};
 
-OtherIOArgs ::= OtherIOArgs:exprList1 PLUS OtherIOArgs:exprList2 {:RESULT = new ArrayList<Expr>();
-                                                                 RESULT.addAll(exprList1);
-                                                                 RESULT.addAll(exprList2);:}
-       |  STRING_CONST:value {: RESULT = new ArrayList<Expr>();
-                                RESULT.add(new Const("StringConst", value));:} ;
+OtherIOArgs ::= OtherIOArgs:exprList1 PLUS OtherIOArgs:exprList2 {:RESULT = new Op("AddOp", exprList1, exprList2); :}
+       |  STRING_CONST:value {: RESULT = new Const("StringConst", value); :};
 
 ProcExprs::= Expr:expr COMMA ProcExprs:exprList {: RESULT = new ArrayList<Expr>();
                                                     RESULT.add(expr);

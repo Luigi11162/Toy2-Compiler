@@ -10,6 +10,7 @@ import java_cup.runtime.Symbol; //This is how we pass tokens to the parser
 
 %%
 
+%public
 %class Lexer
 %cupsym sym
 %cup

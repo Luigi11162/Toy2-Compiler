@@ -3,21 +3,22 @@ package esercitazione5.Visitors.OpTable;
 import esercitazione5.Nodes.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 public class OpTableCombinations {
 
     public enum EnumOpTable {
-        UMINUSOPTABLE,
-        NOTOPTABLE,
-        ARITOPTABLE,
-        CONCATOPTABLE,
-        LOGICOPTABLE,
-        RELOPTABLE
+        UMINUSOP,
+        NOTOP,
+        ARITOP,
+        CONCATOP,
+        LOGICOP,
+        RELOP
     }
 
-    public static final OpTable UMINUSOP = new OpTable(
+    private static final OpTable UMINUSOP = new OpTable(
             "UMinus",
             new ArrayList<>(
                     List.of(
@@ -32,7 +33,7 @@ public class OpTableCombinations {
                     )
             )
     );
-    public static final OpTable NOTOP = new OpTable(
+    private static final OpTable NOTOP = new OpTable(
             "Not",
             new ArrayList<>(
                     List.of(
@@ -44,7 +45,7 @@ public class OpTableCombinations {
             )
     );
 
-    public static final OpTable ARITOP = new OpTable(
+    private static final OpTable ARITOP = new OpTable(
             "AritOp",
             new ArrayList<>(
                     List.of(
@@ -88,7 +89,7 @@ public class OpTableCombinations {
             )
     );
 
-    public static final OpTable CONCATOP = new OpTable(
+    private static final OpTable CONCATOP = new OpTable(
             "ConcatOp",
             new ArrayList<>(
                     List.of(
@@ -105,7 +106,7 @@ public class OpTableCombinations {
             )
     );
 
-    public static final OpTable LOGICOP = new OpTable(
+    private static final OpTable LOGICOP = new OpTable(
             "LogicOp",
             new ArrayList<>(
                     List.of(
@@ -122,7 +123,7 @@ public class OpTableCombinations {
             )
     );
 
-    public static final OpTable RELOP = new OpTable(
+    private static final OpTable RELOP = new OpTable(
             "RelOp",
             new ArrayList<>(
                     List.of(
@@ -167,45 +168,25 @@ public class OpTableCombinations {
     );
 
     public static boolean checkCombination(OpRow opRowToCheck, EnumOpTable enumOpTable) {
-        Iterator<OpRow> opRowIterator = null;
-        switch (enumOpTable) {
-            case UMINUSOPTABLE:
-                 opRowIterator = UMINUSOP.getOpRowList().iterator();
-                return checkIterator(opRowIterator, opRowToCheck);
-            case NOTOPTABLE:
-                opRowIterator = NOTOP.getOpRowList().iterator();
-                return checkIterator(opRowIterator, opRowToCheck);
-            case ARITOPTABLE:
-                opRowIterator = ARITOP.getOpRowList().iterator();
-                return checkIterator(opRowIterator, opRowToCheck);
-            case CONCATOPTABLE:
-                opRowIterator = CONCATOP.getOpRowList().iterator();
-                return checkIterator(opRowIterator, opRowToCheck);
-            case LOGICOPTABLE:
-                opRowIterator = LOGICOP.getOpRowList().iterator();
-                return checkIterator(opRowIterator, opRowToCheck);
-            case RELOPTABLE:
-                opRowIterator = RELOP.getOpRowList().iterator();
-                return checkIterator(opRowIterator, opRowToCheck);
-            default:
-                return false;
-        }
-    }
+        try {
+            OpTable opTable = (OpTable) OpTableCombinations.class.getDeclaredField(enumOpTable.name()).get(OpTableCombinations.class);
+            for (OpRow opRow : opTable.getOpRowList()) {
+                boolean flag = true;
+                Iterator<Type> itType = opRowToCheck.getOperandList().iterator();
+                Iterator<Type> itTypeTable = opRow.getOperandList().iterator();
 
-    private static boolean checkIterator(Iterator<OpRow> opRowIterator, OpRow opRowToCheck){
-        while (opRowIterator.hasNext()){
-            Iterator<Type> itType = opRowToCheck.getOperandList().iterator();
-            OpRow opRowTable = opRowIterator.next();
-            Iterator<Type> itTypeTable = opRowTable.getOperandList().iterator();
+                while (itType.hasNext() || itTypeTable.hasNext())
+                    if (!itType.next().getName().equals(itTypeTable.next().getName())) {
+                        flag = false;
+                        break;
+                    }
 
-            while (itType.hasNext() || itTypeTable.hasNext()){
-                if (!itType.next().getName().equals(itTypeTable.next().getName()))
-                    return false;
+                if (flag && opRowToCheck.getResult().getName().equals(opRow.getResult().getName()))
+                    return true;
             }
-
-            if (!opRowToCheck.getResult().getName().equals(opRowTable.getResult().getName()))
-                return false;
+            return false;
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-        return true;
     }
 }
