@@ -9,6 +9,7 @@ import esercitazione5.SymbolTable.SymbolType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -18,7 +19,7 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(ProgramOp programOp) {
-        SymbolTable symbolTable = new SymbolTable(null,"Global", new ArrayList<>());
+        SymbolTable symbolTable = new SymbolTable(null, "Global", new ArrayList<>());
         if (programOp.getSymbolTable() == null) {
             programOp.setSymbolTable(symbolTable);
         }
@@ -52,7 +53,7 @@ public class ScopeVisitor implements Visitor {
                                 new SymbolType(
                                         procOp.getProcFunParamOpList().stream().map(ProcFunParamOp::getType).
                                                 collect(Collectors.toCollection(ArrayList::new)),
-                                        new Type("void")
+                                        new ArrayList<>(List.of(new Type("void")))
                                 ),
                                 ""
                         )
@@ -80,7 +81,7 @@ public class ScopeVisitor implements Visitor {
                             new SymbolRow(
                                     (String) idIterator.next().accept(this),
                                     "Var",
-                                    new SymbolType(new Type((String) constIterator.next().accept(this))),
+                                    new SymbolType(new ArrayList<>(List.of(new Type((String) constIterator.next().accept(this))))),
                                     ""
                             )
                     );
@@ -95,7 +96,7 @@ public class ScopeVisitor implements Visitor {
                             new SymbolRow(
                                     (String) id.accept(this),
                                     "Var",
-                                    new SymbolType(varDeclOp.getType()),
+                                    new SymbolType(new ArrayList<>(List.of(varDeclOp.getType()))),
                                     ""
                             )
                     );
@@ -121,7 +122,7 @@ public class ScopeVisitor implements Visitor {
                         new SymbolRow(
                                 (String) procFunParamOp.getId().accept(this),
                                 "Param",
-                                new SymbolType(procFunParamOp.getType()),
+                                new SymbolType(new ArrayList<>(List.of(procFunParamOp.getType()))),
                                 (String) procFunParamOp.getMode().accept(this)
                         )
                 );
@@ -148,7 +149,7 @@ public class ScopeVisitor implements Visitor {
                         new SymbolRow(
                                 (String) procFunParamOp.getId().accept(this),
                                 "Param",
-                                new SymbolType(procFunParamOp.getType()),
+                                new SymbolType(new ArrayList<>(List.of(procFunParamOp.getType()))),
                                 (String) procFunParamOp.getMode().accept(this)
                         )
                 );
@@ -215,7 +216,7 @@ public class ScopeVisitor implements Visitor {
         symbolTableStatic = new SymbolTable(symbolTableStatic, "If", new ArrayList<>());
 
         ifStatOp.getBodyOp().accept(this);
-        
+
         ifStatOp.getElifOpList().forEach(elifOp -> elifOp.accept(this));
 
         symbolTableStatic = new SymbolTable(symbolTableStatic, "Else", new ArrayList<>());
@@ -274,9 +275,8 @@ public class ScopeVisitor implements Visitor {
             case "IntegerConst" -> "Integer";
             case "StringConst" -> "String";
             case "TrueConst", "FalseConst" -> "Boolean";
-            default -> null;
+            default -> throw new RuntimeException("Costante non valida");
         };
-
     }
 
     @Override

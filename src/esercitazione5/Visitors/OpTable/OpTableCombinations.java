@@ -1,6 +1,7 @@
 package esercitazione5.Visitors.OpTable;
 
 import esercitazione5.Nodes.Type;
+import esercitazione5.SymbolTable.SymbolType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -167,25 +168,31 @@ public class OpTableCombinations {
             )
     );
 
-    public static Type checkCombination(ArrayList<Type> typeList, EnumOpTable enumOpTable) {
+    public static SymbolType checkCombination(ArrayList<SymbolType> symbolTypeList, EnumOpTable enumOpTable) {
         try {
+            //Prendo l'oggetto daato l'enum fornito
             OpTable opTable = (OpTable) OpTableCombinations.class.getDeclaredField(enumOpTable.name()).get(OpTableCombinations.class);
+
+            //Controllo il match dei tipi forniti con quelli dichiarati in tabella
             for (OpRow opRow : opTable.getOpRowList()) {
                 boolean flag = true;
-                Iterator<Type> itType = typeList.iterator();
+                Iterator<Type> itType = symbolTypeList.stream().flatMap(symbolType -> symbolType.getOutTypeList().stream()).iterator();
                 Iterator<Type> itTypeTable = opRow.getOperandList().iterator();
 
-                while (itType.hasNext() || itTypeTable.hasNext())
+                while (itType.hasNext() && itTypeTable.hasNext())
                     if (!itType.next().getName().equals(itTypeTable.next().getName())) {
                         flag = false;
                         break;
                     }
+                if (itType.hasNext() && itTypeTable.hasNext())
+                    throw new RuntimeException("Utilizzati più operandi di quelli consentiti");
 
-                if (flag){
-                    return opRow.getResult();
+                //Restituisce il tipo fornito dal match
+                if (flag) {
+                    return new SymbolType(new ArrayList<>(List.of(opRow.getResult())));
                 }
             }
-            return null;
+            throw new RuntimeException("I tipi " + symbolTypeList.stream().flatMap(symbolType -> symbolType.getOutTypeList().stream()).map(Type::getName) + " non sono supportati");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

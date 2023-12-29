@@ -65,14 +65,14 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
             return false;
     }
 
-    public Type returnTypeOfId(String name) {
+    public SymbolType returnTypeOfId(String name) {
         Optional<SymbolRow> symbolRowOptional = this.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(name)).findFirst();
         if (symbolRowOptional.isPresent()) {
-            return symbolRowOptional.get().getSymbolType().getType();
+            return symbolRowOptional.get().getSymbolType();
         } else if (father != null) {
             return father.returnTypeOfId(name);
         } else {
-            return null;
+            throw new RuntimeException("L'id "+name+" non è stato dichiarato");
         }
     }
 }
