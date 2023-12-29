@@ -1427,15 +1427,15 @@ class CUP$parser$actions {
           case 65: // IOArgs ::= OtherIOArgs IOArgs 
             {
               ArrayList<Expr> RESULT =null;
-		int exprList1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
-		int exprList1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
-		Expr exprList1 = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		int exprleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int exprright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Expr expr = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int exprList2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int exprList2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<Expr> exprList2 = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT = new ArrayList<Expr>();
-                                                    RESULT.add(exprList1);
-                                                    RESULT.addAll(exprList2);
+		 RESULT = new ArrayList<Expr>();
+                                                    RESULT.add(expr);
+                                                    RESULT.addAll(exprList2); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IOArgs",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1450,9 +1450,9 @@ class CUP$parser$actions {
 		int exprListleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int exprListright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<Expr> exprList = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT = new ArrayList<Expr>();
+		 RESULT = new ArrayList<Expr>();
                                                           RESULT.add(expr);
-                                                          RESULT.addAll(exprList);
+                                                          RESULT.addAll(exprList); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IOArgs",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

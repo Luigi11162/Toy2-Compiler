@@ -6,6 +6,7 @@ import esercitazione5.Nodes.ProgramOp;
 import esercitazione5.Nodes.Type;
 import esercitazione5.Visitors.OpTable.OpRow;
 import esercitazione5.Visitors.OpTable.OpTableCombinations;
+import esercitazione5.Visitors.ScopeVisitor;
 import esercitazione5.Visitors.TypeVisitor;
 import esercitazione5.parser;
 
@@ -31,6 +32,7 @@ public class TestTypeVisitor {
 
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) p.parse().value;
 
+        ((ProgramOp) root).accept(new ScopeVisitor());
         ((ProgramOp) root).accept(new TypeVisitor());
 
         while (!scanner.yyatEOF()) {

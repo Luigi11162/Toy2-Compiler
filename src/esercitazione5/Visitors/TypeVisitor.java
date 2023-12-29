@@ -3,18 +3,24 @@ package esercitazione5.Visitors;
 import esercitazione5.Nodes.*;
 import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
+import esercitazione5.SymbolTable.SymbolRow;
 import esercitazione5.SymbolTable.SymbolTable;
 import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class TypeVisitor implements Visitor {
 
-    Stack<SymbolTable> symbolTableStack = new Stack<>();
+    static SymbolTable symbolTable;
     @Override
     public Object visit(ProgramOp programOp) {
+        if (programOp.getSymbolTable().getSymbolRowList().stream().noneMatch(symbolRow -> symbolRow.getName().equals("main"))){
+            throw new RuntimeException("Procedura main non dichiarata");
+        }
+
+        programOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
+        programOp.getProcOpList().forEach(procOp -> procOp.accept(this));
+        programOp.getFunOpList().forEach(funOp -> funOp.accept(this));
         return null;
     }
 
@@ -65,6 +71,27 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(AssignOp assignOp) {
+        assignOp.getExprList().forEach(expr -> expr.accept(this));
+        assignOp.getIdList().forEach(
+                id -> {
+                    if(!symbolTable.checkIdDeclared(id.getValue()))
+                        throw new RuntimeException("ID: "+id.getValue()+" non è stato dichiarato");
+                });
+
+        if (assignOp.getIdList().size() != assignOp.getExprList().size()){
+            Iterator<ID> idIterator = assignOp.getIdList().iterator();
+            Iterator<Expr> exprIterator = assignOp.getExprList().iterator();
+            while (idIterator.hasNext() && exprIterator.hasNext()){
+                ID id = idIterator.next();
+                Type idType = (Type) id.accept(this);
+                Type exprType = (Type) exprIterator.next().accept(this);
+                if(!idType.getName().equals(exprType.getName())){
+                    throw new RuntimeException("Il tipo dell'id: "+id.getValue()+" non combacia con il tipo della rispettiva espressione: "+exprType.getName());
+                }
+            }
+        }
+        else
+            throw new RuntimeException("Il numero di assegnazioni è diverso dal numero di id");
         return null;
     }
 
@@ -80,11 +107,13 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ReadOp readOp) {
+        readOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
     @Override
     public Object visit(ReturnOp returnOp) {
+        returnOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
@@ -95,6 +124,7 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(WriteOp writeOp) {
+        writeOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
@@ -105,6 +135,12 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(CallFunOp callFunOp) {
+            if (symbolTable.getSymbolRowList().stream().anyMatch(symbolRow ->
+                    symbolRow.getName().equals(callFunOp.getName()) &&
+                    symbolRow.getKind().equals("Func")
+                    //@TODO Controllo parametri in entrata e uscita
+                )
+            ){}
         return null;
     }
 
@@ -121,7 +157,7 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ID id) {
-        return id.getValue();
+        return symbolTable.returnTypeOfId(id.getValue());
     }
 
     @Override

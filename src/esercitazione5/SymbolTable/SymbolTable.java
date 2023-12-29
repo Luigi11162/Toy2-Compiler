@@ -1,16 +1,21 @@
 package esercitazione5.SymbolTable;
 
+import esercitazione5.Nodes.Type;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
 
+    private SymbolTable father;
     private String name;
     private ArrayList<SymbolRow> symbolRowList;
 
-    public SymbolTable(String name, ArrayList<SymbolRow> symbolRowList) {
+    public SymbolTable(SymbolTable father, String name, ArrayList<SymbolRow> symbolRowList) {
         super.put(name, symbolRowList);
 
+        this.father = father;
         this.name = name;
         this.symbolRowList = symbolRowList;
     }
@@ -32,14 +37,42 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
     }
 
     public void addSymbolRow(SymbolRow symbolRow) throws Exception {
-        if(!probe(symbolRow.getName())) {
+        if (!probe(symbolRow.getName())) {
             this.symbolRowList.add(symbolRow);
-        }else{
+        } else {
             throw new Exception("Elemento già dichiarato");
         }
     }
 
-    public boolean probe(String name){
+    public SymbolTable getFather() {
+        return father;
+    }
+
+    public void setFather(SymbolTable father) {
+        this.father = father;
+    }
+
+    public boolean probe(String name) {
         return this.getSymbolRowList().stream().anyMatch(symbolRow -> symbolRow.getName().equals(name));
+    }
+
+    public boolean checkIdDeclared(String name) {
+        if (this.probe(name))
+            return true;
+        else if (father != null)
+            return this.father.probe(name);
+        else
+            return false;
+    }
+
+    public Type returnTypeOfId(String name) {
+        Optional<SymbolRow> symbolRowOptional = this.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(name)).findFirst();
+        if (symbolRowOptional.isPresent()) {
+            return symbolRowOptional.get().getSymbolType().getType();
+        } else if (father != null) {
+            return father.returnTypeOfId(name);
+        } else {
+            return null;
+        }
     }
 }
