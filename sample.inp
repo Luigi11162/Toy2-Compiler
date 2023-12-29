@@ -29,6 +29,8 @@ proc sommac():
 	elseif result > 50 then
 		var valore ^= "media";\
  		size ^= valore;
+ 	elseif result > 50 then
+ 	    var valore ^= "ciao";\
 	else
 		var valore ^= "piccola";\
  		size ^= valore;

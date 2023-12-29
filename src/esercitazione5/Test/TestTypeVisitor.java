@@ -33,7 +33,6 @@ public class TestTypeVisitor {
 
         ((ProgramOp) root).accept(new TypeVisitor());
 
-        int a = 0;
         while (!scanner.yyatEOF()) {
             p.debug_parse();
         }

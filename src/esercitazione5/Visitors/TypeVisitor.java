@@ -3,10 +3,16 @@ package esercitazione5.Visitors;
 import esercitazione5.Nodes.*;
 import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
+import esercitazione5.SymbolTable.SymbolTable;
 import esercitazione5.Visitors.OpTable.OpTableCombinations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 public class TypeVisitor implements Visitor {
 
+    Stack<SymbolTable> symbolTableStack = new Stack<>();
     @Override
     public Object visit(ProgramOp programOp) {
         return null;
@@ -105,10 +111,10 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(Const const1) {
         return switch ((String) const1.getType().accept(this)) {
-            case "RealConst" -> "Real";
-            case "IntegerConst" -> "Integer";
-            case "StringConst" -> "String";
-            case "TrueConst", "FalseConst" -> "Boolean";
+            case "RealConst" -> new Type("Real");
+            case "IntegerConst" -> new Type("Integer");
+            case "StringConst" -> new Type("String");
+            case "TrueConst", "FalseConst" -> new Type("Boolean");
             default -> null;
         };
     }
@@ -121,16 +127,74 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(Op op) {
         switch (op.getName()){
-            case "AddOp", "DiffOp","MulOp", "DivOp":
-                break;
+            case "AddOp":
+                Type type = OpTableCombinations.checkCombination(
+                        new ArrayList<>(
+                                List.of(
+                                        (Type) op.getValueL().accept(this),
+                                        (Type) op.getValueR().accept(this)
+                                )
+                        ),
+                        OpTableCombinations.EnumOpTable.CONCATOP
+                );
+                if (type != null)
+                    return type;
+            case "DiffOp", "MulOp", "DivOp":
+                return OpTableCombinations.checkCombination(
+                        new ArrayList<>(
+                                List.of(
+                                        (Type) op.getValueL().accept(this),
+                                        (Type) op.getValueR().accept(this)
+                                )
+                        ),
+                        OpTableCombinations.EnumOpTable.ARITOP
+                );
+            case "AndOp", "OrOp" :
+                return OpTableCombinations.checkCombination(
+                        new ArrayList<>(
+                                List.of(
+                                        (Type) op.getValueL().accept(this),
+                                        (Type) op.getValueR().accept(this)
+                                )
+                        ),
+                        OpTableCombinations.EnumOpTable.LOGICOP
+                );
+            case "Gt", "GeOp", "LtOp", "LeOp", "EqOp", "NeOp" :
+                return OpTableCombinations.checkCombination(
+                        new ArrayList<>(
+                                List.of(
+                                        (Type) op.getValueL().accept(this),
+                                        (Type) op.getValueR().accept(this)
+                                )
+                        ),
+                        OpTableCombinations.EnumOpTable.RELOP
+                );
             default:
-                throw new IllegalStateException("Unexpected value: " + op.getName());
+                return null;
         }
-        return null;
+
     }
 
     @Override
     public Object visit(UOp uOp) {
-        return null;
+        return switch (uOp.getName()) {
+            case "UMinusOp" -> OpTableCombinations.checkCombination(
+                    new ArrayList<>(
+                            List.of(
+                                    (Type) uOp.getValue().accept(this)
+                            )
+                    ),
+                    OpTableCombinations.EnumOpTable.UMINUSOP
+            );
+            case "NotOp" -> OpTableCombinations.checkCombination(
+                    new ArrayList<>(
+                            List.of(
+                                    (Type) uOp.getValue().accept(this)
+                            )
+                    ),
+                    OpTableCombinations.EnumOpTable.NOTOP
+            );
+            default -> null;
+        };
     }
 }

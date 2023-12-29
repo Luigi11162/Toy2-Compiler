@@ -3,9 +3,9 @@ package esercitazione5.Visitors.OpTable;
 import esercitazione5.Nodes.Type;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class OpTableCombinations {
 
@@ -167,12 +167,12 @@ public class OpTableCombinations {
             )
     );
 
-    public static boolean checkCombination(OpRow opRowToCheck, EnumOpTable enumOpTable) {
+    public static Type checkCombination(ArrayList<Type> typeList, EnumOpTable enumOpTable) {
         try {
             OpTable opTable = (OpTable) OpTableCombinations.class.getDeclaredField(enumOpTable.name()).get(OpTableCombinations.class);
             for (OpRow opRow : opTable.getOpRowList()) {
                 boolean flag = true;
-                Iterator<Type> itType = opRowToCheck.getOperandList().iterator();
+                Iterator<Type> itType = typeList.iterator();
                 Iterator<Type> itTypeTable = opRow.getOperandList().iterator();
 
                 while (itType.hasNext() || itTypeTable.hasNext())
@@ -181,11 +181,12 @@ public class OpTableCombinations {
                         break;
                     }
 
-                if (flag && opRowToCheck.getResult().getName().equals(opRow.getResult().getName()))
-                    return true;
+                if (flag){
+                    return opRow.getResult();
+                }
             }
-            return false;
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

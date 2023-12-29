@@ -220,6 +220,8 @@ public class ScopeVisitor implements Visitor {
         symbolTableStack.add(new SymbolTable("If", new ArrayList<>()));
 
         ifStatOp.getBodyOp().accept(this);
+        
+        ifStatOp.getElifOpList().forEach(elifOp -> elifOp.accept(this));
 
         symbolTableStack.add(new SymbolTable("Else", new ArrayList<>()));
 
