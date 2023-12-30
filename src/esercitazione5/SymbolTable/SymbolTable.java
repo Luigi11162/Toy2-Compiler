@@ -1,5 +1,6 @@
 package esercitazione5.SymbolTable;
 
+import esercitazione5.Nodes.Expr.ID;
 import esercitazione5.Nodes.Type;
 
 import java.util.ArrayList;
@@ -73,6 +74,18 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
             return father.returnTypeOfId(name);
         } else {
             throw new RuntimeException("L'id "+name+" non è stato dichiarato");
+        }
+    }
+
+    public boolean checkAssign(ID id){
+        //Controllo se l'id può avere un'assegnazione
+        Optional<SymbolRow> symbolRow = this.getSymbolRowList().stream().filter(symRow -> symRow.getName().equals(id.getValue())).findFirst();
+        if(symbolRow.isPresent()) {
+            return !symbolRow.get().getProperties().equals("in");
+        }else if (father != null) {
+                return father.checkAssign(id);
+        } else {
+                throw new RuntimeException("L'id "+name+" non è stato dichiarato");
         }
     }
 }

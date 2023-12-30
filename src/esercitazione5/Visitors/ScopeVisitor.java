@@ -167,7 +167,7 @@ public class ScopeVisitor implements Visitor {
     @Override
     public Object visit(BodyOp bodyOp) {
 
-        if (bodyOp.getSymbolTable() == null) {
+        if (bodyOp.getSymbolTable() == null && !symbolTableStatic.getName().equals("Proc") && !symbolTableStatic.getName().equals("Func")) {
             bodyOp.setSymbolTable(symbolTableStatic);
         }
         bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));

@@ -7,6 +7,7 @@ import esercitazione5.Visitors.Visitor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class BodyOp extends DefaultMutableTreeNode implements NodeVisitor {
     private ArrayList<VarDeclOp> varDeclOpList = new ArrayList<>();

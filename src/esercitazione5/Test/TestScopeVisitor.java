@@ -26,6 +26,7 @@ public class TestScopeVisitor {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) p.parse().value;
 
         ((ProgramOp) root).accept(new ScopeVisitor());
+
         int a = 0;
         while (!scanner.yyatEOF()) {
             p.debug_parse();

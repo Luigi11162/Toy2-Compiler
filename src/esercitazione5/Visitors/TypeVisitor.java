@@ -28,22 +28,30 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(VarDeclOp varDeclOp) {
+        if(varDeclOp.getType() == null)
+            if(varDeclOp.getidList().size() != varDeclOp.getConstList().size())
+                throw new RuntimeException("Numero di id:" +varDeclOp.getidList().size()+" è diverso dal numero di costanti: "+varDeclOp.getConstList().size());
         return null;
     }
 
     @Override
     public Object visit(FunOp funOp) {
+        symbolTable = funOp.getSymbolTable();
+        funOp.getBodyOp().accept(this);
         return null;
     }
 
     @Override
     public Object visit(ProcOp procOp) {
+        symbolTable = procOp.getSymbolTable();
+        procOp.getBodyOp().accept(this);
         return null;
     }
 
     @Override
     public Object visit(BodyOp bodyOp) {
-        symbolTable = bodyOp.getSymbolTable();
+        if (bodyOp.getSymbolTable()!= null)
+            symbolTable = bodyOp.getSymbolTable();
         bodyOp.getStatList().forEach(stat -> stat.accept(this));
         return null;
     }
@@ -80,8 +88,10 @@ public class TypeVisitor implements Visitor {
         //Controllo che tutti gli id siano stati dichiarati
         assignOp.getIdList().forEach(
                 id -> {
+                    //Controllo se l'id è presente nella tabella dei simboli
                     if (!symbolTable.checkIdDeclared(id.getValue()))
                         throw new RuntimeException("ID: " + id.getValue() + " non è stato dichiarato");
+
                 });
 
         //Controllo il mapping tra id ed il tipo rispettivo
@@ -247,16 +257,28 @@ public class TypeVisitor implements Visitor {
                         ),
                         OpTableCombinations.EnumOpTable.LOGICOP
                 );
-            case "Gt", "GeOp", "LtOp", "LeOp", "EqOp", "NeOp":
-                return OpTableCombinations.checkCombination(
-                        new ArrayList<>(
-                                List.of(
-                                        (SymbolType) op.getValueL().accept(this),
-                                        (SymbolType) op.getValueR().accept(this)
-                                )
-                        ),
-                        OpTableCombinations.EnumOpTable.RELOP
-                );
+            case "EqOp", "NeOp":
+                try {
+                    return OpTableCombinations.checkCombination(
+                            new ArrayList<>(
+                                    List.of(
+                                            (SymbolType) op.getValueL().accept(this),
+                                            (SymbolType) op.getValueR().accept(this)
+                                    )
+                            ),
+                            OpTableCombinations.EnumOpTable.COMPOP
+                    );
+                }catch (Exception ignored){}
+            case "Gt", "GeOp", "LtOp", "LeOp":
+                    return OpTableCombinations.checkCombination(
+                            new ArrayList<>(
+                                    List.of(
+                                            (SymbolType) op.getValueL().accept(this),
+                                            (SymbolType) op.getValueR().accept(this)
+                                    )
+                            ),
+                            OpTableCombinations.EnumOpTable.RELOP
+                    );
             default:
                 throw new RuntimeException("Operazione non consentita");
         }

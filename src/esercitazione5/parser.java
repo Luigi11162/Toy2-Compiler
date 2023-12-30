@@ -8,8 +8,7 @@ package esercitazione5;
 import esercitazione5.Nodes.*;
 import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
-import esercitazione5.Nodes.UtilsClass.*;
-import java.util.ArrayList;
+import java.util.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -1051,7 +1050,7 @@ class CUP$parser$actions {
               ArrayList<ProcFunParamOp> RESULT =null;
 		int procParamIdleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
 		int procParamIdright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
-		PairModeId procParamId = (PairModeId)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		ID procParamId = (ID)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 		int typeleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int typeright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Type type = (Type)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
@@ -1059,7 +1058,7 @@ class CUP$parser$actions {
 		int procParamIdListright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<ProcFunParamOp> procParamIdList = (ArrayList<ProcFunParamOp>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 RESULT = new  ArrayList<ProcFunParamOp>();
-                                                                                          RESULT.add(new ProcFunParamOp(procParamId.getMode(), procParamId.getId(), type));
+                                                                                          RESULT.add(new ProcFunParamOp(procParamId.getMode(), procParamId, type));
                                                                                           RESULT.addAll(procParamIdList); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ProcParams",24, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1080,7 +1079,7 @@ class CUP$parser$actions {
               ArrayList<ProcFunParamOp> RESULT =null;
 		int procParamIdleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
 		int procParamIdright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
-		PairModeId procParamId = (PairModeId)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		ID procParamId = (ID)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 		int typeleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int typeright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Type type = (Type)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
@@ -1088,7 +1087,7 @@ class CUP$parser$actions {
 		int procParamIdListright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<ProcFunParamOp> procParamIdList = (ArrayList<ProcFunParamOp>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 RESULT = new  ArrayList<ProcFunParamOp>();
-                                                                                                    RESULT.add(new ProcFunParamOp(procParamId.getMode(), procParamId.getId(), type));
+                                                                                                    RESULT.add(new ProcFunParamOp(procParamId.getMode(), procParamId, type));
                                                                                                     RESULT.addAll(procParamIdList); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("OtherProcParams",25, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1106,11 +1105,11 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 41: // ProcParamId ::= ID 
             {
-              PairModeId RESULT =null;
+              ID RESULT =null;
 		int valueleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int valueright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String value = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new PairModeId(new Mode("inout"), new ID(value)); 
+		 RESULT = new ID(value, new Mode("inout")); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ProcParamId",23, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1118,11 +1117,11 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 42: // ProcParamId ::= OUT ID 
             {
-              PairModeId RESULT =null;
+              ID RESULT =null;
 		int valueleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int valueright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String value = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new PairModeId(new Mode("out"), new ID(value)); 
+		 RESULT = new ID(value, new Mode("out")); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ProcParamId",23, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1137,10 +1136,8 @@ class CUP$parser$actions {
 		int bodyleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int bodyright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		BodyOp body = (BodyOp)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 ArrayList<VarDeclOp> varDeclListNew =new ArrayList<>();
-                                            varDeclListNew.addAll(varDeclList);
-                                            varDeclListNew.addAll(body.getVarDeclOpList());
-                                           RESULT = new BodyOp(varDeclListNew, body.getStatList()); 
+		  RESULT = body;
+                                            RESULT.addVarDeclOpList(varDeclList); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Body",5, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1155,10 +1152,8 @@ class CUP$parser$actions {
 		int bodyleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int bodyright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		BodyOp body = (BodyOp)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 ArrayList<Stat> statList = new ArrayList<>();
-                            statList.add(stat);
-                            statList.addAll(body.getStatList());
-                            RESULT = new BodyOp(body.getVarDeclOpList(), statList); 
+		  RESULT = body;
+                              RESULT.addStatList(new ArrayList<>(List.of(stat))); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Body",5, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1521,7 +1516,7 @@ class CUP$parser$actions {
 		int exprListright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<Expr> exprList = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 RESULT = new ArrayList<Expr>();
-                                              RESULT.add(new ID(value));
+                                              RESULT.add(new ID(value, new Mode("out")));
                                                 RESULT.addAll(exprList); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ProcExprs",10, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1548,7 +1543,7 @@ class CUP$parser$actions {
 		int valueright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String value = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 RESULT = new ArrayList<Expr>();
-                      RESULT.add(new ID(value)); 
+                      RESULT.add(new ID(value, new Mode("out"))); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ProcExprs",10, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1848,7 +1843,7 @@ class CUP$parser$actions {
 		int exprleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int exprright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Expr expr = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 RESULT = new Expr("Expr"); 
+		 RESULT = expr; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

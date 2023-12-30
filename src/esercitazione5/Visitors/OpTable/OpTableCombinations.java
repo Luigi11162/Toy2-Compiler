@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class OpTableCombinations {
 
@@ -16,7 +17,8 @@ public class OpTableCombinations {
         ARITOP,
         CONCATOP,
         LOGICOP,
-        RELOP
+        RELOP,
+        COMPOP
     }
 
     private static final OpTable UMINUSOP = new OpTable(
@@ -168,11 +170,63 @@ public class OpTableCombinations {
             )
     );
 
+    private static final OpTable COMPOP = new OpTable(
+            "CompOp",
+            new ArrayList<>(
+                    List.of(
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Integer"),
+                                                    new Type("Integer")
+                                            )
+                                    ),
+                                    new Type("Boolean")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Real"),
+                                                    new Type("Integer")
+                                            )
+                                    ),
+                                    new Type("Boolean")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Integer"),
+                                                    new Type("Real")
+                                            )
+                                    ),
+                                    new Type("Boolean")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Real"),
+                                                    new Type("Real")
+                                            )
+                                    ),
+                                    new Type("Boolean")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Boolean"),
+                                                    new Type("Boolean")
+                                            )
+                                    ),
+                                    new Type("Boolean")
+                            )
+                    )
+            )
+    );
+
     public static SymbolType checkCombination(ArrayList<SymbolType> symbolTypeList, EnumOpTable enumOpTable) {
         try {
-            //Prendo l'oggetto daato l'enum fornito
+            //Prendo l'oggetto dato l'enum fornito
             OpTable opTable = (OpTable) OpTableCombinations.class.getDeclaredField(enumOpTable.name()).get(OpTableCombinations.class);
-
             //Controllo il match dei tipi forniti con quelli dichiarati in tabella
             for (OpRow opRow : opTable.getOpRowList()) {
                 boolean flag = true;
@@ -182,9 +236,9 @@ public class OpTableCombinations {
                 while (itType.hasNext() && itTypeTable.hasNext())
                     if (!itType.next().getName().equals(itTypeTable.next().getName())) {
                         flag = false;
-                        break;
                     }
-                if (itType.hasNext() && itTypeTable.hasNext())
+
+                if (itType.hasNext() || itTypeTable.hasNext())
                     throw new RuntimeException("Utilizzati più operandi di quelli consentiti");
 
                 //Restituisce il tipo fornito dal match
@@ -192,7 +246,7 @@ public class OpTableCombinations {
                     return new SymbolType(new ArrayList<>(List.of(opRow.getResult())));
                 }
             }
-            throw new RuntimeException("I tipi " + symbolTypeList.stream().flatMap(symbolType -> symbolType.getOutTypeList().stream()).map(Type::getName) + " non sono supportati");
+            throw new RuntimeException("I tipi "+symbolTypeList.stream().flatMap(symbolType -> symbolType.getOutTypeList().stream()).map(Type::getName).toList() + " non sono supportati");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

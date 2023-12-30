@@ -2,8 +2,7 @@
 import esercitazione5.Nodes.*;
 import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
-import esercitazione5.Nodes.UtilsClass.*;
-import java.util.ArrayList;
+import java.util.*;
 
 terminal VAR, COLON, ASSIGN, SEMI, COMMA, RETURN, FUNCTION, TYPERETURN, ENDFUNCTION, LPAR, RPAR, PROCEDURE, ENDPROCEDURE,
           OUT, WRITE, WRITERETURN, DOLLARSIGN, READ, IF, THEN, ELSE, ENDIF, ELIF, WHILE,
@@ -43,7 +42,7 @@ non terminal ElifOp Elif;
 non terminal ArrayList<ElifOp> Elifs;
 non terminal Stat Stat;
 non terminal ProcCallOp ProcCall;
-non terminal PairModeId ProcParamId;
+non terminal ID ProcParamId;
 non terminal ArrayList<ProcFunParamOp> ProcParams;
 non terminal ArrayList<ProcFunParamOp> OtherProcParams;
 non terminal ArrayList<ProcFunParamOp> FuncParams;
@@ -164,26 +163,22 @@ Types ::= Type:type COMMA Types:typeList {: RESULT = new ArrayList<Type>();
 Procedure ::= PROCEDURE ID:value LPAR ProcParams:procParamList RPAR COLON Body:body ENDPROCEDURE {: RESULT = new ProcOp(new ID(value), procParamList, body); :};
 
 ProcParams::= ProcParamId:procParamId COLON Type:type OtherProcParams:procParamIdList {: RESULT = new  ArrayList<ProcFunParamOp>();
-                                                                                          RESULT.add(new ProcFunParamOp(procParamId.getMode(), procParamId.getId(), type));
+                                                                                          RESULT.add(new ProcFunParamOp(procParamId.getMode(), procParamId, type));
                                                                                           RESULT.addAll(procParamIdList); :}
     | /* empty */ {: RESULT = new ArrayList<ProcFunParamOp>(); :};
 
 OtherProcParams ::= COMMA ProcParamId:procParamId COLON Type:type OtherProcParams:procParamIdList {: RESULT = new  ArrayList<ProcFunParamOp>();
-                                                                                                    RESULT.add(new ProcFunParamOp(procParamId.getMode(), procParamId.getId(), type));
+                                                                                                    RESULT.add(new ProcFunParamOp(procParamId.getMode(), procParamId, type));
                                                                                                     RESULT.addAll(procParamIdList); :}
     | /* empty */ {: RESULT = new ArrayList<ProcFunParamOp>(); :};
 
-ProcParamId ::= ID:value {: RESULT = new PairModeId(new Mode("inout"), new ID(value)); :}
-    | OUT ID:value {: RESULT = new PairModeId(new Mode("out"), new ID(value)); :};
+ProcParamId ::= ID:value {: RESULT = new ID(value, new Mode("inout")); :}
+    | OUT ID:value {: RESULT = new ID(value, new Mode("out")); :};
 
-Body ::= VarDecls:varDeclList Body:body {: ArrayList<VarDeclOp> varDeclListNew =new ArrayList<>();
-                                            varDeclListNew.addAll(varDeclList);
-                                            varDeclListNew.addAll(body.getVarDeclOpList());
-                                           RESULT = new BodyOp(varDeclListNew, body.getStatList()); :}
-	| Stat:stat Body:body {: ArrayList<Stat> statList = new ArrayList<>();
-                            statList.add(stat);
-                            statList.addAll(body.getStatList());
-                            RESULT = new BodyOp(body.getVarDeclOpList(), statList); :}
+Body ::= VarDecls:varDeclList Body:body {:  RESULT = body;
+                                            RESULT.addVarDeclOpList(varDeclList); :}
+	| Stat:stat Body:body {:  RESULT = body;
+                              RESULT.addStatList(new ArrayList<>(List.of(stat))); :}
 	| /* empty */ {: RESULT = new BodyOp(new ArrayList<VarDeclOp>(), new ArrayList<Stat>()); :};
 
 Stat ::= Ids:idList ASSIGN Exprs:exprList SEMI {: RESULT = new AssignOp(idList, exprList); :}
@@ -230,12 +225,12 @@ ProcExprs::= Expr:expr COMMA ProcExprs:exprList {: RESULT = new ArrayList<Expr>(
                                                     RESULT.add(expr);
                                                     RESULT.addAll(exprList); :}
     | REF ID:value COMMA ProcExprs:exprList {: RESULT = new ArrayList<Expr>();
-                                              RESULT.add(new ID(value));
+                                              RESULT.add(new ID(value, new Mode("out")));
                                                 RESULT.addAll(exprList); :}
     | Expr:expr {: RESULT = new ArrayList<Expr>();
                    RESULT.add(expr); :}
     | REF ID:value {: RESULT = new ArrayList<Expr>();
-                      RESULT.add(new ID(value)); :};
+                      RESULT.add(new ID(value, new Mode("out"))); :};
 
 Exprs ::= Expr:expr COMMA Exprs:exprList {: RESULT = new ArrayList<Expr>();
                                             RESULT.add(expr);
