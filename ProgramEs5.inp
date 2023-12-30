@@ -1,11 +1,12 @@
-
 % programma principale %
 proc main():
 
     var operazione : string; \
     var input1, input2, answer : integer;\
     var flag ^= true;\
-    var result : real;\
+    var result : integer;\
+    var resultReal : real;\
+
 
     while flag = true do
     <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)" $(operazione);
@@ -13,15 +14,15 @@ proc main():
     <-- "Inserisci il secondo input" $(input2);
 
     if operazione = "somma" then
-        var result ^= 0;\
         somma(input1, input2, @result);
     elseif operazione = "sottrazione" then
         sottrazione(input1, input2, @result);
     elseif operazione = "divisione" then
-       result ^= divisione(input1, input2);
+       resultReal ^= divisione(input1, input2);
     elseif operazione = "moltiplicazione" then
        result ^= moltiplicazione(input1, input2);
     endif;
+
 
     --> "Il risultato e':" $(result);
     <-- "Vuoi continuare? (1 yes/0 no)" $(answer);
@@ -36,25 +37,26 @@ proc main():
 
 endproc
 
-proc somma(input1: integer, input2: integer, out result: real):
+proc somma(input1: integer, input2: integer, out result: integer):
+
     result ^= input1 + input2;
 endproc
 
-proc sottrazione(input1: integer, input2: integer, out result : real):
+proc sottrazione(input1: integer, input2: integer, out result : integer):
     result ^= input1 - input2;
 endproc
 
-func moltiplicazione(input1: integer, input2: integer) -> real:
-    var result : real;\
+func moltiplicazione(input1: integer, input2: integer) -> integer:
+    var result : integer;\
     result ^= input1 * input2;
     return result;
 endfunc
 
-func divisione(input1: boolean, input2: integer) -> real:
+func divisione(input1: integer, input2: integer) -> real:
     var result : real;\
     if input2 = 0 then
         --> "Errore";
-        result ^= 0;
+        result ^= 0.0;
     else
         result ^= input1 / input2;
     endif;

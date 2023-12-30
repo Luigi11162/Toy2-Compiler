@@ -12,8 +12,8 @@ public interface sym {
   public static final int GE = 37;
   public static final int UMINUS = 43;
   public static final int ENDVAR = 41;
-  public static final int INTEGER = 51;
-  public static final int INTEGER_CONST = 45;
+  public static final int INTEGER = 52;
+  public static final int INTEGER_CONST = 46;
   public static final int SEMI = 5;
   public static final int OUT = 15;
   public static final int REF = 42;
@@ -33,30 +33,31 @@ public interface sym {
   public static final int PLUS = 28;
   public static final int ASSIGN = 4;
   public static final int IF = 20;
-  public static final int ID = 49;
+  public static final int ID = 50;
   public static final int ENDWHILE = 27;
   public static final int LE = 35;
-  public static final int BOOLEAN = 53;
+  public static final int BOOLEAN = 54;
   public static final int EOF = 0;
   public static final int RETURN = 7;
-  public static final int TRUE = 47;
+  public static final int TRUE = 48;
   public static final int error = 1;
   public static final int EQ = 32;
   public static final int DOLLARSIGN = 18;
-  public static final int REAL = 50;
+  public static final int REAL = 51;
+  public static final int PAR = 44;
   public static final int TIMES = 30;
   public static final int COLON = 3;
   public static final int ENDIF = 23;
   public static final int ELSE = 22;
   public static final int READ = 19;
   public static final int WHILE = 25;
-  public static final int REAL_CONST = 44;
+  public static final int REAL_CONST = 45;
   public static final int THEN = 21;
   public static final int NE = 33;
-  public static final int STRING = 52;
+  public static final int STRING = 53;
   public static final int LPAR = 11;
-  public static final int FALSE = 48;
-  public static final int STRING_CONST = 46;
+  public static final int FALSE = 49;
+  public static final int STRING_CONST = 47;
   public static final int GT = 36;
   public static final int VAR = 2;
   public static final int ELIF = 24;
@@ -107,6 +108,7 @@ public interface sym {
   "ENDVAR",
   "REF",
   "UMINUS",
+  "PAR",
   "REAL_CONST",
   "INTEGER_CONST",
   "STRING_CONST",

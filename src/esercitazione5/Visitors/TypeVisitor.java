@@ -28,7 +28,7 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(VarDeclOp varDeclOp) {
-        if(varDeclOp.getType() == null)
+        if(varDeclOp.getType()==null)
             if(varDeclOp.getidList().size() != varDeclOp.getConstList().size())
                 throw new RuntimeException("Numero di id:" +varDeclOp.getidList().size()+" è diverso dal numero di costanti: "+varDeclOp.getConstList().size());
         return null;
@@ -52,6 +52,7 @@ public class TypeVisitor implements Visitor {
     public Object visit(BodyOp bodyOp) {
         if (bodyOp.getSymbolTable()!= null)
             symbolTable = bodyOp.getSymbolTable();
+        bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
         bodyOp.getStatList().forEach(stat -> stat.accept(this));
         return null;
     }
@@ -87,27 +88,28 @@ public class TypeVisitor implements Visitor {
     public Object visit(AssignOp assignOp) {
         //Controllo il mapping tra id ed il tipo rispettivo
         Iterator<ID> idIterator = assignOp.getIdList().iterator();
-        Iterator<Expr> exprIterator = assignOp.getExprList().iterator();
 
-        while (idIterator.hasNext() && exprIterator.hasNext()) {
-            ID id = idIterator.next();
-            SymbolType symbolType = (SymbolType) id.accept(this);
-            Iterator<Type> typeIterator = symbolType.getOutTypeList().iterator();
-            SymbolType exprSymbolType = (SymbolType) exprIterator.next().accept(this);
+        for (Expr expr : assignOp.getExprList()) {
+
+            SymbolType exprSymbolType = (SymbolType) expr.accept(this);
             Iterator<Type> exprSymbolTypeIterator = exprSymbolType.getOutTypeList().iterator();
 
             //Controllo se l'expr in questione ha più tipi di ritorno
             while (idIterator.hasNext() && exprSymbolTypeIterator.hasNext()) {
+                ID id = idIterator.next();
+                SymbolType symbolType = (SymbolType) id.accept(this);
+                Iterator<Type> typeIterator = symbolType.getOutTypeList().iterator();
                 Type type = exprSymbolTypeIterator.next();
                 if (!typeIterator.next().getName().equals(type.getName()))
                     throw new RuntimeException("Il tipo dell'id: " + id.getValue() + " non coincide con il tipo della rispettiva espressione: " + type.getName());
             }
-            if (exprSymbolTypeIterator.hasNext())
-                throw new RuntimeException("Il numero di assegnazioni è diverso dal numero di id");
+            if (exprSymbolTypeIterator.hasNext()) {
+                throw new RuntimeException("Il numero di assegnazioni è maggiore dal numero di id: " + assignOp.getIdList().size());
+            }
         }
 
-        if ((idIterator.hasNext() || exprIterator.hasNext()))
-            throw new RuntimeException("Il numero di assegnazioni è diverso dal numero di id");
+        if (idIterator.hasNext())
+            throw new RuntimeException("Il numero di assegnazioni è minore dal numero di id: "+assignOp.getIdList().size());
         return null;
     }
 
@@ -123,28 +125,39 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(ProcCallOp procCallOp) {
         SymbolType symbolType = (SymbolType) procCallOp.getId().accept(this);
-        Iterator<Expr> procCallExprIt = procCallOp.getExprList().iterator();
+        //Iteratore tipi di controllo
         Iterator<Type> typeIterator = symbolType.getInTypeList().iterator();
 
-        while (procCallExprIt.hasNext()) {
-            SymbolType symbolTypeProcCall = (SymbolType) procCallExprIt.next().accept(this);
-            Iterator<Type> typeProcCallIt = symbolTypeProcCall.getInTypeList().iterator();
+        //Controllo che ogni parametro abbia lo stesso tipo del rispettivo parametro nella firma
+        for (Expr expr : procCallOp.getExprList()) {
+
+            SymbolType symbolTypeProcCall = (SymbolType) expr.accept(this);
+            Iterator<Type> typeProcCallIt = symbolTypeProcCall.getOutTypeList().iterator();
+
             while (typeProcCallIt.hasNext() && typeIterator.hasNext()) {
                 Type procCallType = typeProcCallIt.next();
                 Type type = typeIterator.next();
                 if(!procCallType.getName().equals(type.getName())){
-                    throw new RuntimeException("Il tipo: "+procCallType.getName()+" non combacia con il tipo: "+type.getName());
+                    throw new RuntimeException("Chiamata procedura: "+procCallOp.getId().getValue()+". Il tipo: "+procCallType.getName()+" non combacia con il tipo: "+type.getName());
                 }
+            }
+            if (typeProcCallIt.hasNext()){
+                throw new RuntimeException("Chiamata procedura: "+procCallOp.getId().getValue()+". Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" è minore del numero dei tipi forniti");
             }
         }
         if (typeIterator.hasNext()){
-            throw new RuntimeException("Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" non combacia con il numero dei tipi forniti");
+            throw new RuntimeException("Chiamata procedura: "+procCallOp.getId().getValue()+". Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" è maggiore del numero dei tipi forniti");
         }
+
         return null;
     }
 
     @Override
     public Object visit(ReadOp readOp) {
+        readOp.getExprList().forEach(expr -> {
+            if (!(expr instanceof ID) && expr.getName().contains("Dollar"))
+                throw new RuntimeException("Lettura di un'espressione che non è un'id: "+expr.getName());
+        });
         readOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
@@ -176,23 +189,30 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(CallFunOp callFunOp) {
         SymbolType symbolType = (SymbolType) callFunOp.getId().accept(this);
-        Iterator<Expr> callFunExprIt = callFunOp.getExprList().iterator();
+        //Iteratore tipi di controllo
         Iterator<Type> typeIterator = symbolType.getInTypeList().iterator();
 
-        while (callFunExprIt.hasNext()) {
-            SymbolType symbolTypeCallFun = (SymbolType) callFunExprIt.next().accept(this);
-            Iterator<Type> typeCallFunIt = symbolTypeCallFun.getInTypeList().iterator();
-            while (typeCallFunIt.hasNext() && typeIterator.hasNext()) {
+        //Controllo che ogni parametro abbia lo stesso tipo del rispettivo parametro nella firma
+        for (Expr expr: callFunOp.getExprList()) {
+
+            SymbolType symbolTypeCallFun = (SymbolType) expr.accept(this);
+            Iterator<Type> typeCallFunIt = symbolTypeCallFun.getOutTypeList().iterator();
+
+            while (typeIterator.hasNext() && typeCallFunIt.hasNext()) {
                 Type funCallType = typeCallFunIt.next();
                 Type type = typeIterator.next();
                 if(!funCallType.getName().equals(type.getName())){
-                    throw new RuntimeException("Il tipo: "+funCallType.getName()+" non combacia con il tipo: "+type.getName());
+                    throw new RuntimeException("Chiamata funzione: "+callFunOp.getId().getValue()+". Il tipo: "+funCallType.getName()+" non combacia con il tipo: "+type.getName());
                 }
+            }
+            if (typeCallFunIt.hasNext()){
+                throw new RuntimeException("Chiamata funzione: "+callFunOp.getId().getValue()+". Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" è minore del numero dei tipi forniti");
             }
         }
         if (typeIterator.hasNext()){
-            throw new RuntimeException("Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" non combacia con il numero dei tipi forniti");
+            throw new RuntimeException("Chiamata funzione: "+callFunOp.getId().getValue()+". Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" è maggiore del numero dei tipi forniti");
         }
+
         return symbolType;
     }
 
@@ -203,7 +223,7 @@ public class TypeVisitor implements Visitor {
             case "IntegerConst" -> new SymbolType(new ArrayList<>(List.of(new Type("Integer"))));
             case "StringConst" -> new SymbolType(new ArrayList<>(List.of(new Type("String"))));
             case "TrueConst", "FalseConst" -> new SymbolType(new ArrayList<>(List.of(new Type("Boolean"))));
-            default -> throw new RuntimeException("Tipo non consentito");
+            default -> throw new RuntimeException("Tipo non consentito: "+const1.getType().getName());
         };
     }
 
@@ -215,20 +235,31 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(Op op) {
         switch (op.getName()) {
-            case "AddOp":
+            case "AddOp", "DivOp":
                 try {
-                    return OpTableCombinations.checkCombination(
-                            new ArrayList<>(
-                                    List.of(
-                                            (SymbolType) op.getValueL().accept(this),
-                                            (SymbolType) op.getValueR().accept(this)
-                                    )
-                            ),
-                            OpTableCombinations.EnumOpTable.CONCATOP
-                    );
-                } catch (Exception ignored) {
-                }
-            case "DiffOp", "MulOp", "DivOp":
+                    if (op.getName().equals("AddOp"))
+                        return OpTableCombinations.checkCombination(
+                                new ArrayList<>(
+                                        List.of(
+                                                (SymbolType) op.getValueL().accept(this),
+                                                (SymbolType) op.getValueR().accept(this)
+                                        )
+                                ),
+                                OpTableCombinations.EnumOpTable.CONCATOP
+                        );
+                    else {
+                        return OpTableCombinations.checkCombination(
+                                new ArrayList<>(
+                                        List.of(
+                                                (SymbolType) op.getValueL().accept(this),
+                                                (SymbolType) op.getValueR().accept(this)
+                                        )
+                                ),
+                                OpTableCombinations.EnumOpTable.DIVOP
+                        );
+                    }
+                }catch (Exception ignored) {}
+            case "DiffOp", "MulOp":
                 return OpTableCombinations.checkCombination(
                         new ArrayList<>(
                                 List.of(
@@ -271,7 +302,7 @@ public class TypeVisitor implements Visitor {
                             OpTableCombinations.EnumOpTable.RELOP
                     );
             default:
-                throw new RuntimeException("Operazione non consentita");
+                throw new RuntimeException("Operazione non consentita: "+op.getName());
         }
 
     }
@@ -295,7 +326,7 @@ public class TypeVisitor implements Visitor {
                     ),
                     OpTableCombinations.EnumOpTable.NOTOP
             );
-            default -> throw new RuntimeException("Operazione non consentita");
+            default -> throw new RuntimeException("Operazione non consentita: "+uOp.getName());
         };
     }
 }

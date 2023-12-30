@@ -18,7 +18,8 @@ public class OpTableCombinations {
         CONCATOP,
         LOGICOP,
         RELOP,
-        COMPOP
+        COMPOP,
+        DIVOP
     }
 
     private static final OpTable UMINUSOP = new OpTable(
@@ -218,6 +219,31 @@ public class OpTableCombinations {
                                             )
                                     ),
                                     new Type("Boolean")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("String"),
+                                                    new Type("String")
+                                            )
+                                    ),
+                                    new Type("Boolean")
+                            )
+                    )
+            )
+    );
+        private static final OpTable DIVOP = new OpTable(
+            "DivOp",
+            new ArrayList<>(
+                    List.of(
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Integer"),
+                                                    new Type("Integer")
+                                            )
+                                    ),
+                                    new Type("Real")
                             )
                     )
             )

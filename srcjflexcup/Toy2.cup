@@ -6,7 +6,7 @@ import java.util.*;
 
 terminal VAR, COLON, ASSIGN, SEMI, COMMA, RETURN, FUNCTION, TYPERETURN, ENDFUNCTION, LPAR, RPAR, PROCEDURE, ENDPROCEDURE,
           OUT, WRITE, WRITERETURN, DOLLARSIGN, READ, IF, THEN, ELSE, ENDIF, ELIF, WHILE,
-          DO, ENDWHILE, PLUS, MINUS, TIMES, DIV, EQ, NE, LT, LE, GT, GE, AND, OR, NOT, ENDVAR, REF, UMINUS;
+          DO, ENDWHILE, PLUS, MINUS, TIMES, DIV, EQ, NE, LT, LE, GT, GE, AND, OR, NOT, ENDVAR, REF, UMINUS, PAR;
 
 terminal String REAL_CONST;
 terminal String INTEGER_CONST;
@@ -62,6 +62,7 @@ precedence left LE, GE, GT, LT;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
 precedence right NOT, UMINUS;
+precedence nonassoc PAR;
 
 
 Program ::= IterNoProcedure:program1 Procedure:procedure Iter:program2 {: ArrayList<VarDeclOp> varDeclList = new ArrayList<>();
@@ -214,8 +215,9 @@ IOArgs ::=  OtherIOArgs:expr IOArgs:exprList2 {: RESULT = new ArrayList<Expr>();
                                                     RESULT.add(expr);
                                                     RESULT.addAll(exprList2); :}
        |  DOLLARSIGN LPAR Expr:expr RPAR IOArgs:exprList {: RESULT = new ArrayList<Expr>();
-                                                          RESULT.add(expr);
-                                                          RESULT.addAll(exprList); :}
+                                                            expr.setName(expr.getName()+"Dollar");
+                                                            RESULT.add(expr);
+                                                            RESULT.addAll(exprList); :}
        | /* empty */ {: RESULT = new ArrayList<Expr>(); :};
 
 OtherIOArgs ::= OtherIOArgs:exprList1 PLUS OtherIOArgs:exprList2 {:RESULT = new Op("AddOp", exprList1, exprList2); :}
@@ -257,7 +259,7 @@ Expr ::= FunCall:funCall {: RESULT = funCall; :}
 	| Expr:expr1  LE Expr:expr2 {: RESULT = new Op("LeOp", expr1, expr2); :}
 	| Expr:expr1  EQ Expr:expr2 {: RESULT = new Op("EqOp", expr1, expr2); :}
 	| Expr:expr1  NE Expr:expr2 {: RESULT = new Op("NeOp", expr1, expr2); :}
-	| LPAR Expr:expr RPAR    {: RESULT = expr; :}
+	| LPAR Expr:expr RPAR    {: RESULT = expr; :} %prec PAR
 	| MINUS Expr:expr {: RESULT = new UOp("UMinusOP", expr); :} %prec UMINUS
     | NOT Expr:expr {: RESULT = new UOp("NotOp", expr); :};
 
