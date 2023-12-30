@@ -32,11 +32,11 @@ public class IfStatOp extends Stat implements NodeVisitor {
         this.bodyOp2 = bodyOp2;
     }
 
-    public Expr getExprNode() {
+    public Expr getExpr() {
         return expr;
     }
 
-    public void setExprNode(Expr expr) {
+    public void setExpr(Expr expr) {
         this.expr = expr;
     }
 

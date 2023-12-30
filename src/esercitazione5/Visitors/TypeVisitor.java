@@ -18,6 +18,7 @@ public class TypeVisitor implements Visitor {
         if (programOp.getSymbolTable().getSymbolRowList().stream().noneMatch(symbolRow -> symbolRow.getName().equals("main"))) {
             throw new RuntimeException("Procedura main non dichiarata");
         }
+        symbolTable = programOp.getSymbolTable();
 
         programOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
         programOp.getProcOpList().forEach(procOp -> procOp.accept(this));
@@ -42,6 +43,8 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(BodyOp bodyOp) {
+        symbolTable = bodyOp.getSymbolTable();
+        bodyOp.getStatList().forEach(stat -> stat.accept(this));
         return null;
     }
 
@@ -52,6 +55,8 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ElifOp elifOp) {
+        elifOp.getExpr().accept(this);
+        elifOp.getBodyOp().accept(this);
         return null;
     }
 
@@ -98,7 +103,7 @@ public class TypeVisitor implements Visitor {
             }
             if (exprSymbolTypeIterator.hasNext())
                 throw new RuntimeException("Il numero di assegnazioni è diverso dal numero di id");
-            }
+        }
 
         if ((idIterator.hasNext() || exprIterator.hasNext()))
             throw new RuntimeException("Il numero di assegnazioni è diverso dal numero di id");
@@ -107,11 +112,33 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(IfStatOp ifStatOp) {
+        ifStatOp.getExpr().accept(this);
+        ifStatOp.getBodyOp().accept(this);
+        ifStatOp.getElifOpList().forEach(elifOp -> elifOp.accept(this));
+        ifStatOp.getBodyOp2().accept(this);
         return null;
     }
 
     @Override
     public Object visit(ProcCallOp procCallOp) {
+        SymbolType symbolType = (SymbolType) procCallOp.getId().accept(this);
+        Iterator<Expr> procCallExprIt = procCallOp.getExprList().iterator();
+        Iterator<Type> typeIterator = symbolType.getInTypeList().iterator();
+
+        while (procCallExprIt.hasNext()) {
+            SymbolType symbolTypeProcCall = (SymbolType) procCallExprIt.next().accept(this);
+            Iterator<Type> typeProcCallIt = symbolTypeProcCall.getInTypeList().iterator();
+            while (typeProcCallIt.hasNext() && typeIterator.hasNext()) {
+                Type procCallType = typeProcCallIt.next();
+                Type type = typeIterator.next();
+                if(!procCallType.getName().equals(type.getName())){
+                    throw new RuntimeException("Il tipo: "+procCallType.getName()+" non combacia con il tipo: "+type.getName());
+                }
+            }
+        }
+        if (typeIterator.hasNext()){
+            throw new RuntimeException("Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" non combacia con il numero dei tipi forniti");
+        }
         return null;
     }
 
@@ -129,6 +156,8 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(WhileOp whileOp) {
+        whileOp.getExpr().accept(this);
+        whileOp.getBodyOp().accept(this);
         return null;
     }
 
@@ -146,8 +175,24 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(CallFunOp callFunOp) {
         SymbolType symbolType = (SymbolType) callFunOp.getId().accept(this);
-        callFunOp.getExprList().forEach(expr -> expr.accept(this));
-        return null;
+        Iterator<Expr> callFunExprIt = callFunOp.getExprList().iterator();
+        Iterator<Type> typeIterator = symbolType.getInTypeList().iterator();
+
+        while (callFunExprIt.hasNext()) {
+            SymbolType symbolTypeCallFun = (SymbolType) callFunExprIt.next().accept(this);
+            Iterator<Type> typeCallFunIt = symbolTypeCallFun.getInTypeList().iterator();
+            while (typeCallFunIt.hasNext() && typeIterator.hasNext()) {
+                Type funCallType = typeCallFunIt.next();
+                Type type = typeIterator.next();
+                if(!funCallType.getName().equals(type.getName())){
+                    throw new RuntimeException("Il tipo: "+funCallType.getName()+" non combacia con il tipo: "+type.getName());
+                }
+            }
+        }
+        if (typeIterator.hasNext()){
+            throw new RuntimeException("Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" non combacia con il numero dei tipi forniti");
+        }
+        return symbolType;
     }
 
     @Override
