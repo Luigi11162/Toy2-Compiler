@@ -85,15 +85,6 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(AssignOp assignOp) {
-        //Controllo che tutti gli id siano stati dichiarati
-        assignOp.getIdList().forEach(
-                id -> {
-                    //Controllo se l'id è presente nella tabella dei simboli
-                    if (!symbolTable.checkIdDeclared(id.getValue()))
-                        throw new RuntimeException("ID: " + id.getValue() + " non è stato dichiarato");
-
-                });
-
         //Controllo il mapping tra id ed il tipo rispettivo
         Iterator<ID> idIterator = assignOp.getIdList().iterator();
         Iterator<Expr> exprIterator = assignOp.getExprList().iterator();

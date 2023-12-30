@@ -7,10 +7,10 @@ import esercitazione5.SymbolTable.SymbolRow;
 import esercitazione5.SymbolTable.SymbolTable;
 import esercitazione5.SymbolTable.SymbolType;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class ScopeVisitor implements Visitor {
@@ -29,7 +29,7 @@ public class ScopeVisitor implements Visitor {
             try {
                 programOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                                (String) funOp.getId().accept(this),
+                                funOp.getId().getValue(),
                                 "Method",
                                 new SymbolType(
                                         funOp.getProcFunParamOpList().stream().map(ProcFunParamOp::getType).
@@ -48,7 +48,7 @@ public class ScopeVisitor implements Visitor {
             try {
                 programOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                                (String) procOp.getId().accept(this),
+                                procOp.getId().getValue(),
                                 "Method",
                                 new SymbolType(
                                         procOp.getProcFunParamOpList().stream().map(ProcFunParamOp::getType).
@@ -79,7 +79,7 @@ public class ScopeVisitor implements Visitor {
                 try {
                     symbolTableStatic.addSymbolRow(
                             new SymbolRow(
-                                    (String) idIterator.next().accept(this),
+                                    idIterator.next().getValue(),
                                     "Var",
                                     new SymbolType(new ArrayList<>(List.of(new Type((String) constIterator.next().accept(this))))),
                                     ""
@@ -94,7 +94,7 @@ public class ScopeVisitor implements Visitor {
                 try {
                     symbolTableStatic.addSymbolRow(
                             new SymbolRow(
-                                    (String) id.accept(this),
+                                    id.getValue(),
                                     "Var",
                                     new SymbolType(new ArrayList<>(List.of(varDeclOp.getType()))),
                                     ""
@@ -120,7 +120,7 @@ public class ScopeVisitor implements Visitor {
             try {
                 funOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                                (String) procFunParamOp.getId().accept(this),
+                                procFunParamOp.getId().getValue(),
                                 "Param",
                                 new SymbolType(new ArrayList<>(List.of(procFunParamOp.getType()))),
                                 (String) procFunParamOp.getMode().accept(this)
@@ -147,7 +147,7 @@ public class ScopeVisitor implements Visitor {
             try {
                 procOp.getSymbolTable().addSymbolRow(
                         new SymbolRow(
-                                (String) procFunParamOp.getId().accept(this),
+                                procFunParamOp.getId().getValue(),
                                 "Param",
                                 new SymbolType(new ArrayList<>(List.of(procFunParamOp.getType()))),
                                 (String) procFunParamOp.getMode().accept(this)
@@ -166,12 +166,21 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(BodyOp bodyOp) {
-
         if (bodyOp.getSymbolTable() == null && !symbolTableStatic.getName().equals("Proc") && !symbolTableStatic.getName().equals("Func")) {
             bodyOp.setSymbolTable(symbolTableStatic);
         }
-        bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
-        bodyOp.getStatList().forEach(stat -> stat.accept(this));
+
+        //Essendo inseriti al contrario, si effettua una scansione in reverse dei figli del body
+        //In questo modo controllo che le variabili, funzioni o procedure utilizzate siano state dichiarate in precedenza
+        for(int i=bodyOp.getChildCount()-1; i>=0; i--)
+        {
+            try {
+                //
+                bodyOp.getChildAt(i).getClass().getDeclaredMethod("accept", Visitor.class).invoke(bodyOp.getChildAt(i), this);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         return null;
     }
@@ -183,9 +192,9 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(ElifOp elifOp) {
-
         symbolTableStatic = new SymbolTable(symbolTableStatic, "Elif", new ArrayList<>());
 
+        elifOp.getExpr().accept(this);
         elifOp.getBodyOp().accept(this);
 
         return null;
@@ -208,12 +217,16 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(AssignOp assignOp) {
+        assignOp.getIdList().forEach(id -> id.accept(this));
+        assignOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
     @Override
     public Object visit(IfStatOp ifStatOp) {
         symbolTableStatic = new SymbolTable(symbolTableStatic, "If", new ArrayList<>());
+
+        ifStatOp.getExpr().accept(this);
 
         ifStatOp.getBodyOp().accept(this);
 
@@ -228,16 +241,20 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(ProcCallOp procCallOp) {
+        procCallOp.getId().accept(this);
+        procCallOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
     @Override
     public Object visit(ReadOp readOp) {
+        readOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
     @Override
     public Object visit(ReturnOp returnOp) {
+        returnOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
@@ -245,15 +262,15 @@ public class ScopeVisitor implements Visitor {
     public Object visit(WhileOp whileOp) {
         symbolTableStatic = new SymbolTable(symbolTableStatic, "While", new ArrayList<>());
 
-        if (whileOp.getBodyOp() != null) {
-            whileOp.getBodyOp().accept(this);
-        }
+        whileOp.getExpr().accept(this);
+        whileOp.getBodyOp().accept(this);
 
         return null;
     }
 
     @Override
     public Object visit(WriteOp writeOp) {
+        writeOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
@@ -264,6 +281,8 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(CallFunOp callFunOp) {
+        callFunOp.getId().accept(this);
+        callFunOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
     }
 
@@ -281,16 +300,20 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(ID id) {
-        return id.getValue();
+        symbolTableStatic.checkAssign(id);
+        return null;
     }
 
     @Override
     public Object visit(Op op) {
+        op.getValueL().accept(this);
+        op.getValueR().accept(this);
         return null;
     }
 
     @Override
     public Object visit(UOp uOp) {
+        uOp.getValue().accept(this);
         return null;
     }
 }

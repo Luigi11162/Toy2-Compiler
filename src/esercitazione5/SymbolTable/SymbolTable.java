@@ -6,6 +6,8 @@ import esercitazione5.Nodes.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
 
@@ -60,7 +62,7 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
     public boolean checkIdDeclared(String name) {
         if (this.probe(name))
             return true;
-        else if (father != null)
+        else if (this.father != null)
             return this.father.probe(name);
         else
             return false;
@@ -70,8 +72,8 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
         Optional<SymbolRow> symbolRowOptional = this.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(name)).findFirst();
         if (symbolRowOptional.isPresent()) {
             return symbolRowOptional.get().getSymbolType();
-        } else if (father != null) {
-            return father.returnTypeOfId(name);
+        } else if (this.father != null) {
+            return this.father.returnTypeOfId(name);
         } else {
             throw new RuntimeException("L'id "+name+" non è stato dichiarato");
         }
@@ -81,11 +83,11 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
         //Controllo se l'id può avere un'assegnazione
         Optional<SymbolRow> symbolRow = this.getSymbolRowList().stream().filter(symRow -> symRow.getName().equals(id.getValue())).findFirst();
         if(symbolRow.isPresent()) {
-            return !symbolRow.get().getProperties().equals("in");
-        }else if (father != null) {
-                return father.checkAssign(id);
+            return true; //!symbolRow.get().getProperties().equals("in");
+        }else if (this.father != null) {
+                return this.father.checkAssign(id);
         } else {
-                throw new RuntimeException("L'id "+name+" non è stato dichiarato");
+                throw new RuntimeException("L'id "+id.getValue()+" non è stato dichiarato");
         }
     }
 }

@@ -1,6 +1,7 @@
 
 % programma principale %
 proc main():
+
     var operazione : string; \
     var input1, input2, answer : integer;\
     var flag ^= true;\
@@ -22,7 +23,7 @@ proc main():
        result ^= moltiplicazione(input1, input2);
     endif;
 
-    --> "Il risultato e':" $(risultato);
+    --> "Il risultato e':" $(result);
     <-- "Vuoi continuare? (1 yes/0 no)" $(answer);
 
     if answer = 1 then
@@ -30,8 +31,9 @@ proc main():
     else
         flag ^= false;
     endif;
-
+    var input8: integer;\
     endwhile;
+
 endproc
 
 proc somma(input1: integer, input2: integer, out result: real):
