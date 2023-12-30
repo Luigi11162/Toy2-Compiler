@@ -8,6 +8,7 @@ import esercitazione5.SymbolTable.SymbolType;
 import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TypeVisitor implements Visitor {
 
@@ -35,6 +36,7 @@ public class TypeVisitor implements Visitor {
     }
 
     @Override
+    //Controllare match tipi con return
     public Object visit(FunOp funOp) {
         symbolTable = funOp.getSymbolTable();
         funOp.getBodyOp().accept(this);
@@ -53,7 +55,16 @@ public class TypeVisitor implements Visitor {
         if (bodyOp.getSymbolTable()!= null)
             symbolTable = bodyOp.getSymbolTable();
         bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
+        if (symbolTable.getName().equals("Func"))
+            if (bodyOp.getStatList().stream().noneMatch(stat -> stat.getName().equals("ReturnOp")))
+                throw new RuntimeException("Funzione non ha return");
+
+        else if(symbolTable.getName().equals("Proc"))
+            if (bodyOp.getStatList().stream().anyMatch(stat -> stat.getName().equals("ReturnOp")))
+                throw new RuntimeException("Procedure non può avere return");
+
         bodyOp.getStatList().forEach(stat -> stat.accept(this));
+
         return null;
     }
 
@@ -97,6 +108,9 @@ public class TypeVisitor implements Visitor {
             //Controllo se l'expr in questione ha più tipi di ritorno
             while (idIterator.hasNext() && exprSymbolTypeIterator.hasNext()) {
                 ID id = idIterator.next();
+                if(!symbolTable.checkAssign(id)){
+                    throw new RuntimeException("Id: "+id.getValue()+" non può essere assegnato");
+                }
                 SymbolType symbolType = (SymbolType) id.accept(this);
                 Iterator<Type> typeIterator = symbolType.getOutTypeList().iterator();
                 Type type = exprSymbolTypeIterator.next();
@@ -164,8 +178,15 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ReturnOp returnOp) {
-        returnOp.getExprList().forEach(expr -> expr.accept(this));
-        return null;
+        Optional<SymbolType> symbolTypeOptional = returnOp.getExprList().stream().map(expr -> (SymbolType) expr.accept(this)).
+                reduce((symbolType, symbolType2) -> {
+                    symbolType.addOutTypeList(symbolType2.getOutTypeList());
+                    return symbolType;
+                });
+        if (symbolTypeOptional.isPresent())
+            return symbolTypeOptional.get();
+        else
+            throw new RuntimeException("Il return deve restituire almeno un elemento");
     }
 
     @Override

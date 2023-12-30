@@ -59,15 +59,6 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
         return this.getSymbolRowList().stream().anyMatch(symbolRow -> symbolRow.getName().equals(name));
     }
 
-    public boolean checkIdDeclared(String name) {
-        if (this.probe(name))
-            return true;
-        else if (this.father != null)
-            return this.father.probe(name);
-        else
-            return false;
-    }
-
     public SymbolType returnTypeOfId(String name) {
         Optional<SymbolRow> symbolRowOptional = this.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(name)).findFirst();
         if (symbolRowOptional.isPresent()) {
@@ -79,11 +70,12 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
         }
     }
 
+    //Metodo che controlla se id è stato precedentemente assegnato
+    //Restituisce un boolean per indicare se gli può essere assegnato un valore
     public boolean checkAssign(ID id){
-        //Controllo se l'id può avere un'assegnazione
         Optional<SymbolRow> symbolRow = this.getSymbolRowList().stream().filter(symRow -> symRow.getName().equals(id.getValue())).findFirst();
         if(symbolRow.isPresent()) {
-            return true; //!symbolRow.get().getProperties().equals("in");
+            return !symbolRow.get().getProperties().equals("in");
         }else if (this.father != null) {
                 return this.father.checkAssign(id);
         } else {

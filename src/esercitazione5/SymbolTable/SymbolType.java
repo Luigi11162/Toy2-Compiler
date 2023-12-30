@@ -36,8 +36,10 @@ public class SymbolType {
     public void setOutTypeList(ArrayList<Type> outTypeList) {
         this.outTypeList = outTypeList;
     }
-
-    public void addOutTypeList(Type type){
+    public void addOutType(Type type){
         this.outTypeList.add(type);
+    }
+    public void addOutTypeList(ArrayList<Type> typeList){
+        this.outTypeList.addAll(typeList);
     }
 }

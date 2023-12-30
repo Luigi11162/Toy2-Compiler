@@ -43,11 +43,13 @@ proc somma(input1: integer, input2: integer, out result: integer):
 endproc
 
 proc sottrazione(input1: integer, input2: integer, out result : integer):
+
     result ^= input1 - input2;
 endproc
 
 func moltiplicazione(input1: integer, input2: integer) -> integer:
     var result : integer;\
+
     result ^= input1 * input2;
     return result;
 endfunc
