@@ -39,6 +39,33 @@ public class TypeVisitor implements Visitor {
     //Controllare match tipi con return
     public Object visit(FunOp funOp) {
         symbolTable = funOp.getSymbolTable();
+        boolean flag = false;
+
+        for (Stat stat: funOp.getBodyOp().getStatList()){
+            if (stat.getName().equals("ReturnOp")) {
+
+                SymbolType symbolType = (SymbolType) stat.accept(this);
+                Iterator<Type> returnTypeIt = symbolType.getOutTypeList().iterator();
+                Iterator<Type> funTypeIt = funOp.getTypeList().iterator();
+
+                while (funTypeIt.hasNext() && returnTypeIt.hasNext()) {
+                    Type funType = funTypeIt.next();
+                    Type returnType = returnTypeIt.next();
+                    if (!funType.getName().equals(returnType.getName()))
+                        throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Tipo del return: "+returnType.getName()+" non combacia con il tipo di ritorno della funzione: "+funType.getName());
+                }
+                if(funTypeIt.hasNext())
+                    throw new RuntimeException("Funzione: "+funOp.getId().getValue()+". La funzione si aspetta più elementi di ritorno.");
+                else if(returnTypeIt.hasNext())
+                    throw new RuntimeException("Funzione: "+funOp.getId().getValue()+". Il return ha più elementi di quanti se ne aspetta la funzione.");
+                flag = true;
+                break;
+            }
+        }
+
+        if(!flag)
+            throw new RuntimeException("Funzione: "+funOp.getId().getValue()+" non ha il return");
+
         funOp.getBodyOp().accept(this);
         return null;
     }
@@ -46,6 +73,10 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(ProcOp procOp) {
         symbolTable = procOp.getSymbolTable();
+
+        if (procOp.getBodyOp().getStatList().stream().anyMatch(stat -> stat.getName().equals("ReturnOp")))
+            throw new RuntimeException("Procedura: "+procOp.getId().getValue()+" non può avere return");
+
         procOp.getBodyOp().accept(this);
         return null;
     }
@@ -55,14 +86,6 @@ public class TypeVisitor implements Visitor {
         if (bodyOp.getSymbolTable()!= null)
             symbolTable = bodyOp.getSymbolTable();
         bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
-        if (symbolTable.getName().equals("Func"))
-            if (bodyOp.getStatList().stream().noneMatch(stat -> stat.getName().equals("ReturnOp")))
-                throw new RuntimeException("Funzione non ha return");
-
-        else if(symbolTable.getName().equals("Proc"))
-            if (bodyOp.getStatList().stream().anyMatch(stat -> stat.getName().equals("ReturnOp")))
-                throw new RuntimeException("Procedure non può avere return");
-
         bodyOp.getStatList().forEach(stat -> stat.accept(this));
 
         return null;

@@ -38,12 +38,10 @@ proc main():
 endproc
 
 proc somma(input1: integer, input2: integer, out result: integer):
-
     result ^= input1 + input2;
 endproc
 
 proc sottrazione(input1: integer, input2: integer, out result : integer):
-
     result ^= input1 - input2;
 endproc
 
@@ -65,3 +63,15 @@ func divisione(input1: integer, input2: integer) -> real:
     return result;
 endfunc
 
+
+%func somma_con_commento(a:integer, b:integer) -> integer:
+    var risultato:integer;\
+    risultato ^= a+b;
+
+    if risultato >  4 then
+
+        return risultato;
+    endif;
+
+endfunc
+%

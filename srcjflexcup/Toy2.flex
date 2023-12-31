@@ -20,7 +20,7 @@ import java_cup.runtime.Symbol; //This is how we pass tokens to the parser
 %column
 
 
-Letter = [a-zA-Z]
+Letter = [a-zA-Z_]
 Digit = [0-9]
 ID = {Letter} ({Letter} | {Digit})*
 Letteral = \" ~\"
