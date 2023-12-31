@@ -55,13 +55,14 @@ func moltiplicazione(input1: integer, input2: integer) -> integer:
 endfunc
 
 func divisione(input1: integer, input2: integer) -> real:
+
     var result : real;\
     if input2 = 0 then
         --> "Errore";
         result ^= 0.0;
 
     endif;
-    return result;
+    return 4.5;
 endfunc
 
 
@@ -72,6 +73,8 @@ func somma_con_commento(a:integer, b:integer) -> integer:
     if (risultato) >  4 then
         var c : integer;\
         return c;
+       elseif a>5 then
+            return 4;
         else
         var c : integer;\
         return c;

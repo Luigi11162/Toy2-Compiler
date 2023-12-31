@@ -65,10 +65,8 @@ public class TypeVisitor implements Visitor {
                             throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Il return ha più elementi di quanti se ne aspetta la funzione.");
                         flag = true;
                     }else if (stat instanceof IfStatOp ifStatOp){
-                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor) && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor);
-                        for (ElifOp elifOp: ifStatOp.getElifOpList()){
-                            flag = flag || ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor);
-                        }
+                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor) && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor)
+                        && ifStatOp.getElifOpList().stream().allMatch(elifOp->ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor));
                     }else if(stat instanceof WhileOp whileOp){
                         flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp(), funOp, visitor);
                     }
@@ -100,6 +98,7 @@ public class TypeVisitor implements Visitor {
                         flag = true;
                     }else if (stat instanceof IfStatOp ifStatOp){
                         flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp()) || ReturnCheck.checkReturn(ifStatOp.getBodyOp2());
+
                         for (ElifOp elifOp: ifStatOp.getElifOpList()){
                             flag = flag || ReturnCheck.checkReturn(elifOp.getBodyOp());
                         }
