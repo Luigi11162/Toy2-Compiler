@@ -20,9 +20,9 @@ import java_cup.runtime.Symbol; //This is how we pass tokens to the parser
 %column
 
 
-Letter = [a-zA-Z_]
+Letter = [a-zA-Z]
 Digit = [0-9]
-ID = {Letter} ({Letter} | {Digit})*
+ID = {Letter} ({Letter} | {Digit} | _ )*
 Letteral = \" ~\"
 Digits = {Digit}+
 OptFraction = ("." {Digits})?

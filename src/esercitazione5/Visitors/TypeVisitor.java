@@ -7,12 +7,14 @@ import esercitazione5.SymbolTable.SymbolTable;
 import esercitazione5.SymbolTable.SymbolType;
 import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class TypeVisitor implements Visitor {
 
     static SymbolTable symbolTable;
+
 
     @Override
     public Object visit(ProgramOp programOp) {
@@ -39,32 +41,46 @@ public class TypeVisitor implements Visitor {
     //Controllare match tipi con return
     public Object visit(FunOp funOp) {
         symbolTable = funOp.getSymbolTable();
-        boolean flag = false;
 
-        for (Stat stat: funOp.getBodyOp().getStatList()){
-            if (stat.getName().equals("ReturnOp")) {
+        class ReturnCheck {
+            private static boolean checkReturn(BodyOp bodyOp, FunOp funOp, Visitor visitor) {
+                boolean flag = false;
+                if (bodyOp.getSymbolTable()!=null)
+                    symbolTable = bodyOp.getSymbolTable();
+                for (Stat stat : bodyOp.getStatList()) {
+                    if (stat.getName().equals("ReturnOp")) {
+                        SymbolType symbolType = (SymbolType) stat.accept(visitor);
+                        Iterator<Type> returnTypeIt = symbolType.getOutTypeList().iterator();
+                        Iterator<Type> funTypeIt = funOp.getTypeList().iterator();
 
-                SymbolType symbolType = (SymbolType) stat.accept(this);
-                Iterator<Type> returnTypeIt = symbolType.getOutTypeList().iterator();
-                Iterator<Type> funTypeIt = funOp.getTypeList().iterator();
-
-                while (funTypeIt.hasNext() && returnTypeIt.hasNext()) {
-                    Type funType = funTypeIt.next();
-                    Type returnType = returnTypeIt.next();
-                    if (!funType.getName().equals(returnType.getName()))
-                        throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Tipo del return: "+returnType.getName()+" non combacia con il tipo di ritorno della funzione: "+funType.getName());
+                        while (funTypeIt.hasNext() && returnTypeIt.hasNext()) {
+                            Type funType = funTypeIt.next();
+                            Type returnType = returnTypeIt.next();
+                            if (!funType.getName().equals(returnType.getName()))
+                                throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Tipo del return: " + returnType.getName() + " non combacia con il tipo di ritorno della funzione: " + funType.getName());
+                        }
+                        if (funTypeIt.hasNext())
+                            throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". La funzione si aspetta più elementi di ritorno.");
+                        else if (returnTypeIt.hasNext())
+                            throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Il return ha più elementi di quanti se ne aspetta la funzione.");
+                        flag = true;
+                    }else if (stat instanceof IfStatOp ifStatOp){
+                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor) && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor);
+                        for (ElifOp elifOp: ifStatOp.getElifOpList()){
+                            flag = flag || ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor);
+                        }
+                    }else if(stat instanceof WhileOp whileOp){
+                        flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp(), funOp, visitor);
+                    }
                 }
-                if(funTypeIt.hasNext())
-                    throw new RuntimeException("Funzione: "+funOp.getId().getValue()+". La funzione si aspetta più elementi di ritorno.");
-                else if(returnTypeIt.hasNext())
-                    throw new RuntimeException("Funzione: "+funOp.getId().getValue()+". Il return ha più elementi di quanti se ne aspetta la funzione.");
-                flag = true;
-                break;
+                return flag;
             }
         }
+        if(!ReturnCheck.checkReturn(funOp.getBodyOp(), funOp, this)){
+            throw new RuntimeException("La funzione: " + funOp.getId().getValue() + " non ha return");
+        }
 
-        if(!flag)
-            throw new RuntimeException("Funzione: "+funOp.getId().getValue()+" non ha il return");
+        symbolTable = funOp.getSymbolTable();
 
         funOp.getBodyOp().accept(this);
         return null;
@@ -74,7 +90,28 @@ public class TypeVisitor implements Visitor {
     public Object visit(ProcOp procOp) {
         symbolTable = procOp.getSymbolTable();
 
-        if (procOp.getBodyOp().getStatList().stream().anyMatch(stat -> stat.getName().equals("ReturnOp")))
+        class ReturnCheck {
+            private static boolean checkReturn(BodyOp bodyOp) {
+                boolean flag = false;
+                if (bodyOp.getSymbolTable()!=null)
+                    symbolTable = bodyOp.getSymbolTable();
+                for (Stat stat : bodyOp.getStatList()) {
+                    if (stat.getName().equals("ReturnOp")) {
+                        flag = true;
+                    }else if (stat instanceof IfStatOp ifStatOp){
+                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp()) || ReturnCheck.checkReturn(ifStatOp.getBodyOp2());
+                        for (ElifOp elifOp: ifStatOp.getElifOpList()){
+                            flag = flag || ReturnCheck.checkReturn(elifOp.getBodyOp());
+                        }
+                    }else if(stat instanceof WhileOp whileOp){
+                        flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp());
+                    }
+                }
+                return flag;
+            }
+        }
+
+        if (ReturnCheck.checkReturn(procOp.getBodyOp()))
             throw new RuntimeException("Procedura: "+procOp.getId().getValue()+" non può avere return");
 
         procOp.getBodyOp().accept(this);
@@ -86,7 +123,19 @@ public class TypeVisitor implements Visitor {
         if (bodyOp.getSymbolTable()!= null)
             symbolTable = bodyOp.getSymbolTable();
         bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
-        bodyOp.getStatList().forEach(stat -> stat.accept(this));
+
+
+        //Essendo inseriti al contrario, si effettua una scansione in reverse dei figli del body
+        //In questo modo controllo che le variabili, funzioni o procedure utilizzate siano state dichiarate in precedenza
+        for(int i=bodyOp.getChildCount()-1; i>=0; i--)
+        {
+            try {
+                //
+                bodyOp.getChildAt(i).getClass().getDeclaredMethod("accept", Visitor.class).invoke(bodyOp.getChildAt(i), this);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         return null;
     }
@@ -273,6 +322,7 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ID id) {
+        symbolTable.checkAssign(id);
         return symbolTable.returnTypeOfId(id.getValue());
     }
 
@@ -335,7 +385,7 @@ public class TypeVisitor implements Visitor {
                             OpTableCombinations.EnumOpTable.COMPOP
                     );
                 }catch (Exception ignored){}
-            case "Gt", "GeOp", "LtOp", "LeOp":
+            case "GtOp", "GeOp", "LtOp", "LeOp":
                     return OpTableCombinations.checkCombination(
                             new ArrayList<>(
                                     List.of(

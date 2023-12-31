@@ -7,7 +7,6 @@ proc main():
     var result : integer;\
     var resultReal : real;\
 
-
     while flag = true do
     <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)" $(operazione);
     <-- "Inserisci il primo input" $(input1);
@@ -43,6 +42,9 @@ endproc
 
 proc sottrazione(input1: integer, input2: integer, out result : integer):
     result ^= input1 - input2;
+    if input1 > 0 then
+
+   endif;
 endproc
 
 func moltiplicazione(input1: integer, input2: integer) -> integer:
@@ -57,21 +59,21 @@ func divisione(input1: integer, input2: integer) -> real:
     if input2 = 0 then
         --> "Errore";
         result ^= 0.0;
-    else
-        result ^= input1 / input2;
+
     endif;
     return result;
 endfunc
 
 
-%func somma_con_commento(a:integer, b:integer) -> integer:
+func somma_con_commento(a:integer, b:integer) -> integer:
     var risultato:integer;\
     risultato ^= a+b;
 
-    if risultato >  4 then
-
-        return risultato;
+    if (risultato) >  4 then
+        var c : integer;\
+        return c;
+        else
+        var c : integer;\
+        return c;
     endif;
-
 endfunc
-%

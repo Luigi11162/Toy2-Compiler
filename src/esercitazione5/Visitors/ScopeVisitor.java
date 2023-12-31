@@ -171,7 +171,6 @@ public class ScopeVisitor implements Visitor {
         }
 
         //Essendo inseriti al contrario, si effettua una scansione in reverse dei figli del body
-        //In questo modo controllo che le variabili, funzioni o procedure utilizzate siano state dichiarate in precedenza
         for(int i=bodyOp.getChildCount()-1; i>=0; i--)
         {
             try {
@@ -300,7 +299,6 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(ID id) {
-        symbolTableStatic.checkAssign(id);
         return null;
     }
 
