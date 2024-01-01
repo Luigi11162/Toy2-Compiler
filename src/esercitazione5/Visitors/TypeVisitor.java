@@ -40,7 +40,6 @@ public class TypeVisitor implements Visitor {
     @Override
     //Controllare match tipi con return
     public Object visit(FunOp funOp) {
-        symbolTable = funOp.getSymbolTable();
 
         class ReturnCheck {
             private static boolean checkReturn(BodyOp bodyOp, FunOp funOp, Visitor visitor) {
@@ -86,8 +85,6 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ProcOp procOp) {
-        symbolTable = procOp.getSymbolTable();
-
         class ReturnCheck {
             private static boolean checkReturn(BodyOp bodyOp) {
                 boolean flag = false;
@@ -110,6 +107,7 @@ public class TypeVisitor implements Visitor {
         if (ReturnCheck.checkReturn(procOp.getBodyOp()))
             throw new RuntimeException("Procedura: " + procOp.getId().getValue() + " non può avere return");
 
+        symbolTable = procOp.getSymbolTable();
         procOp.getBodyOp().accept(this);
         return null;
     }
