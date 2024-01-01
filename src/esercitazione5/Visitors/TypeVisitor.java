@@ -31,9 +31,9 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(VarDeclOp varDeclOp) {
-        if(varDeclOp.getType()==null)
-            if(varDeclOp.getidList().size() != varDeclOp.getConstList().size())
-                throw new RuntimeException("Numero di id:" +varDeclOp.getidList().size()+" è diverso dal numero di costanti: "+varDeclOp.getConstList().size());
+        if (varDeclOp.getType() == null)
+            if (varDeclOp.getidList().size() != varDeclOp.getConstList().size())
+                throw new RuntimeException("Numero di id:" + varDeclOp.getidList().size() + " è diverso dal numero di costanti: " + varDeclOp.getConstList().size());
         return null;
     }
 
@@ -45,7 +45,7 @@ public class TypeVisitor implements Visitor {
         class ReturnCheck {
             private static boolean checkReturn(BodyOp bodyOp, FunOp funOp, Visitor visitor) {
                 boolean flag = false;
-                if (bodyOp.getSymbolTable()!=null)
+                if (bodyOp.getSymbolTable() != null)
                     symbolTable = bodyOp.getSymbolTable();
                 for (Stat stat : bodyOp.getStatList()) {
                     if (stat.getName().equals("ReturnOp")) {
@@ -64,17 +64,17 @@ public class TypeVisitor implements Visitor {
                         else if (returnTypeIt.hasNext())
                             throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Il return ha più elementi di quanti se ne aspetta la funzione.");
                         flag = true;
-                    }else if (stat instanceof IfStatOp ifStatOp){
+                    } else if (stat instanceof IfStatOp ifStatOp) {
                         flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor) && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor)
-                        && ifStatOp.getElifOpList().stream().allMatch(elifOp->ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor));
-                    }else if(stat instanceof WhileOp whileOp){
+                                && ifStatOp.getElifOpList().stream().allMatch(elifOp -> ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor));
+                    } else if (stat instanceof WhileOp whileOp) {
                         flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp(), funOp, visitor);
                     }
                 }
                 return flag;
             }
         }
-        if(!ReturnCheck.checkReturn(funOp.getBodyOp(), funOp, this)){
+        if (!ReturnCheck.checkReturn(funOp.getBodyOp(), funOp, this)) {
             throw new RuntimeException("La funzione: " + funOp.getId().getValue() + " non ha return");
         }
 
@@ -91,18 +91,15 @@ public class TypeVisitor implements Visitor {
         class ReturnCheck {
             private static boolean checkReturn(BodyOp bodyOp) {
                 boolean flag = false;
-                if (bodyOp.getSymbolTable()!=null)
+                if (bodyOp.getSymbolTable() != null)
                     symbolTable = bodyOp.getSymbolTable();
                 for (Stat stat : bodyOp.getStatList()) {
                     if (stat.getName().equals("ReturnOp")) {
                         flag = true;
-                    }else if (stat instanceof IfStatOp ifStatOp){
-                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp()) || ReturnCheck.checkReturn(ifStatOp.getBodyOp2());
-
-                        for (ElifOp elifOp: ifStatOp.getElifOpList()){
-                            flag = flag || ReturnCheck.checkReturn(elifOp.getBodyOp());
-                        }
-                    }else if(stat instanceof WhileOp whileOp){
+                    } else if (stat instanceof IfStatOp ifStatOp) {
+                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp()) || ReturnCheck.checkReturn(ifStatOp.getBodyOp2())
+                                || ifStatOp.getElifOpList().stream().anyMatch(elifOp -> ReturnCheck.checkReturn(elifOp.getBodyOp()));
+                    } else if (stat instanceof WhileOp whileOp) {
                         flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp());
                     }
                 }
@@ -111,7 +108,7 @@ public class TypeVisitor implements Visitor {
         }
 
         if (ReturnCheck.checkReturn(procOp.getBodyOp()))
-            throw new RuntimeException("Procedura: "+procOp.getId().getValue()+" non può avere return");
+            throw new RuntimeException("Procedura: " + procOp.getId().getValue() + " non può avere return");
 
         procOp.getBodyOp().accept(this);
         return null;
@@ -119,17 +116,16 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(BodyOp bodyOp) {
-        if (bodyOp.getSymbolTable()!= null)
+        if (bodyOp.getSymbolTable() != null)
             symbolTable = bodyOp.getSymbolTable();
         bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
 
 
         //Essendo inseriti al contrario, si effettua una scansione in reverse dei figli del body
         //In questo modo controllo che le variabili, funzioni o procedure utilizzate siano state dichiarate in precedenza
-        for(int i=bodyOp.getChildCount()-1; i>=0; i--)
-        {
+        for (int i = bodyOp.getChildCount() - 1; i >= 0; i--) {
             try {
-                //
+                //Uso la reflection per richiamare il metodo accept di ogni stat
                 bodyOp.getChildAt(i).getClass().getDeclaredMethod("accept", Visitor.class).invoke(bodyOp.getChildAt(i), this);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 throw new RuntimeException(e);
@@ -179,8 +175,8 @@ public class TypeVisitor implements Visitor {
             //Controllo se l'expr in questione ha più tipi di ritorno
             while (idIterator.hasNext() && exprSymbolTypeIterator.hasNext()) {
                 ID id = idIterator.next();
-                if(!symbolTable.checkAssign(id)){
-                    throw new RuntimeException("Id: "+id.getValue()+" non può essere assegnato");
+                if (!symbolTable.checkAssign(id)) {
+                    throw new RuntimeException("Id: " + id.getValue() + " non può essere assegnato");
                 }
                 SymbolType symbolType = (SymbolType) id.accept(this);
                 Iterator<Type> typeIterator = symbolType.getOutTypeList().iterator();
@@ -194,7 +190,7 @@ public class TypeVisitor implements Visitor {
         }
 
         if (idIterator.hasNext())
-            throw new RuntimeException("Il numero di assegnazioni è minore dal numero di id: "+assignOp.getIdList().size());
+            throw new RuntimeException("Il numero di assegnazioni è minore dal numero di id: " + assignOp.getIdList().size());
         return null;
     }
 
@@ -222,16 +218,16 @@ public class TypeVisitor implements Visitor {
             while (typeProcCallIt.hasNext() && typeIterator.hasNext()) {
                 Type procCallType = typeProcCallIt.next();
                 Type type = typeIterator.next();
-                if(!procCallType.getName().equals(type.getName())){
-                    throw new RuntimeException("Chiamata procedura: "+procCallOp.getId().getValue()+". Il tipo: "+procCallType.getName()+" non combacia con il tipo: "+type.getName());
+                if (!procCallType.getName().equals(type.getName())) {
+                    throw new RuntimeException("Chiamata procedura: " + procCallOp.getId().getValue() + ". Il tipo: " + procCallType.getName() + " non combacia con il tipo: " + type.getName());
                 }
             }
-            if (typeProcCallIt.hasNext()){
-                throw new RuntimeException("Chiamata procedura: "+procCallOp.getId().getValue()+". Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" è minore del numero dei tipi forniti");
+            if (typeProcCallIt.hasNext()) {
+                throw new RuntimeException("Chiamata procedura: " + procCallOp.getId().getValue() + ". Il numero dei tipi richiesti: " + symbolType.getInTypeList().size() + " è minore del numero dei tipi forniti");
             }
         }
-        if (typeIterator.hasNext()){
-            throw new RuntimeException("Chiamata procedura: "+procCallOp.getId().getValue()+". Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" è maggiore del numero dei tipi forniti");
+        if (typeIterator.hasNext()) {
+            throw new RuntimeException("Chiamata procedura: " + procCallOp.getId().getValue() + ". Il numero dei tipi richiesti: " + symbolType.getInTypeList().size() + " è maggiore del numero dei tipi forniti");
         }
 
         return null;
@@ -241,7 +237,7 @@ public class TypeVisitor implements Visitor {
     public Object visit(ReadOp readOp) {
         readOp.getExprList().forEach(expr -> {
             if (!(expr instanceof ID) && expr.getName().contains("Dollar"))
-                throw new RuntimeException("Lettura di un'espressione che non è un'id: "+expr.getName());
+                throw new RuntimeException("Lettura di un'espressione che non è un'id: " + expr.getName());
         });
         readOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
@@ -285,7 +281,7 @@ public class TypeVisitor implements Visitor {
         Iterator<Type> typeIterator = symbolType.getInTypeList().iterator();
 
         //Controllo che ogni parametro abbia lo stesso tipo del rispettivo parametro nella firma
-        for (Expr expr: callFunOp.getExprList()) {
+        for (Expr expr : callFunOp.getExprList()) {
 
             SymbolType symbolTypeCallFun = (SymbolType) expr.accept(this);
             Iterator<Type> typeCallFunIt = symbolTypeCallFun.getOutTypeList().iterator();
@@ -293,16 +289,16 @@ public class TypeVisitor implements Visitor {
             while (typeIterator.hasNext() && typeCallFunIt.hasNext()) {
                 Type funCallType = typeCallFunIt.next();
                 Type type = typeIterator.next();
-                if(!funCallType.getName().equals(type.getName())){
-                    throw new RuntimeException("Chiamata funzione: "+callFunOp.getId().getValue()+". Il tipo: "+funCallType.getName()+" non combacia con il tipo: "+type.getName());
+                if (!funCallType.getName().equals(type.getName())) {
+                    throw new RuntimeException("Chiamata funzione: " + callFunOp.getId().getValue() + ". Il tipo: " + funCallType.getName() + " non combacia con il tipo: " + type.getName());
                 }
             }
-            if (typeCallFunIt.hasNext()){
-                throw new RuntimeException("Chiamata funzione: "+callFunOp.getId().getValue()+". Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" è minore del numero dei tipi forniti");
+            if (typeCallFunIt.hasNext()) {
+                throw new RuntimeException("Chiamata funzione: " + callFunOp.getId().getValue() + ". Il numero dei tipi richiesti: " + symbolType.getInTypeList().size() + " è minore del numero dei tipi forniti");
             }
         }
-        if (typeIterator.hasNext()){
-            throw new RuntimeException("Chiamata funzione: "+callFunOp.getId().getValue()+". Il numero dei tipi richiesti: "+symbolType.getInTypeList().size()+" è maggiore del numero dei tipi forniti");
+        if (typeIterator.hasNext()) {
+            throw new RuntimeException("Chiamata funzione: " + callFunOp.getId().getValue() + ". Il numero dei tipi richiesti: " + symbolType.getInTypeList().size() + " è maggiore del numero dei tipi forniti");
         }
 
         return symbolType;
@@ -315,7 +311,7 @@ public class TypeVisitor implements Visitor {
             case "IntegerConst" -> new SymbolType(new ArrayList<>(List.of(new Type("Integer"))));
             case "StringConst" -> new SymbolType(new ArrayList<>(List.of(new Type("String"))));
             case "TrueConst", "FalseConst" -> new SymbolType(new ArrayList<>(List.of(new Type("Boolean"))));
-            default -> throw new RuntimeException("Tipo non consentito: "+const1.getType().getName());
+            default -> throw new RuntimeException("Tipo non consentito: " + const1.getType().getName());
         };
     }
 
@@ -351,7 +347,8 @@ public class TypeVisitor implements Visitor {
                                 OpTableCombinations.EnumOpTable.DIVOP
                         );
                     }
-                }catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             case "DiffOp", "MulOp":
                 return OpTableCombinations.checkCombination(
                         new ArrayList<>(
@@ -383,19 +380,20 @@ public class TypeVisitor implements Visitor {
                             ),
                             OpTableCombinations.EnumOpTable.COMPOP
                     );
-                }catch (Exception ignored){}
+                } catch (Exception ignored) {
+                }
             case "GtOp", "GeOp", "LtOp", "LeOp":
-                    return OpTableCombinations.checkCombination(
-                            new ArrayList<>(
-                                    List.of(
-                                            (SymbolType) op.getValueL().accept(this),
-                                            (SymbolType) op.getValueR().accept(this)
-                                    )
-                            ),
-                            OpTableCombinations.EnumOpTable.RELOP
-                    );
+                return OpTableCombinations.checkCombination(
+                        new ArrayList<>(
+                                List.of(
+                                        (SymbolType) op.getValueL().accept(this),
+                                        (SymbolType) op.getValueR().accept(this)
+                                )
+                        ),
+                        OpTableCombinations.EnumOpTable.RELOP
+                );
             default:
-                throw new RuntimeException("Operazione non consentita: "+op.getName());
+                throw new RuntimeException("Operazione non consentita: " + op.getName());
         }
 
     }
@@ -419,7 +417,7 @@ public class TypeVisitor implements Visitor {
                     ),
                     OpTableCombinations.EnumOpTable.NOTOP
             );
-            default -> throw new RuntimeException("Operazione non consentita: "+uOp.getName());
+            default -> throw new RuntimeException("Operazione non consentita: " + uOp.getName());
         };
     }
 }
