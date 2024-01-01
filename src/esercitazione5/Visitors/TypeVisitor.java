@@ -9,7 +9,6 @@ import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TypeVisitor implements Visitor {
 
