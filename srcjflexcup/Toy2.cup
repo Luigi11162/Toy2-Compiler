@@ -132,11 +132,11 @@ Consts ::= Const:const1 COMMA Consts:constList {: RESULT =  new ArrayList<Const>
 	| Const:const1 {: RESULT = new ArrayList<Const>();
                     RESULT.add(const1); :};
 
-Const ::= REAL_CONST:value {: RESULT = new  Const("RealConst", value); :}
-	| INTEGER_CONST:value {: RESULT = new Const("IntegerConst", value); :}
-    | STRING_CONST:value {: RESULT = new Const("StringConst", value); :}
-    | TRUE:value {: RESULT = new Const("TrueConst", "true"); :}
-    | FALSE:value {: RESULT = new Const("FalseConst", "false"); :};
+Const ::= REAL_CONST:value {: RESULT = new  Const("Real", value); :}
+	| INTEGER_CONST:value {: RESULT = new Const("Integer", value); :}
+    | STRING_CONST:value {: RESULT = new Const("String", value); :}
+    | TRUE:value {: RESULT = new Const("Boolean", "true"); :}
+    | FALSE:value {: RESULT = new Const("Boolean", "false"); :};
 
 Type ::= REAL {: RESULT = new Type("Real");:}
 	| INTEGER {: RESULT = new Type("Integer");:}
@@ -215,13 +215,13 @@ IOArgs ::=  OtherIOArgs:expr IOArgs:exprList2 {: RESULT = new ArrayList<Expr>();
                                                     RESULT.add(expr);
                                                     RESULT.addAll(exprList2); :}
        |  DOLLARSIGN LPAR Expr:expr RPAR IOArgs:exprList {: RESULT = new ArrayList<Expr>();
-                                                            expr.setName(expr.getName()+"Dollar");
+                                                            expr.setName(expr.getName()+" Dollar");
                                                             RESULT.add(expr);
                                                             RESULT.addAll(exprList); :}
        | /* empty */ {: RESULT = new ArrayList<Expr>(); :};
 
 OtherIOArgs ::= OtherIOArgs:exprList1 PLUS OtherIOArgs:exprList2 {:RESULT = new Op("AddOp", exprList1, exprList2); :}
-       |  STRING_CONST:value {: RESULT = new Const("StringConst", value); :};
+       |  STRING_CONST:value {: RESULT = new Const("String", value); :};
 
 ProcExprs::= Expr:expr COMMA ProcExprs:exprList {: RESULT = new ArrayList<Expr>();
                                                     RESULT.add(expr);
@@ -241,12 +241,12 @@ Exprs ::= Expr:expr COMMA Exprs:exprList {: RESULT = new ArrayList<Expr>();
                     RESULT.add(expr); :};
 
 Expr ::= FunCall:funCall {: RESULT = funCall; :}
-	| REAL_CONST:value {: RESULT = new Const("RealConst", value); :}
-    | INTEGER_CONST:value {: RESULT = new Const("IntegerConst", value); :}
-	| STRING_CONST:value {: RESULT = new Const("StringConst", value); :}
+	| REAL_CONST:value {: RESULT = new Const("Real", value); :}
+    | INTEGER_CONST:value {: RESULT = new Const("Integer", value); :}
+	| STRING_CONST:value {: RESULT = new Const("String", value); :}
 	| ID:value {: RESULT = new ID(value); :}
-    | TRUE {: RESULT = new Const("TrueConst", "true"); :}
-    | FALSE {: RESULT = new Const("FalseConst", "false"); :}
+    | TRUE {: RESULT = new Const("Boolean", "true"); :}
+    | FALSE {: RESULT = new Const("Boolean", "false"); :}
     | Expr:expr1  PLUS Expr:expr2 {: RESULT = new Op("AddOp", expr1, expr2); :}
 	| Expr:expr1  MINUS Expr:expr2 {: RESULT = new Op("DiffOp", expr1, expr2); :}
 	| Expr:expr1  TIMES Expr:expr2 {: RESULT = new Op("MulOp", expr1, expr2); :}

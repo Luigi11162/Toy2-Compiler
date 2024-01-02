@@ -171,8 +171,7 @@ public class ScopeVisitor implements Visitor {
         }
 
         //Essendo inseriti al contrario, si effettua una scansione in reverse dei figli del body
-        for(int i=bodyOp.getChildCount()-1; i>=0; i--)
-        {
+        for (int i = bodyOp.getChildCount() - 1; i >= 0; i--) {
             try {
                 //
                 bodyOp.getChildAt(i).getClass().getDeclaredMethod("accept", Visitor.class).invoke(bodyOp.getChildAt(i), this);
@@ -287,14 +286,7 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(Const const1) {
-
-        return switch ((String) const1.getType().accept(this)) {
-            case "RealConst" -> "Real";
-            case "IntegerConst" -> "Integer";
-            case "StringConst" -> "String";
-            case "TrueConst", "FalseConst" -> "Boolean";
-            default -> throw new RuntimeException("Costante non valida");
-        };
+        return const1.getType().accept(this);
     }
 
     @Override

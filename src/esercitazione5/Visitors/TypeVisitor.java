@@ -304,10 +304,10 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(Const const1) {
         return switch ((String) const1.getType().accept(this)) {
-            case "RealConst" -> new SymbolType(new ArrayList<>(List.of(new Type("Real"))));
-            case "IntegerConst" -> new SymbolType(new ArrayList<>(List.of(new Type("Integer"))));
-            case "StringConst" -> new SymbolType(new ArrayList<>(List.of(new Type("String"))));
-            case "TrueConst", "FalseConst" -> new SymbolType(new ArrayList<>(List.of(new Type("Boolean"))));
+            case "Real" -> new SymbolType(new ArrayList<>(List.of(new Type("Real"))));
+            case "Integer" -> new SymbolType(new ArrayList<>(List.of(new Type("Integer"))));
+            case "String" -> new SymbolType(new ArrayList<>(List.of(new Type("String"))));
+            case "Boolean" -> new SymbolType(new ArrayList<>(List.of(new Type("Boolean"))));
             default -> throw new RuntimeException("Tipo non consentito: " + const1.getType().getName());
         };
     }
