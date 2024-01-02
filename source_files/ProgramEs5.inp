@@ -23,8 +23,8 @@ proc main():
     endif;
 
 
-    --> "Il risultato e':" $(result);
-    <-- "Vuoi continuare? (1 yes/0 no)" $(answer);
+    --> "Il risultato e':" $(result) $(divisione(input1, input2));
+    <-- "Vuoi continuare? (1 yes/0 no)" $(answer) ;
 
     if answer = 1 then
         flag ^= true;

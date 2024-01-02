@@ -18,6 +18,7 @@ public class CodeVisitor implements Visitor {
     private static SymbolTable symbolTable;
     private static File file;
     private static FileWriter fileWriter;
+    private static int tabs = 0;
 
     @Override
     public Object visit(ProgramOp programOp) {
@@ -131,6 +132,7 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(VarDeclOp varDeclOp) {
         Iterator<ID> idIt = varDeclOp.getidList().iterator();
+        //Inizializzazione con constanti
         if (varDeclOp.getType() == null) {
             Iterator<Const> constIt = varDeclOp.getConstList().iterator();
 
@@ -148,6 +150,7 @@ public class CodeVisitor implements Visitor {
                     throw new RuntimeException(e);
                 }
             }
+            //Inizializzazione con tipo
         } else {
             while (idIt.hasNext()) {
                 try {
@@ -168,6 +171,7 @@ public class CodeVisitor implements Visitor {
         try {
             // Firma della funzione
             if (funOp.getTypeList().size() > 1) {
+                //Se la funzione restituisce più tipi restituisco il tipo struct precedentemente creato
                 funOp.getId().accept(this);
                 fileWriter.write("Struct");
             } else
@@ -175,20 +179,21 @@ public class CodeVisitor implements Visitor {
             fileWriter.write(" ");
             funOp.getId().accept(this);
             fileWriter.write(" (");
+
+            //Scrivo i parametri
             if (funOp.getProcFunParamOpList().size() > 1)
                 for (int i = 0; i < funOp.getProcFunParamOpList().size() - 1; i++) {
                     funOp.getProcFunParamOpList().get(i).accept(this);
                     fileWriter.write(", ");
                 }
 
-            //Non inserisco la virgola
+            //Non inserisco la virgola perché è l'ultimo parametro
             if (!funOp.getProcFunParamOpList().isEmpty())
                 funOp.getProcFunParamOpList().get(funOp.getProcFunParamOpList().size() - 1).accept(this);
-            fileWriter.write(") {\n");
+            fileWriter.write(")");
 
             // Corpo della funzione
             funOp.getBodyOp().accept(this);
-            fileWriter.write("}\n\n");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -204,21 +209,21 @@ public class CodeVisitor implements Visitor {
             procOp.getId().accept(this);
             fileWriter.write(" (");
 
+            //Scrivo i parametri
             if (procOp.getProcFunParamOpList().size() > 1)
                 for (int i = 0; i < procOp.getProcFunParamOpList().size() - 1; i++) {
                     procOp.getProcFunParamOpList().get(i).accept(this);
                     fileWriter.write(", ");
                 }
 
-            //Non inserisco la virgola
+            //Non inserisco la virgola perché è l'ultimo parametro
             if (!procOp.getProcFunParamOpList().isEmpty())
                 procOp.getProcFunParamOpList().get(procOp.getProcFunParamOpList().size() - 1).accept(this);
 
-            fileWriter.write(") {\n");
+            fileWriter.write(")");
 
             //Corpo della procedura
             procOp.getBodyOp().accept(this);
-            fileWriter.write("}\n\n");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -229,6 +234,17 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(BodyOp bodyOp) {
+        ++tabs;
+        try {
+            fileWriter.write(" {\n");
+            bodyOp.getStatList().forEach(stat -> {
+                stat.accept(this);
+            });
+            fileWriter.write("}\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        --tabs;
         return null;
     }
 
@@ -299,12 +315,30 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(IfStatOp ifStatOp) {
+        try {
+            fileWriter.write("if (");
+            //Condizione
+            ifStatOp.getExpr().accept(this);
+            fileWriter.write(")");
+            //Corpo
+            ifStatOp.getBodyOp().accept(this);
+
+            ifStatOp.getElifOpList().forEach(elifOp -> elifOp.accept(this));
+            if (!ifStatOp.getBodyOp2().getStatList().isEmpty()) {
+
+                fileWriter.write("else{\n");
+                ifStatOp.getBodyOp2().accept(this);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
     @Override
     public Object visit(ProcCallOp procCallOp) {
         try {
+
             if (procCallOp.getName().contains("PAR"))
                 fileWriter.write("(");
 
@@ -313,7 +347,7 @@ public class CodeVisitor implements Visitor {
             if (procCallOp.getExprList().size() > 1)
                 for (int i = 0; i < procCallOp.getExprList().size() - 1; i++) {
                     //Controllo se viene passato per riferimento
-                    if(procCallOp.getExprList().get(i) instanceof ID id && id.getMode()!=null && id.getMode().equals("out"))
+                    if (procCallOp.getExprList().get(i) instanceof ID id && id.getMode() != null && id.getMode().equals("out"))
                         fileWriter.write("&");
                     procCallOp.getExprList().get(i).accept(this);
                     fileWriter.write(", ");
@@ -335,6 +369,22 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(ReadOp readOp) {
+        try {
+
+            fileWriter.write(" scanf(");
+            if (readOp.getExprList().size() > 1)
+                for (int i = 0; i < readOp.getExprList().size() - 1; i++) {
+                    readOp.getExprList().get(i).accept(this);
+                    fileWriter.write(", ");
+                }
+
+            //Non inserisco la virgola
+            if (!readOp.getExprList().isEmpty())
+                readOp.getExprList().get(readOp.getExprList().size() - 1).accept(this);
+            fileWriter.write(");\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -345,11 +395,37 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(WhileOp whileOp) {
+        try {
+            fileWriter.write("while(");
+            whileOp.getExpr().accept(this);
+            fileWriter.write(") ");
+            whileOp.getBodyOp().accept(this);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
     @Override
     public Object visit(WriteOp writeOp) {
+        try {
+
+            fileWriter.write(" printf(");
+            if (writeOp.getExprList().size() > 1)
+                for (int i = 0; i < writeOp.getExprList().size() - 1; i++) {
+                    writeOp.getExprList().get(i).accept(this);
+                    fileWriter.write(", ");
+                }
+
+            //Non inserisco la virgola
+            if (!writeOp.getExprList().isEmpty())
+                writeOp.getExprList().get(writeOp.getExprList().size() - 1).accept(this);
+            fileWriter.write(");\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return null;
     }
 
@@ -361,6 +437,7 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(CallFunOp callFunOp) {
         try {
+
             if (callFunOp.getName().contains("PAR"))
                 fileWriter.write("(");
 
@@ -408,9 +485,11 @@ public class CodeVisitor implements Visitor {
                 fileWriter.write("(");
                 fileWriter.write(id.getValue());
                 fileWriter.write(")");
-            } else {
+            } else if (id.getName().contains("DOLLAR")) {
+                fileWriter.write("%");
                 fileWriter.write(id.getValue());
-            }
+            } else
+                fileWriter.write(id.getValue());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
