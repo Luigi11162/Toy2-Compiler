@@ -212,7 +212,10 @@ public class TypeVisitor implements Visitor {
         for (int j=0; j<procCallOp.getExprList().size(); j++) {
 
             Expr expr = procCallOp.getExprList().get(j);
+
             SymbolType symbolTypeProcCall = (SymbolType) expr.accept(this);
+            if(expr instanceof CallFunOp && symbolTypeProcCall.getOutTypeList().size()!=1)
+                throw new RuntimeException("Chiamata a funzione non può essere passata come argomento perché restituisce più valori");
 
             //Controllo nella tabella dei simboli della procedura se i parametri vengono passati nel giusto modo
             for(int i=0; i<procCallOp.getRoot().getChildCount(); i++) {
@@ -296,6 +299,9 @@ public class TypeVisitor implements Visitor {
         for (Expr expr : callFunOp.getExprList()) {
 
             SymbolType symbolTypeCallFun = (SymbolType) expr.accept(this);
+            if(expr instanceof CallFunOp && symbolTypeCallFun.getOutTypeList().size()!=1)
+                throw new RuntimeException("Chiamata a funzione non può essere passata come argomento perché restituisce più valori");
+
             Iterator<Type> typeCallFunIt = symbolTypeCallFun.getOutTypeList().iterator();
 
             while (typeIterator.hasNext() && typeCallFunIt.hasNext()) {
@@ -335,6 +341,8 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(Op op) {
+        if(op.getValueL() instanceof CallFunOp || op.getValueR() instanceof CallFunOp)
+            throw new RuntimeException("Non è possibile effettuare operazioni su chiamate a funzione");
         switch (op.getName()) {
             case "AddOp", "DivOp":
                 try {
@@ -412,6 +420,8 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(UOp uOp) {
+        if(uOp.getValue() instanceof CallFunOp)
+            throw new RuntimeException("Non è possibile effettuare operazioni su chiamate a funzione");
         return switch (uOp.getName()) {
             case "UMinusOp" -> OpTableCombinations.checkCombination(
                     new ArrayList<>(
