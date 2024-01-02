@@ -13,7 +13,7 @@ proc main():
     <-- "Inserisci il secondo input" $(input2);
 
     if operazione = "somma" then
-        somma(input1, input2, @result);
+        somma(input1, input2, @operazione);
     elseif operazione = "sottrazione" then
         sottrazione(input1, input2, @result);
     elseif operazione = "divisione" then
@@ -36,8 +36,8 @@ proc main():
 
 endproc
 
-proc somma(input1: integer, input2: integer, out result: integer):
-    result ^= input1 + input2;
+proc somma(input1: integer, input2: integer, out result: string):
+    result ^= "input1" + "input2";
 endproc
 
 proc sottrazione(input1: integer, input2: integer, out result : integer):

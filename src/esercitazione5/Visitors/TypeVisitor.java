@@ -209,17 +209,22 @@ public class TypeVisitor implements Visitor {
         Iterator<Type> typeIterator = symbolType.getInTypeList().iterator();
 
         //Controllo che ogni parametro abbia lo stesso tipo del rispettivo parametro nella firma
-        for (Expr expr : procCallOp.getExprList()) {
+        for (int j=0; j<procCallOp.getExprList().size(); j++) {
 
+            Expr expr = procCallOp.getExprList().get(j);
             SymbolType symbolTypeProcCall = (SymbolType) expr.accept(this);
 
             //Controllo nella tabella dei simboli della procedura se i parametri vengono passati nel giusto modo
             for(int i=0; i<procCallOp.getRoot().getChildCount(); i++) {
-                if (procCallOp.getRoot().getChildAt(i) instanceof ProcOp procOp && procOp.getId().getValue().equals(procCallOp.getId().getValue()))
-                    if (expr instanceof ID)
-                        procOp.getSymbolTable().checkProcOut((ID) expr);
-
+                    if (procCallOp.getRoot().getChildAt(i) instanceof ProcOp procOp && procOp.getId().getValue().equals(procCallOp.getId().getValue()))
+                        if(expr instanceof ID id) {
+                            if ((id.getMode() == null || !id.getMode().getName().equals("out")) && procOp.getProcFunParamOpList().get(j).getMode().getName().equals("out"))
+                                throw new RuntimeException("L'id " + id.getValue() + " deve essere passato per riferimento");
+                            else if (id.getMode() != null && id.getMode().getName().equals("out") && !procOp.getProcFunParamOpList().get(j).getMode().getName().equals("out"))
+                                throw new RuntimeException("L'id " + id.getValue() + " non deve essere passato per riferimento");
+                        }
             }
+
             Iterator<Type> typeProcCallIt = symbolTypeProcCall.getOutTypeList().iterator();
 
             while (typeProcCallIt.hasNext() && typeIterator.hasNext()) {

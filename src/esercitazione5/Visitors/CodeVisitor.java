@@ -4,8 +4,6 @@ import esercitazione5.Nodes.*;
 import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
 import esercitazione5.SymbolTable.SymbolTable;
-import esercitazione5.SymbolTable.SymbolType;
-import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,9 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 
 public class CodeVisitor implements Visitor {
@@ -308,6 +304,32 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(ProcCallOp procCallOp) {
+        try {
+            if (procCallOp.getName().contains("PAR"))
+                fileWriter.write("(");
+
+            procCallOp.getId().accept(this);
+            fileWriter.write("(");
+            if (procCallOp.getExprList().size() > 1)
+                for (int i = 0; i < procCallOp.getExprList().size() - 1; i++) {
+                    //Controllo se viene passato per riferimento
+                    if(procCallOp.getExprList().get(i) instanceof ID id && id.getMode()!=null && id.getMode().equals("out"))
+                        fileWriter.write("&");
+                    procCallOp.getExprList().get(i).accept(this);
+                    fileWriter.write(", ");
+                }
+
+            //Non inserisco la virgola
+            if (!procCallOp.getExprList().isEmpty())
+                procCallOp.getExprList().get(procCallOp.getExprList().size() - 1).accept(this);
+
+            fileWriter.write(")");
+
+            if (procCallOp.getName().contains("PAR"))
+                fileWriter.write(")");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -384,11 +406,9 @@ public class CodeVisitor implements Visitor {
         try {
             if (id.getName().contains("PAR")) {
                 fileWriter.write("(");
-
                 fileWriter.write(id.getValue());
                 fileWriter.write(")");
             } else {
-                fileWriter.write("&");
                 fileWriter.write(id.getValue());
             }
         } catch (IOException e) {

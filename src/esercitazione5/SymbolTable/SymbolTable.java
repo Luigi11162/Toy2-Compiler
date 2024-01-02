@@ -81,19 +81,4 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
         }
     }
 
-    public void checkProcOut(ID id) {
-        Optional<SymbolRow> symbolRow = this.getSymbolRowList().stream().filter(symRow -> symRow.getName().equals(id.getValue())).findFirst();
-        if (symbolRow.isPresent()) {
-            if (symbolRow.get().getProperties().equals("out")) {
-                if(!(id.getMode() != null && symbolRow.get().getProperties().equals(id.getMode().getName())))
-                    throw new RuntimeException("L'id " + id.getValue() + " deve essere passato per riferimento");
-            } else if (id.getMode() != null && id.getMode().getName().equals("out")) {
-                throw new RuntimeException("L'id " + id.getValue() + " non deve essere passato per riferimento");
-            }
-            return;
-        } else if (this.father != null) {
-            this.father.checkProcOut(id);
-        }
-        throw new RuntimeException("L'id " + id.getValue() + " non è stato dichiarato");
-    }
 }
