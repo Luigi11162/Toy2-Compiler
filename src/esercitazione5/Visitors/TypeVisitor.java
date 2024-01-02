@@ -63,8 +63,10 @@ public class TypeVisitor implements Visitor {
                             throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Il return ha più elementi di quanti se ne aspetta la funzione.");
                         flag = true;
                     } else if (stat instanceof IfStatOp ifStatOp) {
-                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor) && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor)
-                                && ifStatOp.getElifOpList().stream().allMatch(elifOp -> ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor));
+                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor)
+                                && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor)
+                                && ifStatOp.getElifOpList().stream().allMatch(elifOp ->
+                                ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor));
                     } else if (stat instanceof WhileOp whileOp) {
                         flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp(), funOp, visitor);
                     }
@@ -210,6 +212,14 @@ public class TypeVisitor implements Visitor {
         for (Expr expr : procCallOp.getExprList()) {
 
             SymbolType symbolTypeProcCall = (SymbolType) expr.accept(this);
+
+            //Controllo nella tabella dei simboli della procedura se i parametri vengono passati nel giusto modo
+            for(int i=0; i<procCallOp.getRoot().getChildCount(); i++) {
+                if (procCallOp.getRoot().getChildAt(i) instanceof ProcOp procOp && procOp.getId().getValue().equals(procCallOp.getId().getValue()))
+                    if (expr instanceof ID)
+                        procOp.getSymbolTable().checkProcOut((ID) expr);
+
+            }
             Iterator<Type> typeProcCallIt = symbolTypeProcCall.getOutTypeList().iterator();
 
             while (typeProcCallIt.hasNext() && typeIterator.hasNext()) {

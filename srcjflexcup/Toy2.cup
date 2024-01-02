@@ -259,7 +259,8 @@ Expr ::= FunCall:funCall {: RESULT = funCall; :}
 	| Expr:expr1  LE Expr:expr2 {: RESULT = new Op("LeOp", expr1, expr2); :}
 	| Expr:expr1  EQ Expr:expr2 {: RESULT = new Op("EqOp", expr1, expr2); :}
 	| Expr:expr1  NE Expr:expr2 {: RESULT = new Op("NeOp", expr1, expr2); :}
-	| LPAR Expr:expr RPAR    {: RESULT = expr; :} %prec PAR
+	| LPAR Expr:expr RPAR    {:RESULT = expr;
+	                            RESULT.setName(RESULT.getName()+"PAR");:} %prec PAR
 	| MINUS Expr:expr {: RESULT = new UOp("UMinusOP", expr); :} %prec UMINUS
     | NOT Expr:expr {: RESULT = new UOp("NotOp", expr); :};
 

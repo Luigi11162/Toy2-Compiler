@@ -8,22 +8,33 @@
 
 typedef struct {
 	int value0;
-	double value1;
-} moltiplicazioneStruct;
+	int value1;
+} &moltiplicazioneStruct;
 
-moltiplicazioneStruct moltiplicazione (int input1, int input2);
-double divisione (int input1, int input2);
-int somma_con_commento (int a, int b);
-void somma (int input1, int input2, out int result);
-void sottrazione (int input1, int input2, out int result);
+&moltiplicazioneStruct &moltiplicazione (int &input1, int &input2);
+double &divisione (int &input1, int &input2);
+int &somma_con_commento (int &a, int &b);
+void &somma (int &input1, int &input2, int* &result);
+void &sottrazione (int &input1, int &input2, int* &result);
 
-operazione char*;
-input1 int;
-input2 int;
-answer int;
-bool flag = true;
-result int;
-resultReal double;
 
+&moltiplicazioneStruct &moltiplicazione (int &input1, int &input2) {
+}
+
+double &divisione (int &input1, int &input2) {
+}
+
+int &somma_con_commento (int &a, int &b) {
+}
+
+
+void &main () {
+}
+
+void &somma (int &input1, int &input2, int* &result) {
+}
+
+void &sottrazione (int &input1, int &input2, int* &result) {
+}
 
 

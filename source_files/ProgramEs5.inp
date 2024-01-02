@@ -1,9 +1,4 @@
 % programma principale %
-    var operazione : string; \
-    var input1, input2, answer : integer;\
-    var flag ^= true;\
-    var result : integer;\
-    var resultReal : real;\
 proc main():
 
     var operazione : string; \
@@ -24,7 +19,7 @@ proc main():
     elseif operazione = "divisione" then
        resultReal ^= divisione(input1, input2);
     elseif operazione = "moltiplicazione" then
-       result, resultReal ^= moltiplicazione(input1, input2);
+       result, result ^= moltiplicazione(input1, input2);
     endif;
 
 
@@ -52,11 +47,11 @@ proc sottrazione(input1: integer, input2: integer, out result : integer):
    endif;
 endproc
 
-func moltiplicazione(input1: integer, input2: integer) -> integer, real:
+func moltiplicazione(input1: integer, input2: integer) -> integer, integer:
     var result : integer;\
 
     result ^= input1 * input2;
-    return result, 4.5;
+    return result, 4;
 endfunc
 
 func divisione(input1: integer, input2: integer) -> real:

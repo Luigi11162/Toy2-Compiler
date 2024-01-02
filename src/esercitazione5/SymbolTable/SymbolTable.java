@@ -1,13 +1,11 @@
 package esercitazione5.SymbolTable;
 
 import esercitazione5.Nodes.Expr.ID;
-import esercitazione5.Nodes.Type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+
 
 public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
 
@@ -66,20 +64,36 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
         } else if (this.father != null) {
             return this.father.returnTypeOfId(name);
         } else {
-            throw new RuntimeException("L'id "+name+" non è stato dichiarato");
+            throw new RuntimeException("L'id " + name + " non è stato dichiarato");
         }
     }
 
     //Metodo che controlla se id è stato precedentemente assegnato
     //Restituisce un boolean per indicare se gli può essere assegnato un valore
-    public boolean checkAssign(ID id){
+    public boolean checkAssign(ID id) {
         Optional<SymbolRow> symbolRow = this.getSymbolRowList().stream().filter(symRow -> symRow.getName().equals(id.getValue())).findFirst();
-        if(symbolRow.isPresent()) {
+        if (symbolRow.isPresent()) {
             return !symbolRow.get().getProperties().equals("in");
-        }else if (this.father != null) {
-                return this.father.checkAssign(id);
+        } else if (this.father != null) {
+            return this.father.checkAssign(id);
         } else {
-                throw new RuntimeException("L'id "+id.getValue()+" non è stato dichiarato");
+            throw new RuntimeException("L'id " + id.getValue() + " non è stato dichiarato");
         }
+    }
+
+    public void checkProcOut(ID id) {
+        Optional<SymbolRow> symbolRow = this.getSymbolRowList().stream().filter(symRow -> symRow.getName().equals(id.getValue())).findFirst();
+        if (symbolRow.isPresent()) {
+            if (symbolRow.get().getProperties().equals("out")) {
+                if(!(id.getMode() != null && symbolRow.get().getProperties().equals(id.getMode().getName())))
+                    throw new RuntimeException("L'id " + id.getValue() + " deve essere passato per riferimento");
+            } else if (id.getMode() != null && id.getMode().getName().equals("out")) {
+                throw new RuntimeException("L'id " + id.getValue() + " non deve essere passato per riferimento");
+            }
+            return;
+        } else if (this.father != null) {
+            this.father.checkProcOut(id);
+        }
+        throw new RuntimeException("L'id " + id.getValue() + " non è stato dichiarato");
     }
 }
