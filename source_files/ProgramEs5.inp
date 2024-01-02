@@ -19,7 +19,7 @@ proc main():
     elseif operazione = "divisione" then
        resultReal ^= divisione(input1, input2);
     elseif operazione = "moltiplicazione" then
-       result ^= moltiplicazione(input1, input2);
+       result, result ^= moltiplicazione(input1, input2);
     endif;
 
 
@@ -47,11 +47,11 @@ proc sottrazione(input1: integer, input2: integer, out result : integer):
    endif;
 endproc
 
-func moltiplicazione(input1: integer, input2: integer) -> integer:
+func moltiplicazione(input1: integer, input2: integer) -> integer, integer:
     var result : integer;\
 
     result ^= input1 * input2;
-    return result;
+    return result,2;
 endfunc
 
 func divisione(input1: integer, input2: integer) -> real:

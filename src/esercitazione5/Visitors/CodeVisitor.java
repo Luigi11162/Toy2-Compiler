@@ -8,6 +8,7 @@ import esercitazione5.SymbolTable.SymbolTable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +20,8 @@ public class CodeVisitor implements Visitor {
     private static File file;
     private static FileWriter fileWriter;
     private static int tabs = 0;
+    //Per gestire il return della function
+    private static ID funId;
 
     @Override
     public Object visit(ProgramOp programOp) {
@@ -169,6 +172,8 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(FunOp funOp) {
         try {
+            symbolTable = funOp.getSymbolTable();
+            funId = funOp.getId();
             // Firma della funzione
             if (funOp.getTypeList().size() > 1) {
                 //Se la funzione restituisce più tipi restituisco il tipo struct precedentemente creato
@@ -179,6 +184,7 @@ public class CodeVisitor implements Visitor {
             fileWriter.write(" ");
             funOp.getId().accept(this);
             fileWriter.write(" (");
+
 
             //Scrivo i parametri
             if (funOp.getProcFunParamOpList().size() > 1)
@@ -205,6 +211,8 @@ public class CodeVisitor implements Visitor {
     public Object visit(ProcOp procOp) {
         //firma della procedura
         try {
+            symbolTable = procOp.getSymbolTable();
+
             fileWriter.write("void ");
             procOp.getId().accept(this);
             fileWriter.write(" (");
@@ -236,10 +244,18 @@ public class CodeVisitor implements Visitor {
     public Object visit(BodyOp bodyOp) {
         ++tabs;
         try {
+            if (bodyOp.getSymbolTable() != null)
+                symbolTable = bodyOp.getSymbolTable();
+
             fileWriter.write(" {\n");
-            bodyOp.getStatList().forEach(stat -> {
-                stat.accept(this);
-            });
+            for (int i = bodyOp.getChildCount() - 1; i >= 0; i--) {
+                //Uso la reflection per richiamare il metodo accept di ogni stat
+                try {
+                    bodyOp.getChildAt(i).getClass().getDeclaredMethod("accept", Visitor.class).invoke(bodyOp.getChildAt(i), this);
+                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             fileWriter.write("}\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -263,6 +279,14 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(ElifOp elifOp) {
+        try {
+            fileWriter.write("else if (");
+            elifOp.getExpr().accept(this);
+            fileWriter.write(") ");
+            elifOp.getBodyOp().accept(this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -310,6 +334,18 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(AssignOp assignOp) {
+        try {
+            Iterator<ID> idIt = assignOp.getIdList().iterator();
+            Iterator<Expr> exprIt = assignOp.getExprList().iterator();
+            while (idIt.hasNext() && exprIt.hasNext()) {
+                idIt.next().accept(this);
+                fileWriter.write("=");
+                exprIt.next().accept(this);
+                fileWriter.write(";\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -326,7 +362,7 @@ public class CodeVisitor implements Visitor {
             ifStatOp.getElifOpList().forEach(elifOp -> elifOp.accept(this));
             if (!ifStatOp.getBodyOp2().getStatList().isEmpty()) {
 
-                fileWriter.write("else{\n");
+                fileWriter.write("else\n");
                 ifStatOp.getBodyOp2().accept(this);
             }
         } catch (IOException e) {
@@ -360,7 +396,7 @@ public class CodeVisitor implements Visitor {
             fileWriter.write(")");
 
             if (procCallOp.getName().contains("PAR"))
-                fileWriter.write(")");
+                fileWriter.write(");\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -370,17 +406,21 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(ReadOp readOp) {
         try {
-
             fileWriter.write(" scanf(");
             if (readOp.getExprList().size() > 1)
                 for (int i = 0; i < readOp.getExprList().size() - 1; i++) {
+                    if (readOp.getExprList().get(i) instanceof ID id && !symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName().equals("String"))
+                        fileWriter.write("&");
                     readOp.getExprList().get(i).accept(this);
                     fileWriter.write(", ");
                 }
 
             //Non inserisco la virgola
-            if (!readOp.getExprList().isEmpty())
+            if (!readOp.getExprList().isEmpty()) {
+                if (readOp.getExprList().get(readOp.getExprList().size() - 1) instanceof ID id && !symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName().equals("String"))
+                    fileWriter.write("&");
                 readOp.getExprList().get(readOp.getExprList().size() - 1).accept(this);
+            }
             fileWriter.write(");\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -390,6 +430,33 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(ReturnOp returnOp) {
+        try {
+            if (returnOp.getExprList().size() > 1) {
+                fileWriter.write(funId.getValue());
+                fileWriter.write("Struct ");
+                fileWriter.write(funId.getValue());
+                fileWriter.write("StructReturnValue;\n");
+                for (int i = 0; i < returnOp.getExprList().size(); i++) {
+                    fileWriter.write(funId.getValue());
+                    fileWriter.write("StructReturnValue.value" + i);
+                    fileWriter.write(" = ");
+                    returnOp.getExprList().get(i).accept(this);
+                    fileWriter.write(";\n");
+                }
+            }
+            fileWriter.write("return ");
+            //Inserire il ritorno
+            if (returnOp.getExprList().size() == 1)
+                returnOp.getExprList().get(0).accept(this);
+            else {
+                fileWriter.write(funId.getValue());
+                fileWriter.write("StructReturnValue");
+            }
+            fileWriter.write(";\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return null;
     }
 
@@ -421,7 +488,10 @@ public class CodeVisitor implements Visitor {
             //Non inserisco la virgola
             if (!writeOp.getExprList().isEmpty())
                 writeOp.getExprList().get(writeOp.getExprList().size() - 1).accept(this);
-            fileWriter.write(");\n");
+            if (writeOp.getMode().getName().equals("writeReturn"))
+                fileWriter.write(", \"\\n\");\n");
+            else
+                fileWriter.write(");\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -501,10 +571,19 @@ public class CodeVisitor implements Visitor {
         try {
             if (op.getName().contains("PAR"))
                 fileWriter.write("(");
-            op.getValueL().accept(this);
+            if (!(op.getValueL() instanceof Const const1 && const1.getType().getName().equals("String")
+                    && op.getValueL() instanceof Const const2 && const1.getType().getName().equals("String")))
+                op.getValueL().accept(this);
             switch (op.getName()) {
                 case "AddOp":
-                    fileWriter.write("+");
+                    if (op.getValueL() instanceof Const const1 && const1.getType().getName().equals("String")
+                            && op.getValueL() instanceof Const const2 && const1.getType().getName().equals("String")) {
+                        fileWriter.write("str_concat(");
+                        op.getValueL().accept(this);
+                        fileWriter.write(", ");
+
+                    } else
+                        fileWriter.write("+");
                     break;
                 case "DivOp":
                     fileWriter.write("/");
@@ -543,6 +622,9 @@ public class CodeVisitor implements Visitor {
                     throw new RuntimeException("Operazione non consentita: " + op.getName());
             }
             op.getValueR().accept(this);
+            if (op.getValueL() instanceof Const const1 && const1.getType().getName().equals("String")
+                    && op.getValueL() instanceof Const const2 && const1.getType().getName().equals("String"))
+                fileWriter.write(")");
             if (op.getName().contains("PAR"))
                 fileWriter.write(")");
         } catch (IOException e) {

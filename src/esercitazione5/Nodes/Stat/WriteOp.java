@@ -16,7 +16,7 @@ public class WriteOp extends Stat implements NodeVisitor {
         super.add(mode);
         exprList.forEach(super::add);
 
-        this.add(mode);
+        this.mode = mode;
         this.exprList = exprList;
     }
 
