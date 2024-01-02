@@ -80,5 +80,4 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
             throw new RuntimeException("L'id " + id.getValue() + " non è stato dichiarato");
         }
     }
-
 }
