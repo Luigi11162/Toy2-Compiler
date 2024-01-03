@@ -155,7 +155,7 @@ public class CodeVisitor implements Visitor {
                         fileWriter.write(",");
                         const1.accept(this);
                         fileWriter.write(", MAXCHAR);\n");
-                    }else {
+                    } else {
                         const1.getType().accept(this);
                         fileWriter.write(" ");
                         id.accept(this);
@@ -370,7 +370,7 @@ public class CodeVisitor implements Visitor {
                     //Assegno ogni valore all'interno della struct alle rispettive variabili
                     for (int i = 0; i < symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size(); i++) {
                         //Controllo se è un puntatore
-                        if(symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
+                        if (symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
                             fileWriter.write("*");
                         id.accept(this);
                         fileWriter.write(" = ");
@@ -381,7 +381,7 @@ public class CodeVisitor implements Visitor {
                     j++;
                 } else {
                     //Controllo se è un puntatore
-                    if(symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
+                    if (symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
                         fileWriter.write("*");
                     id.accept(this);
                     fileWriter.write(" = ");
@@ -557,7 +557,7 @@ public class CodeVisitor implements Visitor {
     public Object visit(WriteOp writeOp) {
         try {
             fileWriter.write(" printf(\"");
-            for (int i = 0; i < writeOp.getExprList().size() ; i++) {
+            for (int i = 0; i < writeOp.getExprList().size(); i++) {
                 if (writeOp.getExprList().get(i) instanceof Const const1)
                     switch (const1.getType().getName()) {
                         case "String":
@@ -689,17 +689,18 @@ public class CodeVisitor implements Visitor {
         try {
             if (op.getName().contains("PAR"))
                 fileWriter.write("(");
-            if (!(op.getValueL() instanceof Const const1 && const1.getType().getName().equals("String")
-                    && op.getValueL() instanceof Const const2 && const1.getType().getName().equals("String")))
+            //Controlla se l'operazione avviene su stinghe
+            if (!(checkString(op.getValueL()) || checkString(op.getValueR())))
                 op.getValueL().accept(this);
             switch (op.getName()) {
                 case "AddOp":
-                    if (op.getValueL() instanceof Const const1 && const1.getType().getName().equals("String")
-                            && op.getValueL() instanceof Const const2 && const1.getType().getName().equals("String")) {
-                        fileWriter.write("str_concat(");
+                    //Concatenazione di stringhe
+                    if (checkString(op.getValueL()) && checkString(op.getValueR())){
+                        fileWriter.write("strncat(");
                         op.getValueL().accept(this);
                         fileWriter.write(", ");
-
+                        op.getValueR().accept(this);
+                        fileWriter.write(", MAXCHAR)");
                     } else
                         fileWriter.write("+");
                     break;
@@ -719,10 +720,26 @@ public class CodeVisitor implements Visitor {
                     fileWriter.write("||");
                     break;
                 case "EqOp":
-                    fileWriter.write("==");
+                    //Comparazione di stringhe
+                    if (checkString(op.getValueL()) && checkString(op.getValueR())){
+                        fileWriter.write("strncmp(");
+                        op.getValueL().accept(this);
+                        fileWriter.write(", ");
+                        op.getValueR().accept(this);
+                        fileWriter.write(", MAXCHAR) == 1");
+                    } else
+                        fileWriter.write("==");
                     break;
                 case "NeOp":
-                    fileWriter.write("!=");
+                    //Comparazione di stringhe
+                    if (checkString(op.getValueL()) && checkString(op.getValueR())){
+                        fileWriter.write("strncmp(");
+                        op.getValueL().accept(this);
+                        fileWriter.write(", ");
+                        op.getValueR().accept(this);
+                        fileWriter.write(", MAXCHAR) == 1");
+                    } else
+                        fileWriter.write("!=");
                     break;
                 case "GtOp":
                     fileWriter.write(">");
@@ -739,10 +756,9 @@ public class CodeVisitor implements Visitor {
                 default:
                     throw new RuntimeException("Operazione non consentita: " + op.getName());
             }
-            op.getValueR().accept(this);
-            if (op.getValueL() instanceof Const const1 && const1.getType().getName().equals("String")
-                    && op.getValueL() instanceof Const const2 && const1.getType().getName().equals("String"))
-                fileWriter.write(")");
+            if (!(checkString(op.getValueL()) || checkString(op.getValueR())))
+                op.getValueR().accept(this);
+
             if (op.getName().contains("PAR"))
                 fileWriter.write(")");
         } catch (IOException e) {
@@ -863,6 +879,15 @@ public class CodeVisitor implements Visitor {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean checkString(Expr expr){
+        return expr instanceof Const const1 && const1.getType().getName().equals("String") ||
+                expr instanceof ID id &&
+                        symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName().equals("String") ||
+                expr instanceof CallFunOp callFunOp &&
+                        symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().get(0).getName().equals("String");
+
     }
 
 

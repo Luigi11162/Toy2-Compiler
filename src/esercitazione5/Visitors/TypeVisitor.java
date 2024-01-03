@@ -163,7 +163,7 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(AssignOp assignOp) {
-        //Controllo il mapping tra id ed il tipo rispettivo
+        //Controllo il mapping tra id e il tipo rispettivo
         Iterator<ID> idIterator = assignOp.getIdList().iterator();
 
         for (Expr expr : assignOp.getExprList()) {
@@ -335,7 +335,6 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ID id) {
-        symbolTable.checkAssign(id);
         return symbolTable.returnTypeOfId(id.getValue());
     }
 

@@ -120,16 +120,16 @@ printf("Inserisci il primo input");
 scanf("%d", &input1);
 printf("Inserisci il secondo input");
 scanf("%d", &input2);
-if (operazione=="somma") {
+if (strncmp(operazione, "somma", MAXCHAR) == 1) {
 somma(input1, input2, &operazione);
 }
-else if (operazione=="sottrazione")  {
+else if (strncmp(operazione, "sottrazione", MAXCHAR) == 1)  {
 sottrazione(input1, input2, &result);
 }
-else if (operazione=="divisione")  {
+else if (strncmp(operazione, "divisione", MAXCHAR) == 1)  {
 resultReal = divisione(input1, input2);
 }
-else if (operazione=="moltiplicazione")  {
+else if (strncmp(operazione, "moltiplicazione", MAXCHAR) == 1)  {
 moltiplicazioneStruct moltiplicazioneReturned0 = moltiplicazione(input1, input2);
 result = moltiplicazioneReturned0.value0;
 result = moltiplicazioneReturned0.value1;
@@ -148,7 +148,7 @@ int input8;
 }
 }
 void somma (int input1, int input2, char** result) {
-*result = str_concat("input1", "input2");
+*result = strncat("input1", "input2", MAXCHAR);
 }
 void sottrazione (int input1, int input2, int* result) {
 *result = input1-input2;
