@@ -80,7 +80,7 @@ return moltiplicazioneStructReturnValue;
 double divisione (int input1, int input2) {
 double result;
 if (input2==0) {
- printf("Errore");
+ printf("%s ", "Errore");
 result = 0.0;
 }
 return 4.5;
@@ -103,13 +103,16 @@ return c;
 }
 
 void main () {
+char* ciao = malloc(MAXCHAR);
+ciao = strncpy(ciao,"ciao", MAXCHAR);
+;
 double resultReal;
 int result;
 bool flag = true;
 int input1;
 int input2;
 int answer;
-char* operazione;
+char* operazione = malloc(MAXCHAR);
 while(flag==true)  {
 printf("Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)");
 scanf("%s", operazione);
@@ -131,7 +134,7 @@ moltiplicazioneStruct moltiplicazioneReturned0 = moltiplicazione(input1, input2)
 result = moltiplicazioneReturned0.value0;
 result = moltiplicazioneReturned0.value1;
 }
- printf("Il risultato e':", result, divisione(input1, input2));
+ printf("%s %d ", "Il risultato e':", result);
 printf("Vuoi continuare? (1 yes/0 no)");
 scanf("%d", &answer);
 if (answer==1) {
@@ -145,10 +148,10 @@ int input8;
 }
 }
 void somma (int input1, int input2, char** result) {
-result = str_concat("input1", "input2");
+*result = str_concat("input1", "input2");
 }
 void sottrazione (int input1, int input2, int* result) {
-result = input1-input2;
+*result = input1-input2;
 if (input1>0) {
 }
 }

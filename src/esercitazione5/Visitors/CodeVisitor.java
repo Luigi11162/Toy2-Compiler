@@ -17,7 +17,6 @@ import java.util.Iterator;
 
 public class CodeVisitor implements Visitor {
     private static SymbolTable symbolTable;
-    private static File file;
     private static FileWriter fileWriter;
     private static int tabs = 0;
     //Per gestire il return della function
@@ -31,7 +30,7 @@ public class CodeVisitor implements Visitor {
             if (!Files.exists(path))
                 Files.createDirectory(path);
 
-            file = new File(path + File.separator + "out_c.c");
+            File file = new File(path + File.separator + "out_c.c");
 
             file.createNewFile();
 
@@ -145,11 +144,24 @@ public class CodeVisitor implements Visitor {
                 while (idIt.hasNext() && constIt.hasNext()) {
                     ID id = idIt.next();
                     Const const1 = constIt.next();
-                    const1.getType().accept(this);
-                    fileWriter.write(" ");
-                    id.accept(this);
-                    fileWriter.write(" = ");
-                    const1.accept(this);
+                    if (const1.getType().getName().equals("String")) {
+                        const1.getType().accept(this);
+                        fileWriter.write(" ");
+                        id.accept(this);
+                        fileWriter.write(" = malloc(MAXCHAR);\n");
+                        id.accept(this);
+                        fileWriter.write(" = strncpy(");
+                        id.accept(this);
+                        fileWriter.write(",");
+                        const1.accept(this);
+                        fileWriter.write(", MAXCHAR);\n");
+                    }else {
+                        const1.getType().accept(this);
+                        fileWriter.write(" ");
+                        id.accept(this);
+                        fileWriter.write(" = ");
+                        const1.accept(this);
+                    }
                     fileWriter.write(";\n");
                 }
                 //Inizializzazione con tipo
@@ -158,6 +170,9 @@ public class CodeVisitor implements Visitor {
                     varDeclOp.getType().accept(this);
                     fileWriter.write(" ");
                     idIt.next().accept(this);
+                    if (varDeclOp.getType().getName().equals("String")) {
+                        fileWriter.write(" = malloc(MAXCHAR)");
+                    }
                     fileWriter.write(";\n");
 
                 }
@@ -339,6 +354,7 @@ public class CodeVisitor implements Visitor {
             int j = 0;
             while (idIt.hasNext() && exprIt.hasNext()) {
                 Expr expr = exprIt.next();
+                ID id = idIt.next();
 
                 //Controllo se la funzione restituisce più valori
                 if (expr instanceof CallFunOp callFunOp && symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size() > 1) {
@@ -347,21 +363,27 @@ public class CodeVisitor implements Visitor {
                     fileWriter.write("Struct ");
                     callFunOp.getId().accept(this);
                     //Se vengono chiamate più funzioni allora la variabile j garantisce l'unicità della variabile struct
-                    fileWriter.write("Returned"+j+" = ");
+                    fileWriter.write("Returned" + j + " = ");
                     callFunOp.accept(this);
                     fileWriter.write(";\n");
 
                     //Assegno ogni valore all'interno della struct alle rispettive variabili
                     for (int i = 0; i < symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size(); i++) {
-                        idIt.next().accept(this);
+                        //Controllo se è un puntatore
+                        if(symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
+                            fileWriter.write("*");
+                        id.accept(this);
                         fileWriter.write(" = ");
                         callFunOp.getId().accept(this);
-                        fileWriter.write("Returned"+j+".value" + i);
+                        fileWriter.write("Returned" + j + ".value" + i);
                         fileWriter.write(";\n");
                     }
                     j++;
                 } else {
-                    idIt.next().accept(this);
+                    //Controllo se è un puntatore
+                    if(symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
+                        fileWriter.write("*");
+                    id.accept(this);
                     fileWriter.write(" = ");
                     expr.accept(this);
                     fileWriter.write(";\n");
@@ -534,8 +556,47 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(WriteOp writeOp) {
         try {
-
-            fileWriter.write(" printf(");
+            fileWriter.write(" printf(\"");
+            for (int i = 0; i < writeOp.getExprList().size() ; i++) {
+                if (writeOp.getExprList().get(i) instanceof Const const1)
+                    switch (const1.getType().getName()) {
+                        case "String":
+                            fileWriter.write("%s ");
+                            break;
+                        case "Boolean", "Integer":
+                            fileWriter.write("%d ");
+                            break;
+                        case "Real":
+                            fileWriter.write("%lf ");
+                            break;
+                    }
+                else if (writeOp.getExprList().get(i) instanceof ID id) {
+                    switch (symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName()) {
+                        case "String":
+                            fileWriter.write("%s ");
+                            break;
+                        case "Boolean", "Integer":
+                            fileWriter.write("%d ");
+                            break;
+                        case "Real":
+                            fileWriter.write("%lf ");
+                            break;
+                    }
+                } else if (writeOp.getExprList().get(i) instanceof CallFunOp callFun) {
+                    switch (symbolTable.returnTypeOfId(callFun.getId().getValue()).getOutTypeList().get(0).getName()) {
+                        case "String":
+                            fileWriter.write("%s ");
+                            break;
+                        case "Boolean", "Integer":
+                            fileWriter.write("%d ");
+                            break;
+                        case "Real":
+                            fileWriter.write("%lf ");
+                            break;
+                    }
+                }
+            }
+            fileWriter.write("\", ");
             if (writeOp.getExprList().size() > 1)
                 for (int i = 0; i < writeOp.getExprList().size() - 1; i++) {
                     writeOp.getExprList().get(i).accept(this);

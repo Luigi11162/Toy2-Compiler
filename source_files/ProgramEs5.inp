@@ -6,6 +6,7 @@ proc main():
     var flag ^= true;\
     var result : integer;\
     var resultReal : real;\
+    var ciao ^= "ciao";\
 
     while flag = true do
     <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)" $(operazione);
@@ -23,7 +24,7 @@ proc main():
     endif;
 
 
-    --> "Il risultato e':" $(result) $(divisione(input1, input2));
+    --> "Il risultato e':" $(result);
     <-- "Vuoi continuare? (1 yes/0 no)" $(answer) ;
 
     if answer = 1 then
