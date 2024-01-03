@@ -4,6 +4,7 @@ import esercitazione5.Nodes.*;
 import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
 import esercitazione5.SymbolTable.SymbolTable;
+import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -153,7 +154,7 @@ public class CodeVisitor implements Visitor {
                         id.accept(this);
                         fileWriter.write(",");
                         const1.accept(this);
-                        fileWriter.write(", MAXCHAR);\n");
+                        fileWriter.write(", MAXCHAR)");
                     } else {
                         const1.getType().accept(this);
                         fileWriter.write(" ");
@@ -692,13 +693,9 @@ public class CodeVisitor implements Visitor {
             switch (op.getName()) {
                 case "AddOp":
                     //Concatenazione di stringhe
-                    if (checkString(op.getValueL()) && checkString(op.getValueR())){
-                        fileWriter.write("str_concat(");
-                        op.getValueL().accept(this);
-                        fileWriter.write(", ");
-                        op.getValueR().accept(this);
-                        fileWriter.write(")");
-                    } else
+                    if (checkString(op.getValueL()) || checkString(op.getValueR()))
+                        concatOp(op);
+                    else
                         fileWriter.write("+");
                     break;
                 case "DivOp":
@@ -718,7 +715,7 @@ public class CodeVisitor implements Visitor {
                     break;
                 case "EqOp":
                     //Comparazione di stringhe
-                    if (checkString(op.getValueL()) && checkString(op.getValueR())){
+                    if (checkString(op.getValueL()) && checkString(op.getValueR())) {
                         fileWriter.write("strncmp(");
                         op.getValueL().accept(this);
                         fileWriter.write(", ");
@@ -729,7 +726,7 @@ public class CodeVisitor implements Visitor {
                     break;
                 case "NeOp":
                     //Comparazione di stringhe
-                    if (checkString(op.getValueL()) && checkString(op.getValueR())){
+                    if (checkString(op.getValueL()) && checkString(op.getValueR())) {
                         fileWriter.write("strncmp(");
                         op.getValueL().accept(this);
                         fileWriter.write(", ");
@@ -807,13 +804,9 @@ public class CodeVisitor implements Visitor {
     public void addPrototipiFunzioniDiSupporto() {
         try {
             fileWriter.write("char* integer_to_str(int i);\n");
-
-            fileWriter.write("char* real_to_str(float i);\n");
-            fileWriter.write("char* char_to_str(char i);\n");
+            fileWriter.write("char* real_to_str(double i);\n");
             fileWriter.write("char* bool_to_str(bool i);\n");
             fileWriter.write("char* str_concat(char* str1, char* str2);\n");
-            fileWriter.write("char* read_str();\n");
-            fileWriter.write("int str_to_bool(char* expr);\n");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -832,17 +825,10 @@ public class CodeVisitor implements Visitor {
             fileWriter.write("return result;\n");
             fileWriter.write("}\n");
 
-            fileWriter.write("char* real_to_str(float i){\n");
-            fileWriter.write("int length= snprintf(NULL,0,\"%f\",i);\n");
+            fileWriter.write("char* real_to_str(double i){\n");
+            fileWriter.write("int length= snprintf(NULL,0,\"%lf\",i);\n");
             fileWriter.write("char* result=malloc(length+1);\n");
             fileWriter.write("snprintf(result,length+1,\"%f\",i);\n");
-            fileWriter.write("return result;\n");
-            fileWriter.write("}\n");
-
-            fileWriter.write("char* char_to_str(char i){\n");
-            fileWriter.write("int length= snprintf(NULL,0,\"%c\",i);\n");
-            fileWriter.write("char* result=malloc(length+1);\n");
-            fileWriter.write("snprintf(result,length+1,\"%c\",i);\n");
             fileWriter.write("return result;\n");
             fileWriter.write("}\n");
 
@@ -858,34 +844,72 @@ public class CodeVisitor implements Visitor {
             fileWriter.write("result=strcat(result,str1);\n");
             fileWriter.write("result=strcat(result,str2);\n");
             fileWriter.write("return result;}\n");
-
-            fileWriter.write("\n");
-            fileWriter.write("char* read_str(){\n");
-            fileWriter.write("char* str=malloc(sizeof(char)*MAXCHAR);\n");
-            fileWriter.write("scanf(\"%s\",str);\n");
-            fileWriter.write("return str;}\n");
-
-            fileWriter.write("\n");
-            fileWriter.write("int str_to_bool(char* expr){\n");
-            fileWriter.write("int i=0;\n");
-            fileWriter.write("if ( (strcmp(expr, \"true\")==0) || (strcmp(expr, \"1\"))==0 )\n");
-            fileWriter.write("i=1;\n");
-            fileWriter.write("if ( (strcmp(expr, \"false\")==0) || (strcmp(expr, \"0\"))==0 )\n");
-            fileWriter.write("i=0;\n");
-            fileWriter.write("return i;}\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private boolean checkString(Expr expr){
-        return expr instanceof Const const1 && const1.getType().getName().equals("String") ||
+    //Controlla se l'expr è di tipo stringa
+    private boolean checkString(Expr expr) {
+        if (expr instanceof Const const1 && const1.getType().getName().equals("String") ||
                 expr instanceof ID id &&
                         symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName().equals("String") ||
                 expr instanceof CallFunOp callFunOp &&
-                        symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().get(0).getName().equals("String");
-
+                        symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().get(0).getName().equals("String"))
+            return true;
+        if (expr instanceof Op op) {
+            return checkString(op.getValueL()) || checkString(op.getValueR());
+        }
+        return false;
     }
 
+    //Effettua la concatenazione di stringhe
+    private void concatOp(Op op) {
+        try {
+            fileWriter.write("str_concat(");
+            if (checkString(op.getValueL()))
+                op.getValueL().accept(this);
+            else
+                exprToString(op.getValueL());
+            fileWriter.write(", ");
+            if (checkString(op.getValueR()))
+                op.getValueR().accept(this);
+            else
+                exprToString(op.getValueR());
+            fileWriter.write(")");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //Effettua il cast dell'espressione in tipo stringa
+    private void exprToString(Expr expr) {
+        Type type;
+        if (expr instanceof ID id)
+            type = symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0);
+        else if (expr instanceof Const const1)
+            type = const1.getType();
+        else if (expr instanceof CallFunOp callFunOp)
+            type = symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().get(0);
+        else
+            throw new RuntimeException("Non è un'espressione valida");
+        try {
+            switch (type.getName()) {
+                case "Integer":
+                    fileWriter.write("integer_to_str(");
+                    break;
+                case "Real":
+                    fileWriter.write("real_to_str(");
+                    break;
+                case "Boolean":
+                    fileWriter.write("bool_to_str(");
+                    break;
+            }
+            expr.accept(this);
+            fileWriter.write(")");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

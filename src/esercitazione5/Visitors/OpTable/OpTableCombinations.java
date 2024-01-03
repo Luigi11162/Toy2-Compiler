@@ -105,6 +105,60 @@ public class OpTableCombinations {
                                             )
                                     ),
                                     new Type("String")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("String"),
+                                                    new Type("Integer")
+                                            )
+                                    ),
+                                    new Type("String")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Integer"),
+                                                    new Type("String")
+                                            )
+                                    ),
+                                    new Type("String")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("String"),
+                                                    new Type("Real")
+                                            )
+                                    ),
+                                    new Type("String")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Real"),
+                                                    new Type("String")
+                                            )
+                                    ),
+                                    new Type("String")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("String"),
+                                                    new Type("Boolean")
+                                            )
+                                    ),
+                                    new Type("String")
+                            ),
+                            new OpRow(
+                                    new ArrayList<>(
+                                            List.of(
+                                                    new Type("Boolean"),
+                                                    new Type("String")
+                                            )
+                                    ),
+                                    new Type("String")
                             )
                     )
             )
