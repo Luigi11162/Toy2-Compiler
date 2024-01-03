@@ -170,15 +170,8 @@ public class ScopeVisitor implements Visitor {
             bodyOp.setSymbolTable(symbolTableStatic);
         }
 
-        //Essendo inseriti al contrario, si effettua una scansione in reverse dei figli del body
-        for (int i = bodyOp.getChildCount() - 1; i >= 0; i--) {
-            try {
-                //
-                bodyOp.getChildAt(i).getClass().getDeclaredMethod("accept", Visitor.class).invoke(bodyOp.getChildAt(i), this);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
+        bodyOp.getStatList().forEach(stat -> stat.accept(this));
 
         return null;
     }

@@ -5,8 +5,8 @@ proc main():
     var input1, input2, answer : integer;\
     var flag ^= true;\
     var result : integer;\
-    var resultReal : real;\
-    var ciao ^= "ciao";\
+
+
 
     while flag = true do
     <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)" $(operazione);

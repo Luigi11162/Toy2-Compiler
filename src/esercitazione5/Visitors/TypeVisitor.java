@@ -119,17 +119,7 @@ public class TypeVisitor implements Visitor {
             symbolTable = bodyOp.getSymbolTable();
         bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
 
-
-        //Essendo inseriti al contrario, si effettua una scansione in reverse dei figli del body
-        //In questo modo controllo che le variabili, funzioni o procedure utilizzate siano state dichiarate in precedenza
-        for (int i = bodyOp.getChildCount() - 1; i >= 0; i--) {
-            try {
-                //Uso la reflection per richiamare il metodo accept di ogni stat
-                bodyOp.getChildAt(i).getClass().getDeclaredMethod("accept", Visitor.class).invoke(bodyOp.getChildAt(i), this);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        bodyOp.getStatList().forEach(stat -> stat.accept(this));
 
         return null;
     }
@@ -335,6 +325,7 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ID id) {
+        symbolTable.checkAssign(id);
         return symbolTable.returnTypeOfId(id.getValue());
     }
 

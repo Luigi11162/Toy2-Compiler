@@ -103,10 +103,6 @@ return c;
 }
 
 void main () {
-char* ciao = malloc(MAXCHAR);
-ciao = strncpy(ciao,"ciao", MAXCHAR);
-;
-double resultReal;
 int result;
 bool flag = true;
 int input1;
@@ -128,6 +124,7 @@ sottrazione(input1, input2, &result);
 }
 else if (strncmp(operazione, "divisione", MAXCHAR) == 1)  {
 resultReal = divisione(input1, input2);
+double resultReal;
 }
 else if (strncmp(operazione, "moltiplicazione", MAXCHAR) == 1)  {
 moltiplicazioneStruct moltiplicazioneReturned0 = moltiplicazione(input1, input2);
