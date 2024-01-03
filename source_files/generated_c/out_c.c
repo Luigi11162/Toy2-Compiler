@@ -57,25 +57,17 @@ i=1;
 if ( (strcmp(expr, "false")==0) || (strcmp(expr, "0"))==0 )
 i=0;
 return i;}
-typedef struct {
-	int value0;
-	int value1;
-} moltiplicazioneStruct;
-
-moltiplicazioneStruct moltiplicazione (int input1, int input2);
+int moltiplicazione (int input1, int input2);
 double divisione (int input1, int input2);
 int somma_con_commento (int a, int b);
-void somma (int input1, int input2, char** result);
+void somma (int input1, int input2, int* result);
 void sottrazione (int input1, int input2, int* result);
 
 
-moltiplicazioneStruct moltiplicazione (int input1, int input2) {
+int moltiplicazione (int input1, int input2) {
 int result;
 result = input1*input2;
-moltiplicazioneStruct moltiplicazioneStructReturnValue;
-moltiplicazioneStructReturnValue.value0 = result;
-moltiplicazioneStructReturnValue.value1 = 2;
-return moltiplicazioneStructReturnValue;
+return result;
 }
 double divisione (int input1, int input2) {
 double result;
@@ -83,7 +75,7 @@ if (input2==0) {
  printf("%s ", "Errore");
 result = 0.0;
 }
-return 4.5;
+return result;
 }
 int somma_con_commento (int a, int b) {
 int risultato;
@@ -112,28 +104,34 @@ int result;
 double resultReal;
 while(flag==true)  {
 int input8;
-printf("Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)");
+printf("Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione): ");
+fflush(stdin);
 scanf("%s", operazione);
-printf("Inserisci il primo input");
+printf("Inserisci il primo input: ");
+fflush(stdin);
 scanf("%d", &input1);
-printf("Inserisci il secondo input");
+printf("Inserisci il secondo input: ");
+fflush(stdin);
 scanf("%d", &input2);
-if (strncmp(operazione, "somma", MAXCHAR) == 1) {
-somma(input1, input2, &operazione);
+if (strncmp(operazione, "somma", MAXCHAR) == 0) {
+somma(input1, input2, &result);
 }
-else if (strncmp(operazione, "sottrazione", MAXCHAR) == 1)  {
+else if (strncmp(operazione, "sottrazione", MAXCHAR) == 0)  {
 sottrazione(input1, input2, &result);
 }
-else if (strncmp(operazione, "divisione", MAXCHAR) == 1)  {
+else if (strncmp(operazione, "divisione", MAXCHAR) == 0)  {
 resultReal = divisione(input1, input2);
 }
-else if (strncmp(operazione, "moltiplicazione", MAXCHAR) == 1)  {
-moltiplicazioneStruct moltiplicazioneReturned0 = moltiplicazione(input1, input2);
-result = moltiplicazioneReturned0.value0;
-result = moltiplicazioneReturned0.value1;
+else if (strncmp(operazione, "moltiplicazione", MAXCHAR) == 0)  {
+result = moltiplicazione(input1, input2);
 }
- printf("%s %d ", "Il risultato e':", result);
-printf("Vuoi continuare? (1 yes/0 no)");
+else
+ {
+ printf("%s %s", "Operazione non consentita", "\n");
+}
+ printf("%s %d %s", "Il risultato e': ", result, "\n");
+printf("Vuoi continuare? (1 yes/0 no): ");
+fflush(stdin);
 scanf("%d", &answer);
 if (answer==1) {
 flag = true;
@@ -144,12 +142,10 @@ flag = false;
 }
 }
 }
-void somma (int input1, int input2, char** result) {
-*result = str_concat("input1", "input2");
+void somma (int input1, int input2, int* result) {
+*result = input1+input2;
 }
 void sottrazione (int input1, int input2, int* result) {
-*result = input1*input2;
-if (input1>0) {
-}
+*result = input1-input2;
 }
 

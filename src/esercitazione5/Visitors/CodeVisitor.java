@@ -8,7 +8,6 @@ import esercitazione5.SymbolTable.SymbolTable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -445,7 +444,7 @@ public class CodeVisitor implements Visitor {
             if (readOp.getExprList().size() > 1)
                 for (int i = 0; i < readOp.getExprList().size() - 1; i++) {
                     if (readOp.getExprList().get(i) instanceof ID id) {
-
+                        fileWriter.write("fflush(stdin);\n");
                         fileWriter.write("scanf(\"");
                         switch (symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName()) {
                             case "String":
@@ -473,6 +472,7 @@ public class CodeVisitor implements Visitor {
             //Non inserisco la virgola
             if (!readOp.getExprList().isEmpty()) {
                 if (readOp.getExprList().get(readOp.getExprList().size() - 1) instanceof ID id) {
+                    fileWriter.write("fflush(stdin);\n");
                     fileWriter.write("scanf(\"");
                     switch (symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName()) {
                         case "String":
@@ -591,6 +591,8 @@ public class CodeVisitor implements Visitor {
                     }
                 }
             }
+            if (writeOp.getMode().getName().equals("writeReturn"))
+                fileWriter.write("%s");
             fileWriter.write("\", ");
             if (writeOp.getExprList().size() > 1)
                 for (int i = 0; i < writeOp.getExprList().size() - 1; i++) {
@@ -721,7 +723,7 @@ public class CodeVisitor implements Visitor {
                         op.getValueL().accept(this);
                         fileWriter.write(", ");
                         op.getValueR().accept(this);
-                        fileWriter.write(", MAXCHAR) == 1");
+                        fileWriter.write(", MAXCHAR) == 0");
                     } else
                         fileWriter.write("==");
                     break;
@@ -732,7 +734,7 @@ public class CodeVisitor implements Visitor {
                         op.getValueL().accept(this);
                         fileWriter.write(", ");
                         op.getValueR().accept(this);
-                        fileWriter.write(", MAXCHAR) == 1");
+                        fileWriter.write(", MAXCHAR) != 0 ");
                     } else
                         fileWriter.write("!=");
                     break;

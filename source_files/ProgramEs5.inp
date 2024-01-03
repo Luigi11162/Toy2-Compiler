@@ -9,23 +9,25 @@ proc main():
 
 
     while flag = true do
-    <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)" $(operazione);
-    <-- "Inserisci il primo input" $(input1);
-    <-- "Inserisci il secondo input" $(input2);
+    <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione): " $(operazione);
+    <-- "Inserisci il primo input: " $(input1);
+    <-- "Inserisci il secondo input: " $(input2);
 
     if operazione = "somma" then
-        somma(input1, input2, @operazione);
+        somma(input1, input2, @result);
     elseif operazione = "sottrazione" then
         sottrazione(input1, input2, @result);
     elseif operazione = "divisione" then
        resultReal ^= divisione(input1, input2);
     elseif operazione = "moltiplicazione" then
-       result, result ^= moltiplicazione(input1, input2);
+       result ^= moltiplicazione(input1, input2);
+    else
+        -->! "Operazione non consentita";
     endif;
 
 
-    --> "Il risultato e':" $(result);
-    <-- "Vuoi continuare? (1 yes/0 no)" $(answer) ;
+    -->! "Il risultato e': " $(result);
+    <-- "Vuoi continuare? (1 yes/0 no): " $(answer) ;
 
     if answer = 1 then
         flag ^= true;
@@ -37,22 +39,19 @@ proc main():
     var resultReal : real;\
 endproc
 
-proc somma(input1: integer, input2: integer, out result: string):
-    result ^= "input1" + "input2";
+proc somma(input1: integer, input2: integer, out result: integer):
+    result ^= input1 + input2;
 endproc
 
 proc sottrazione(input1: integer, input2: integer, out result : integer):
-    result ^= input1 * input2;
-    if input1 > 0 then
-
-   endif;
+    result ^= input1 - input2;
 endproc
 
-func moltiplicazione(input1: integer, input2: integer) -> integer, integer:
+func moltiplicazione(input1: integer, input2: integer) -> integer:
     var result : integer;\
 
     result ^= input1 * input2;
-    return result,2;
+    return result;
 endfunc
 
 func divisione(input1: integer, input2: integer) -> real:
@@ -63,7 +62,7 @@ func divisione(input1: integer, input2: integer) -> real:
         result ^= 0.0;
 
     endif;
-    return 4.5;
+    return result;
 endfunc
 
 
