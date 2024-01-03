@@ -34,7 +34,7 @@ proc main():
     endif;
     var input8: integer;\
     endwhile;
-
+    var resultReal : real;\
 endproc
 
 proc somma(input1: integer, input2: integer, out result: string):
@@ -42,7 +42,7 @@ proc somma(input1: integer, input2: integer, out result: string):
 endproc
 
 proc sottrazione(input1: integer, input2: integer, out result : integer):
-    result ^= input1 - input2;
+    result ^= input1 * input2;
     if input1 > 0 then
 
    endif;

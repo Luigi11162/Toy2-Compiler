@@ -166,6 +166,7 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(BodyOp bodyOp) {
+        //Se è una funzione o una procedura allora eredita la symbol table
         if (bodyOp.getSymbolTable() == null && !symbolTableStatic.getName().equals("Proc") && !symbolTableStatic.getName().equals("Func")) {
             bodyOp.setSymbolTable(symbolTableStatic);
         }

@@ -262,18 +262,13 @@ public class CodeVisitor implements Visitor {
                 symbolTable = bodyOp.getSymbolTable();
 
             fileWriter.write(" {\n");
-            for (int i = bodyOp.getChildCount() - 1; i >= 0; i--) {
-                //Uso la reflection per richiamare il metodo accept di ogni stat
-                try {
-                    bodyOp.getChildAt(i).getClass().getDeclaredMethod("accept", Visitor.class).invoke(bodyOp.getChildAt(i), this);
-                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
+            bodyOp.getStatList().forEach(stat -> stat.accept(this));
             fileWriter.write("}\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        symbolTable = symbolTable.getFather();
         --tabs;
         return null;
     }
@@ -696,11 +691,11 @@ public class CodeVisitor implements Visitor {
                 case "AddOp":
                     //Concatenazione di stringhe
                     if (checkString(op.getValueL()) && checkString(op.getValueR())){
-                        fileWriter.write("strncat(");
+                        fileWriter.write("str_concat(");
                         op.getValueL().accept(this);
                         fileWriter.write(", ");
                         op.getValueR().accept(this);
-                        fileWriter.write(", MAXCHAR)");
+                        fileWriter.write(")");
                     } else
                         fileWriter.write("+");
                     break;

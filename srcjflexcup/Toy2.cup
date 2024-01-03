@@ -176,10 +176,14 @@ OtherProcParams ::= COMMA ProcParamId:procParamId COLON Type:type OtherProcParam
 ProcParamId ::= ID:value {: RESULT = new ID(value, new Mode("inout")); :}
     | OUT ID:value {: RESULT = new ID(value, new Mode("out")); :};
 
-Body ::= VarDecls:varDeclList Body:body {:  RESULT = body;
-                                            RESULT.addVarDeclOpList(varDeclList); :}
-	| Stat:stat Body:body {:  RESULT = body;
-                              RESULT.addStatList(new ArrayList<>(List.of(stat))); :}
+Body ::= VarDecls:varDeclList Body:body {:  ArrayList<VarDeclOp> varDeclListNew = new ArrayList<>();
+                                            varDeclListNew.addAll(varDeclList);
+                                            varDeclListNew.addAll(body.getVarDeclOpList());
+                                            RESULT = new BodyOp(varDeclListNew, body.getStatList()); :}
+	| Stat:stat Body:body {:  ArrayList<Stat> statList = new ArrayList<>();
+                              statList.add(stat);
+                              statList.addAll(body.getStatList());
+                              RESULT = new BodyOp(body.getVarDeclOpList(), statList); :}
 	| /* empty */ {: RESULT = new BodyOp(new ArrayList<VarDeclOp>(), new ArrayList<Stat>()); :};
 
 Stat ::= Ids:idList ASSIGN Exprs:exprList SEMI {: RESULT = new AssignOp(idList, exprList); :}

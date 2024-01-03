@@ -103,13 +103,15 @@ return c;
 }
 
 void main () {
-int result;
-bool flag = true;
+char* operazione = malloc(MAXCHAR);
 int input1;
 int input2;
 int answer;
-char* operazione = malloc(MAXCHAR);
+bool flag = true;
+int result;
+double resultReal;
 while(flag==true)  {
+int input8;
 printf("Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)");
 scanf("%s", operazione);
 printf("Inserisci il primo input");
@@ -124,7 +126,6 @@ sottrazione(input1, input2, &result);
 }
 else if (strncmp(operazione, "divisione", MAXCHAR) == 1)  {
 resultReal = divisione(input1, input2);
-double resultReal;
 }
 else if (strncmp(operazione, "moltiplicazione", MAXCHAR) == 1)  {
 moltiplicazioneStruct moltiplicazioneReturned0 = moltiplicazione(input1, input2);
@@ -141,14 +142,13 @@ else
  {
 flag = false;
 }
-int input8;
 }
 }
 void somma (int input1, int input2, char** result) {
-*result = strncat("input1", "input2", MAXCHAR);
+*result = str_concat("input1", "input2");
 }
 void sottrazione (int input1, int input2, int* result) {
-*result = input1-input2;
+*result = input1*input2;
 if (input1>0) {
 }
 }

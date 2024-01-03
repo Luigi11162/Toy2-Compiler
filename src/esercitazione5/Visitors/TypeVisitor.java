@@ -115,8 +115,10 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(BodyOp bodyOp) {
+        //Se non è una funzione o una procedura allora imposta il nuovo scope
         if (bodyOp.getSymbolTable() != null)
             symbolTable = bodyOp.getSymbolTable();
+
         bodyOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
 
         bodyOp.getStatList().forEach(stat -> stat.accept(this));
