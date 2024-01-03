@@ -6,6 +6,57 @@
 #include <stdbool.h>
 #define MAXCHAR 512
 
+char* integer_to_str(int i);
+char* real_to_str(float i);
+char* char_to_str(char i);
+char* bool_to_str(bool i);
+char* str_concat(char* str1, char* str2);
+char* read_str();
+int str_to_bool(char* expr);
+
+//Funzioni di supporto 
+char* integer_to_str(int i){
+int length= snprintf(NULL,0,"%d",i);
+char* result=malloc(length+1);
+snprintf(result,length+1,"%d",i);
+return result;
+}
+char* real_to_str(float i){
+int length= snprintf(NULL,0,"%f",i);
+char* result=malloc(length+1);
+snprintf(result,length+1,"%f",i);
+return result;
+}
+char* char_to_str(char i){
+int length= snprintf(NULL,0,"%c",i);
+char* result=malloc(length+1);
+snprintf(result,length+1,"%c",i);
+return result;
+}
+char* bool_to_str(bool i){
+int length= snprintf(NULL,0,"%d",i);
+char* result=malloc(length+1);
+snprintf(result,length+1,"%d",i);
+return result;
+}
+char* str_concat(char* str1, char* str2){
+char* result=malloc(sizeof(char)*MAXCHAR);
+result=strcat(result,str1);
+result=strcat(result,str2);
+return result;}
+
+char* read_str(){
+char* str=malloc(sizeof(char)*MAXCHAR);
+scanf("%s",str);
+return str;}
+
+int str_to_bool(char* expr){
+int i=0;
+if ( (strcmp(expr, "true")==0) || (strcmp(expr, "1"))==0 )
+i=1;
+if ( (strcmp(expr, "false")==0) || (strcmp(expr, "0"))==0 )
+i=0;
+return i;}
 typedef struct {
 	int value0;
 	int value1;
@@ -20,7 +71,7 @@ void sottrazione (int input1, int input2, int* result);
 
 moltiplicazioneStruct moltiplicazione (int input1, int input2) {
 int result;
-result=input1*input2;
+result = input1*input2;
 moltiplicazioneStruct moltiplicazioneStructReturnValue;
 moltiplicazioneStructReturnValue.value0 = result;
 moltiplicazioneStructReturnValue.value1 = 2;
@@ -30,13 +81,13 @@ double divisione (int input1, int input2) {
 double result;
 if (input2==0) {
  printf("Errore");
-result=0.0;
+result = 0.0;
 }
 return 4.5;
 }
 int somma_con_commento (int a, int b) {
 int risultato;
-risultato=a+b;
+risultato = a+b;
 if ((risultato)>4) {
 int c;
 return c;
@@ -60,36 +111,44 @@ int input2;
 int answer;
 char* operazione;
 while(flag==true)  {
- scanf("Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)", operazione);
- scanf("Inserisci il primo input", &input1);
- scanf("Inserisci il secondo input", &input2);
+printf("Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione)");
+scanf("%s", operazione);
+printf("Inserisci il primo input");
+scanf("%d", &input1);
+printf("Inserisci il secondo input");
+scanf("%d", &input2);
 if (operazione=="somma") {
-somma(input1, input2, operazione)}
+somma(input1, input2, &operazione);
+}
 else if (operazione=="sottrazione")  {
-sottrazione(input1, input2, result)}
+sottrazione(input1, input2, &result);
+}
 else if (operazione=="divisione")  {
-resultReal=divisione(input1, input2);
+resultReal = divisione(input1, input2);
 }
 else if (operazione=="moltiplicazione")  {
-result=moltiplicazione(input1, input2);
+moltiplicazioneStruct moltiplicazioneReturned0 = moltiplicazione(input1, input2);
+result = moltiplicazioneReturned0.value0;
+result = moltiplicazioneReturned0.value1;
 }
  printf("Il risultato e':", result, divisione(input1, input2));
- scanf("Vuoi continuare? (1 yes/0 no)", &answer);
+printf("Vuoi continuare? (1 yes/0 no)");
+scanf("%d", &answer);
 if (answer==1) {
-flag=true;
+flag = true;
 }
 else
  {
-flag=false;
+flag = false;
 }
 int input8;
 }
 }
 void somma (int input1, int input2, char** result) {
-result=str_concat("input1", "input2");
+result = str_concat("input1", "input2");
 }
 void sottrazione (int input1, int input2, int* result) {
-result=input1-input2;
+result = input1-input2;
 if (input1>0) {
 }
 }

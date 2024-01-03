@@ -39,6 +39,8 @@ public class CodeVisitor implements Visitor {
 
             addLibrerie();
             fileWriter.write("\n");
+            addPrototipiFunzioniDiSupporto();
+            addFunzioniDiSupporto();
 
             symbolTable = programOp.getSymbolTable();
 
@@ -134,37 +136,34 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(VarDeclOp varDeclOp) {
-        Iterator<ID> idIt = varDeclOp.getidList().iterator();
-        //Inizializzazione con constanti
-        if (varDeclOp.getType() == null) {
-            Iterator<Const> constIt = varDeclOp.getConstList().iterator();
+        try {
+            Iterator<ID> idIt = varDeclOp.getidList().iterator();
+            //Inizializzazione con constanti
+            if (varDeclOp.getType() == null) {
+                Iterator<Const> constIt = varDeclOp.getConstList().iterator();
 
-            while (idIt.hasNext() && constIt.hasNext()) {
-                ID id = idIt.next();
-                Const const1 = constIt.next();
-                const1.getType().accept(this);
-                try {
+                while (idIt.hasNext() && constIt.hasNext()) {
+                    ID id = idIt.next();
+                    Const const1 = constIt.next();
+                    const1.getType().accept(this);
                     fileWriter.write(" ");
                     id.accept(this);
                     fileWriter.write(" = ");
                     const1.accept(this);
                     fileWriter.write(";\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
-            }
-            //Inizializzazione con tipo
-        } else {
-            while (idIt.hasNext()) {
-                try {
+                //Inizializzazione con tipo
+            } else {
+                while (idIt.hasNext()) {
                     varDeclOp.getType().accept(this);
                     fileWriter.write(" ");
                     idIt.next().accept(this);
                     fileWriter.write(";\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -337,11 +336,36 @@ public class CodeVisitor implements Visitor {
         try {
             Iterator<ID> idIt = assignOp.getIdList().iterator();
             Iterator<Expr> exprIt = assignOp.getExprList().iterator();
+            int j = 0;
             while (idIt.hasNext() && exprIt.hasNext()) {
-                idIt.next().accept(this);
-                fileWriter.write("=");
-                exprIt.next().accept(this);
-                fileWriter.write(";\n");
+                Expr expr = exprIt.next();
+
+                //Controllo se la funzione restituisce più valori
+                if (expr instanceof CallFunOp callFunOp && symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size() > 1) {
+                    //Creo una nuova variabile struct dove assegnare il valore
+                    callFunOp.getId().accept(this);
+                    fileWriter.write("Struct ");
+                    callFunOp.getId().accept(this);
+                    //Se vengono chiamate più funzioni allora la variabile j garantisce l'unicità della variabile struct
+                    fileWriter.write("Returned"+j+" = ");
+                    callFunOp.accept(this);
+                    fileWriter.write(";\n");
+
+                    //Assegno ogni valore all'interno della struct alle rispettive variabili
+                    for (int i = 0; i < symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size(); i++) {
+                        idIt.next().accept(this);
+                        fileWriter.write(" = ");
+                        callFunOp.getId().accept(this);
+                        fileWriter.write("Returned"+j+".value" + i);
+                        fileWriter.write(";\n");
+                    }
+                    j++;
+                } else {
+                    idIt.next().accept(this);
+                    fileWriter.write(" = ");
+                    expr.accept(this);
+                    fileWriter.write(";\n");
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -374,29 +398,24 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(ProcCallOp procCallOp) {
         try {
-
-            if (procCallOp.getName().contains("PAR"))
-                fileWriter.write("(");
-
             procCallOp.getId().accept(this);
             fileWriter.write("(");
             if (procCallOp.getExprList().size() > 1)
                 for (int i = 0; i < procCallOp.getExprList().size() - 1; i++) {
                     //Controllo se viene passato per riferimento
-                    if (procCallOp.getExprList().get(i) instanceof ID id && id.getMode() != null && id.getMode().equals("out"))
+                    if (procCallOp.getExprList().get(i) instanceof ID id && id.getMode() != null && id.getMode().getName().equals("out"))
                         fileWriter.write("&");
                     procCallOp.getExprList().get(i).accept(this);
                     fileWriter.write(", ");
                 }
 
             //Non inserisco la virgola
-            if (!procCallOp.getExprList().isEmpty())
+            if (!procCallOp.getExprList().isEmpty()) {
+                if (procCallOp.getExprList().get(procCallOp.getExprList().size() - 1) instanceof ID id && id.getMode() != null && id.getMode().getName().equals("out"))
+                    fileWriter.write("&");
                 procCallOp.getExprList().get(procCallOp.getExprList().size() - 1).accept(this);
-
-            fileWriter.write(")");
-
-            if (procCallOp.getName().contains("PAR"))
-                fileWriter.write(");\n");
+            }
+            fileWriter.write(");\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -406,22 +425,60 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(ReadOp readOp) {
         try {
-            fileWriter.write(" scanf(");
             if (readOp.getExprList().size() > 1)
                 for (int i = 0; i < readOp.getExprList().size() - 1; i++) {
-                    if (readOp.getExprList().get(i) instanceof ID id && !symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName().equals("String"))
-                        fileWriter.write("&");
-                    readOp.getExprList().get(i).accept(this);
-                    fileWriter.write(", ");
+                    if (readOp.getExprList().get(i) instanceof ID id) {
+
+                        fileWriter.write("scanf(\"");
+                        switch (symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName()) {
+                            case "String":
+                                fileWriter.write("%s\", ");
+                                readOp.getExprList().get(i).accept(this);
+                                break;
+                            case "Integer":
+                                fileWriter.write("%d\", ");
+                                fileWriter.write("&");
+                                readOp.getExprList().get(i).accept(this);
+                                break;
+                            case "Real":
+                                fileWriter.write("%lf\", ");
+                                fileWriter.write("&");
+                                readOp.getExprList().get(i).accept(this);
+                                break;
+                        }
+                    } else {
+                        fileWriter.write("printf(");
+                        readOp.getExprList().get(i).accept(this);
+                    }
+                    fileWriter.write(");\n");
                 }
 
             //Non inserisco la virgola
             if (!readOp.getExprList().isEmpty()) {
-                if (readOp.getExprList().get(readOp.getExprList().size() - 1) instanceof ID id && !symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName().equals("String"))
-                    fileWriter.write("&");
-                readOp.getExprList().get(readOp.getExprList().size() - 1).accept(this);
+                if (readOp.getExprList().get(readOp.getExprList().size() - 1) instanceof ID id) {
+                    fileWriter.write("scanf(\"");
+                    switch (symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName()) {
+                        case "String":
+                            fileWriter.write("%s\", ");
+                            readOp.getExprList().get(readOp.getExprList().size() - 1).accept(this);
+                            break;
+                        case "Integer":
+                            fileWriter.write("%d\", ");
+                            fileWriter.write("&");
+                            readOp.getExprList().get(readOp.getExprList().size() - 1).accept(this);
+                            break;
+                        case "Real":
+                            fileWriter.write("%lf\", ");
+                            fileWriter.write("&");
+                            readOp.getExprList().get(readOp.getExprList().size() - 1).accept(this);
+                            break;
+                    }
+                } else {
+                    fileWriter.write("printf(");
+                    readOp.getExprList().get(readOp.getExprList().size() - 1).accept(this);
+                }
+                fileWriter.write(");\n");
             }
-            fileWriter.write(");\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
