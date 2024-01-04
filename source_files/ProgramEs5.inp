@@ -40,6 +40,8 @@ proc main():
     var input8: integer;\
     endwhile;
     var resultReal : real;\
+    var valore : string;\
+    valore ^= stampa("ed è pari a"+result);
 endproc
 
 proc somma(input1: integer, input2: integer, out result: integer):
@@ -69,14 +71,14 @@ func divisione(input1: integer, input2: integer) -> real:
 endfunc
 
 
-func somma_con_commento(a:integer, b:integer) -> integer:
+func somma_con_commento(ac:integer, b:integer) -> integer:
     var risultato:integer;\
-    risultato ^= a+b;
+    risultato ^= ac+b;
 
     if (risultato) >  4 then
         var c : integer;\
         return c;
-       elseif a>5 then
+       elseif ac>5 then
             return 4;
         else
         var c : integer;\
@@ -86,4 +88,8 @@ endfunc
 
 func function() -> integer, integer, integer, integer:
 return moltiplicazione(1,2),moltiplicazione(1,2), moltiplicazione(1,2), moltiplicazione(1,2);
+endfunc
+
+func stampa(stringa: string)->string:
+return stringa;
 endfunc

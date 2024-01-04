@@ -39,7 +39,7 @@ public class TypeVisitor implements Visitor {
     @Override
     //Controllare match tipi con return
     public Object visit(FunOp funOp) {
-
+        symbolTable = funOp.getSymbolTable();
         class ReturnCheck {
             private static boolean checkReturn(BodyOp bodyOp, FunOp funOp, Visitor visitor) {
                 boolean flag = false;
@@ -90,6 +90,7 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ProcOp procOp) {
+        symbolTable = procOp.getSymbolTable();
         class ReturnCheck {
             private static boolean checkReturn(BodyOp bodyOp) {
                 boolean flag = false;

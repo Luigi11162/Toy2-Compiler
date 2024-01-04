@@ -44,8 +44,9 @@ typedef struct {
 
 int moltiplicazione (int input1, int input2);
 double divisione (int input1, int input2);
-int somma_con_commento (int a, int b);
+int somma_con_commento (int ac, int b);
 functionStruct function ();
+char* stampa (char* stringa);
 void somma (int input1, int input2, int* result);
 void sottrazione (int input1, int input2, int* result);
 
@@ -63,14 +64,14 @@ result = 0.0;
 }
 return result;
 }
-int somma_con_commento (int a, int b) {
+int somma_con_commento (int ac, int b) {
 int risultato;
-risultato = a+b;
+risultato = ac+b;
 if ((risultato)>4) {
 int c;
 return c;
 }
-else if (a>5)  {
+else if (ac>5)  {
 return 4;
 }
 else
@@ -87,6 +88,9 @@ functionStructReturnValue.value2 = moltiplicazione(1, 2);
 functionStructReturnValue.value3 = moltiplicazione(1, 2);
 return functionStructReturnValue;
 }
+char* stampa (char* stringa) {
+return stringa;
+}
 
 void main () {
 char* operazione = malloc(MAXCHAR);
@@ -98,6 +102,7 @@ int result;
 char* ciao = malloc(MAXCHAR);
 ciao = strncpy(ciao,"ciao", MAXCHAR);
 double resultReal;
+char* valore = malloc(MAXCHAR);
 ciao = str_concat(str_concat(str_concat(bool_to_str(true), "ciao"), integer_to_str(8)), bool_to_str(true));
 while(flag==true)  {
 int input8;
@@ -149,6 +154,7 @@ else
 flag = false;
 }
 }
+valore = stampa(str_concat("ed è pari a", integer_to_str(result)));
 }
 void somma (int input1, int input2, int* result) {
 *result = input1+input2;
