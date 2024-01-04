@@ -35,9 +35,17 @@ char* result=malloc(sizeof(char)*MAXCHAR);
 result=strcat(result,str1);
 result=strcat(result,str2);
 return result;}
+typedef struct {
+	int value0;
+	int value1;
+	int value2;
+	int value3;
+} functionStruct;
+
 int moltiplicazione (int input1, int input2);
 double divisione (int input1, int input2);
 int somma_con_commento (int a, int b);
+functionStruct function ();
 void somma (int input1, int input2, int* result);
 void sottrazione (int input1, int input2, int* result);
 
@@ -70,6 +78,14 @@ else
 int c;
 return c;
 }
+}
+functionStruct function () {
+functionStruct functionStructReturnValue;
+functionStructReturnValue.value0 = moltiplicazione(1, 2);
+functionStructReturnValue.value1 = moltiplicazione(1, 2);
+functionStructReturnValue.value2 = moltiplicazione(1, 2);
+functionStructReturnValue.value3 = moltiplicazione(1, 2);
+return functionStructReturnValue;
 }
 
 void main () {
@@ -105,6 +121,17 @@ resultReal = divisione(input1, input2);
 }
 else if (strncmp(operazione, "moltiplicazione", MAXCHAR) == 0)  {
 result = moltiplicazione(input1, input2);
+}
+else if (strncmp(operazione, "func", MAXCHAR) == 0)  {
+int res1;
+int res2;
+int res3;
+int res4;
+functionStruct functionReturned0 = function();
+res1 = functionReturned0.value0;
+res2 = functionReturned0.value1;
+res3 = functionReturned0.value2;
+res4 = functionReturned0.value3;
 }
 else
  {

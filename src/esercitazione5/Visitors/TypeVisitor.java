@@ -46,6 +46,7 @@ public class TypeVisitor implements Visitor {
                 if (bodyOp.getSymbolTable() != null)
                     symbolTable = bodyOp.getSymbolTable();
                 for (Stat stat : bodyOp.getStatList()) {
+                    //Controlla se tutti i return restituiscono il numero di valori e di tipi corretti
                     if (stat.getName().equals("ReturnOp")) {
                         SymbolType symbolType = (SymbolType) stat.accept(visitor);
                         Iterator<Type> returnTypeIt = symbolType.getOutTypeList().iterator();
@@ -62,11 +63,14 @@ public class TypeVisitor implements Visitor {
                         else if (returnTypeIt.hasNext())
                             throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Il return ha più elementi di quanti se ne aspetta la funzione.");
                         flag = true;
+                    //Se lo statement è un if controlla che il return, se non è presente nel body,
+                    // debba essere presente e debba essere corretto in ogni body dell'if, elseif ed else
                     } else if (stat instanceof IfStatOp ifStatOp) {
                         flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor)
                                 && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor)
                                 && ifStatOp.getElifOpList().stream().allMatch(elifOp ->
                                 ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor));
+                    //Se lo statement è un while controlla se il return è presente e corretto
                     } else if (stat instanceof WhileOp whileOp) {
                         flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp(), funOp, visitor);
                     }
@@ -254,9 +258,12 @@ public class TypeVisitor implements Visitor {
     public Object visit(ReturnOp returnOp) {
         Optional<SymbolType> symbolTypeOptional = returnOp.getExprList().stream().map(expr -> (SymbolType) expr.accept(this)).
                 reduce((symbolType, symbolType2) -> {
-                    symbolType.addOutTypeList(symbolType2.getOutTypeList());
-                    return symbolType;
-                });
+                            SymbolType symbolTypeNew = new SymbolType(new ArrayList<>(), new ArrayList<>());
+                            symbolTypeNew.addOutTypeList(symbolType.getOutTypeList());
+                            symbolTypeNew.addOutTypeList(symbolType2.getOutTypeList());
+                            return symbolTypeNew;
+                        }
+                );
         if (symbolTypeOptional.isPresent())
             return symbolTypeOptional.get();
         else

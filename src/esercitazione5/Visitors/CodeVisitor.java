@@ -349,8 +349,6 @@ public class CodeVisitor implements Visitor {
             int j = 0;
             while (idIt.hasNext() && exprIt.hasNext()) {
                 Expr expr = exprIt.next();
-                ID id = idIt.next();
-
                 //Controllo se la funzione restituisce più valori
                 if (expr instanceof CallFunOp callFunOp && symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size() > 1) {
                     //Creo una nuova variabile struct dove assegnare il valore
@@ -364,6 +362,7 @@ public class CodeVisitor implements Visitor {
 
                     //Assegno ogni valore all'interno della struct alle rispettive variabili
                     for (int i = 0; i < symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size(); i++) {
+                        ID id = idIt.next();
                         //Controllo se è un puntatore
                         if (symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
                             fileWriter.write("*");
@@ -375,6 +374,7 @@ public class CodeVisitor implements Visitor {
                     }
                     j++;
                 } else {
+                    ID id = idIt.next();
                     //Controllo se è un puntatore
                     if (symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
                         fileWriter.write("*");

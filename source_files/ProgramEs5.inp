@@ -21,6 +21,9 @@ proc main():
        resultReal ^= divisione(input1, input2);
     elseif operazione = "moltiplicazione" then
        result ^= moltiplicazione(input1, input2);
+    elseif operazione = "func" then
+        var res1, res2, res3, res4: integer;\
+        res1, res2, res3, res4 ^= function();
     else
         -->! "Operazione non consentita";
     endif;
@@ -79,4 +82,8 @@ func somma_con_commento(a:integer, b:integer) -> integer:
         var c : integer;\
         return c;
     endif;
+endfunc
+
+func function() -> integer, integer, integer, integer:
+return moltiplicazione(1,2),moltiplicazione(1,2), moltiplicazione(1,2), moltiplicazione(1,2);
 endfunc
