@@ -142,7 +142,7 @@ else
  {
  printf("%s %s", "Operazione non consentita", "\n");
 }
- printf("%s %d %s", "Il risultato e': ", result, "\n");
+ printf("%s %d %s", str_concat("Il risultato e': ", "ciao"), 3+4, "\n");
 printf("Vuoi continuare? (1 yes/0 no): ");
 fflush(stdin);
 scanf("%d", &answer);

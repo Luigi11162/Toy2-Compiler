@@ -1450,7 +1450,7 @@ class CUP$parser$actions {
 		int exprListright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<Expr> exprList = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 RESULT = new ArrayList<Expr>();
-                                                            expr.setName(expr.getName()+" Dollar");
+                                                            expr.setMode(new Mode("DOLLAR"));
                                                             RESULT.add(expr);
                                                             RESULT.addAll(exprList); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IOArgs",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

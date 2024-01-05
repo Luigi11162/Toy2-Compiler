@@ -29,7 +29,7 @@ proc main():
     endif;
 
 
-    -->! "Il risultato e': " $(result);
+    -->! "Il risultato e': " + "ciao" $(3+4);
     <-- "Vuoi continuare? (1 yes/0 no): " $(answer) ;
 
     if answer = 1 then

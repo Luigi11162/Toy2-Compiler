@@ -4,6 +4,7 @@ import esercitazione5.Nodes.*;
 import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
 import esercitazione5.SymbolTable.SymbolTable;
+import esercitazione5.SymbolTable.SymbolType;
 import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
 import java.io.File;
@@ -553,45 +554,11 @@ public class CodeVisitor implements Visitor {
     public Object visit(WriteOp writeOp) {
         try {
             fileWriter.write(" printf(\"");
+
             for (int i = 0; i < writeOp.getExprList().size(); i++) {
-                if (writeOp.getExprList().get(i) instanceof Const const1)
-                    switch (const1.getType().getName()) {
-                        case "String":
-                            fileWriter.write("%s ");
-                            break;
-                        case "Boolean", "Integer":
-                            fileWriter.write("%d ");
-                            break;
-                        case "Real":
-                            fileWriter.write("%lf ");
-                            break;
-                    }
-                else if (writeOp.getExprList().get(i) instanceof ID id) {
-                    switch (symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName()) {
-                        case "String":
-                            fileWriter.write("%s ");
-                            break;
-                        case "Boolean", "Integer":
-                            fileWriter.write("%d ");
-                            break;
-                        case "Real":
-                            fileWriter.write("%lf ");
-                            break;
-                    }
-                } else if (writeOp.getExprList().get(i) instanceof CallFunOp callFun) {
-                    switch (symbolTable.returnTypeOfId(callFun.getId().getValue()).getOutTypeList().get(0).getName()) {
-                        case "String":
-                            fileWriter.write("%s ");
-                            break;
-                        case "Boolean", "Integer":
-                            fileWriter.write("%d ");
-                            break;
-                        case "Real":
-                            fileWriter.write("%lf ");
-                            break;
-                    }
-                }
+                writeOpTypes(writeOp.getExprList().get(i));
             }
+
             if (writeOp.getMode().getName().equals("writeReturn"))
                 fileWriter.write("%s");
             fileWriter.write("\", ");
@@ -912,4 +879,42 @@ public class CodeVisitor implements Visitor {
         }
     }
 
+    //Funzione che permette di formattare i tipi per la printf
+    private void writeOpTypes(Expr expr) {
+        try {
+            String nameType;
+            //Il type visitor restituisce il tipo se l'espressione è un'operazione
+            TypeVisitor typeVisitor = new TypeVisitor();
+            if (expr instanceof Const const1)
+                nameType = const1.getType().getName();
+            else if (expr instanceof ID id)
+                nameType = symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName();
+            else if (expr instanceof CallFunOp callFun)
+                nameType = symbolTable.returnTypeOfId(callFun.getId().getValue()).getOutTypeList().get(0).getName();
+            else if (expr instanceof Op op) {
+                SymbolType symbolType = (SymbolType) typeVisitor.visit(op);
+                nameType = symbolType.getOutTypeList().get(0).getName();
+            } else if (expr instanceof UOp uOp) {
+                SymbolType symbolType = (SymbolType) typeVisitor.visit(uOp);
+                nameType = symbolType.getOutTypeList().get(0).getName();
+            } else {
+                throw new RuntimeException("Espressione non valida");
+            }
+
+            switch (nameType) {
+                case "String":
+                    fileWriter.write("%s ");
+                    break;
+                case "Boolean", "Integer":
+                    fileWriter.write("%d ");
+                    break;
+                case "Real":
+                    fileWriter.write("%lf ");
+                    break;
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

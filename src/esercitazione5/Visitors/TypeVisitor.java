@@ -248,7 +248,7 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(ReadOp readOp) {
         readOp.getExprList().forEach(expr -> {
-            if (!(expr instanceof ID) && expr.getName().contains("Dollar"))
+            if (!(expr instanceof ID) && expr.getMode() != null && expr.getMode().getName().equals("DOLLAR"))
                 throw new RuntimeException("Lettura di un'espressione che non è un'id: " + expr.getName());
         });
         readOp.getExprList().forEach(expr -> expr.accept(this));

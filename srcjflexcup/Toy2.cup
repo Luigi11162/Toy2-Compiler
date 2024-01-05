@@ -219,7 +219,7 @@ IOArgs ::=  OtherIOArgs:expr IOArgs:exprList2 {: RESULT = new ArrayList<Expr>();
                                                     RESULT.add(expr);
                                                     RESULT.addAll(exprList2); :}
        |  DOLLARSIGN LPAR Expr:expr RPAR IOArgs:exprList {: RESULT = new ArrayList<Expr>();
-                                                            expr.setName(expr.getName()+" Dollar");
+                                                            expr.setMode(new Mode("DOLLAR"));
                                                             RESULT.add(expr);
                                                             RESULT.addAll(exprList); :}
        | /* empty */ {: RESULT = new ArrayList<Expr>(); :};
