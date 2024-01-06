@@ -43,6 +43,7 @@ proc main():
     var valore : string;\
     valore ^= stampa("ed è pari a"+result);
 endproc
+%%
 
 proc somma(input1: integer, input2: integer, out result: integer):
     result ^= input1 + input2;
