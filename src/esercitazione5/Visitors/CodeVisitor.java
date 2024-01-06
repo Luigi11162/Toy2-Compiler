@@ -590,7 +590,7 @@ public class CodeVisitor implements Visitor {
     public Object visit(CallFunOp callFunOp) {
         try {
 
-            if (callFunOp.getName().contains("PAR"))
+            if (callFunOp.getModeExpr() != null && callFunOp.getModeExpr().getName().equals("PAR"))
                 fileWriter.write("(");
 
             callFunOp.getId().accept(this);
@@ -607,7 +607,7 @@ public class CodeVisitor implements Visitor {
 
             fileWriter.write(")");
 
-            if (callFunOp.getName().contains("PAR"))
+            if (callFunOp.getModeExpr() != null && callFunOp.getModeExpr().getName().equals("PAR"))
                 fileWriter.write(")");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -618,7 +618,7 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(Const const1) {
         try {
-            if (const1.getName().contains("PAR")) {
+            if (const1.getModeExpr() != null && const1.getModeExpr().getName().equals("PAR")) {
                 fileWriter.write("(");
                 fileWriter.write(const1.getValue());
                 fileWriter.write(")");
@@ -633,11 +633,11 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(ID id) {
         try {
-            if (id.getName().contains("PAR")) {
+            if (id.getModeExpr() != null && id.getModeExpr().getName().equals("PAR")) {
                 fileWriter.write("(");
                 fileWriter.write(id.getValue());
                 fileWriter.write(")");
-            } else if (id.getName().contains("DOLLAR")) {
+            } else if (id.getMode()!= null && id.getMode().getName().equals("DOLLAR")) {
                 fileWriter.write("%");
                 fileWriter.write(id.getValue());
             } else
@@ -651,7 +651,7 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(Op op) {
         try {
-            if (op.getName().contains("PAR"))
+            if (op.getModeExpr() != null && op.getModeExpr().getName().equals("PAR"))
                 fileWriter.write("(");
             //Controlla se l'operazione avviene su stinghe
             if (!(checkString(op.getValueL()) || checkString(op.getValueR())))
@@ -719,7 +719,7 @@ public class CodeVisitor implements Visitor {
             if (!(checkString(op.getValueL()) || checkString(op.getValueR())))
                 op.getValueR().accept(this);
 
-            if (op.getName().contains("PAR"))
+            if (op.getModeExpr() != null && op.getModeExpr().getName().equals("PAR"))
                 fileWriter.write(")");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -730,7 +730,7 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(UOp uOp) {
         try {
-            if (uOp.getName().contains("PAR"))
+            if (uOp.getModeExpr()!=null && uOp.getModeExpr().getName().equals("PAR"))
                 fileWriter.write("(");
             switch (uOp.getName()) {
                 case "UMinusOp":
@@ -744,7 +744,7 @@ public class CodeVisitor implements Visitor {
             }
 
             uOp.getValue().accept(this);
-            if (uOp.getName().contains("PAR"))
+            if (uOp.getModeExpr()!=null && uOp.getModeExpr().getName().equals("PAR"))
                 fileWriter.write(")");
         } catch (IOException e) {
             throw new RuntimeException(e);

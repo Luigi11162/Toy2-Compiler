@@ -5,19 +5,20 @@ import esercitazione5.Visitors.NodeVisitor;
 import esercitazione5.Visitors.Visitor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.ArrayList;
 
 public class Expr extends DefaultMutableTreeNode implements NodeVisitor {
     private String name;
-    private Mode mode;
+    private Mode modeExpr;
     public Expr(String name) {
         super(name);
         this.name = name;
     }
 
-    public Expr(String name, Mode mode) {
+    public Expr(String name, Mode modeExpr) {
         super(name);
 
-        this.mode = mode;
+        this.modeExpr = modeExpr;
         this.name = name;
     }
 
@@ -29,12 +30,12 @@ public class Expr extends DefaultMutableTreeNode implements NodeVisitor {
         this.name = name;
     }
 
-    public Mode getMode() {
-        return mode;
+    public Mode getModeExpr() {
+        return modeExpr;
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    public void setModeExpr(Mode modeExpr) {
+        this.modeExpr = modeExpr;
     }
 
     @Override

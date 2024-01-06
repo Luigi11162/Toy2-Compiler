@@ -7,7 +7,6 @@ import esercitazione5.SymbolTable.SymbolTable;
 import esercitazione5.SymbolTable.SymbolType;
 import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class TypeVisitor implements Visitor {
@@ -63,14 +62,14 @@ public class TypeVisitor implements Visitor {
                         else if (returnTypeIt.hasNext())
                             throw new RuntimeException("Funzione: " + funOp.getId().getValue() + ". Il return ha più elementi di quanti se ne aspetta la funzione.");
                         flag = true;
-                    //Se lo statement è un if controlla che il return, se non è presente nel body,
-                    // debba essere presente e debba essere corretto in ogni body dell'if, elseif ed else
+                        //Se lo statement è un if controlla che il return, se non è presente nel body,
+                        // debba essere presente e debba essere corretto in ogni body dell'if, elseif ed else
                     } else if (stat instanceof IfStatOp ifStatOp) {
                         flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor)
                                 && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor)
                                 && ifStatOp.getElifOpList().stream().allMatch(elifOp ->
                                 ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor));
-                    //Se lo statement è un while controlla se il return è presente e corretto
+                        //Se lo statement è un while controlla se il return è presente e corretto
                     } else if (stat instanceof WhileOp whileOp) {
                         flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp(), funOp, visitor);
                     }
@@ -206,23 +205,23 @@ public class TypeVisitor implements Visitor {
         Iterator<Type> typeIterator = symbolType.getInTypeList().iterator();
 
         //Controllo che ogni parametro abbia lo stesso tipo del rispettivo parametro nella firma
-        for (int j=0; j<procCallOp.getExprList().size(); j++) {
+        for (int j = 0; j < procCallOp.getExprList().size(); j++) {
 
             Expr expr = procCallOp.getExprList().get(j);
 
             SymbolType symbolTypeProcCall = (SymbolType) expr.accept(this);
-            if(expr instanceof CallFunOp && symbolTypeProcCall.getOutTypeList().size()!=1)
+            if (expr instanceof CallFunOp && symbolTypeProcCall.getOutTypeList().size() != 1)
                 throw new RuntimeException("Chiamata a funzione non può essere passata come argomento perché restituisce più valori");
 
             //Controllo nella tabella dei simboli della procedura se i parametri vengono passati nel giusto modo
-            for(int i=0; i<procCallOp.getRoot().getChildCount(); i++) {
-                    if (procCallOp.getRoot().getChildAt(i) instanceof ProcOp procOp && procOp.getId().getValue().equals(procCallOp.getId().getValue()))
-                        if(expr instanceof ID id) {
-                            if ((id.getMode() == null || !id.getMode().getName().equals("out")) && procOp.getProcFunParamOpList().get(j).getMode().getName().equals("out"))
-                                throw new RuntimeException("L'id " + id.getValue() + " deve essere passato per riferimento");
-                            else if (id.getMode() != null && id.getMode().getName().equals("out") && !procOp.getProcFunParamOpList().get(j).getMode().getName().equals("out"))
-                                throw new RuntimeException("L'id " + id.getValue() + " non deve essere passato per riferimento");
-                        }
+            for (int i = 0; i < procCallOp.getRoot().getChildCount(); i++) {
+                if (procCallOp.getRoot().getChildAt(i) instanceof ProcOp procOp && procOp.getId().getValue().equals(procCallOp.getId().getValue()))
+                    if (expr instanceof ID id) {
+                        if ((id.getMode() == null || !id.getMode().getName().equals("out")) && procOp.getProcFunParamOpList().get(j).getMode().getName().equals("out"))
+                            throw new RuntimeException("L'id " + id.getValue() + " deve essere passato per riferimento");
+                        else if (id.getMode() != null && id.getMode().getName().equals("out") && !procOp.getProcFunParamOpList().get(j).getMode().getName().equals("out"))
+                            throw new RuntimeException("L'id " + id.getValue() + " non deve essere passato per riferimento");
+                    }
             }
 
             Iterator<Type> typeProcCallIt = symbolTypeProcCall.getOutTypeList().iterator();
@@ -248,8 +247,10 @@ public class TypeVisitor implements Visitor {
     @Override
     public Object visit(ReadOp readOp) {
         readOp.getExprList().forEach(expr -> {
-            if (!(expr instanceof ID) && expr.getMode() != null && expr.getMode().getName().equals("DOLLAR"))
+            if (!(expr instanceof ID) && expr.getModeExpr() != null && expr.getModeExpr().getName().equals("DOLLAR"))
                 throw new RuntimeException("Lettura di un'espressione che non è un'id: " + expr.getName());
+            else if (expr instanceof ID id && !symbolTable.checkAssign(id))
+                throw new RuntimeException("Id: " + id.getValue() + " non può essere assegnato");
         });
         readOp.getExprList().forEach(expr -> expr.accept(this));
         return null;
@@ -299,7 +300,7 @@ public class TypeVisitor implements Visitor {
         for (Expr expr : callFunOp.getExprList()) {
 
             SymbolType symbolTypeCallFun = (SymbolType) expr.accept(this);
-            if(expr instanceof CallFunOp && symbolTypeCallFun.getOutTypeList().size()!=1)
+            if (expr instanceof CallFunOp && symbolTypeCallFun.getOutTypeList().size() != 1)
                 throw new RuntimeException("Chiamata a funzione non può essere passata come argomento perché restituisce più valori");
 
             Iterator<Type> typeCallFunIt = symbolTypeCallFun.getOutTypeList().iterator();
@@ -341,8 +342,9 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(Op op) {
-        if(op.getValueL() instanceof CallFunOp || op.getValueR() instanceof CallFunOp)
-            throw new RuntimeException("Non è possibile effettuare operazioni su chiamate a funzione");
+        if (op.getValueL() instanceof CallFunOp callFunOp1 && symbolTable.returnTypeOfId(callFunOp1.getId().getValue()).getOutTypeList().size() > 1 || op.getValueR() instanceof CallFunOp callFunOp2 && symbolTable.returnTypeOfId(callFunOp2.getId().getValue()).getOutTypeList().size() > 1) {
+            throw new RuntimeException("Non è possibile effettuare operazioni su chiamate a funzione con valori di ritorno multipli");
+        }
         switch (op.getName()) {
             case "AddOp", "DivOp":
                 try {
@@ -420,8 +422,8 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(UOp uOp) {
-        if(uOp.getValue() instanceof CallFunOp)
-            throw new RuntimeException("Non è possibile effettuare operazioni su chiamate a funzione");
+        if (uOp.getValue() instanceof CallFunOp callFunOp && symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size() > 1)
+            throw new RuntimeException("Non è possibile effettuare operazioni su chiamate a funzione con valori di ritorno multipli");
         return switch (uOp.getName()) {
             case "UMinusOp" -> OpTableCombinations.checkCombination(
                     new ArrayList<>(

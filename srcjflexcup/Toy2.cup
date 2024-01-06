@@ -219,7 +219,7 @@ IOArgs ::=  OtherIOArgs:expr IOArgs:exprList2 {: RESULT = new ArrayList<Expr>();
                                                     RESULT.add(expr);
                                                     RESULT.addAll(exprList2); :}
        |  DOLLARSIGN LPAR Expr:expr RPAR IOArgs:exprList {: RESULT = new ArrayList<Expr>();
-                                                            expr.setMode(new Mode("DOLLAR"));
+                                                            expr.setModeExpr(new Mode("DOLLAR"));
                                                             RESULT.add(expr);
                                                             RESULT.addAll(exprList); :}
        | /* empty */ {: RESULT = new ArrayList<Expr>(); :};
@@ -264,7 +264,8 @@ Expr ::= FunCall:funCall {: RESULT = funCall; :}
 	| Expr:expr1  EQ Expr:expr2 {: RESULT = new Op("EqOp", expr1, expr2); :}
 	| Expr:expr1  NE Expr:expr2 {: RESULT = new Op("NeOp", expr1, expr2); :}
 	| LPAR Expr:expr RPAR    {:RESULT = expr;
-	                            RESULT.setName(RESULT.getName()+"PAR");:} %prec PAR
+	                            RESULT.setName(RESULT.getName());
+	                            RESULT.setModeExpr(new Mode("PAR"));:} %prec PAR
 	| MINUS Expr:expr {: RESULT = new UOp("UMinusOP", expr); :} %prec UMINUS
     | NOT Expr:expr {: RESULT = new UOp("NotOp", expr); :};
 

@@ -28,8 +28,7 @@ proc main():
         -->! "Operazione non consentita";
     endif;
 
-    -->! "Il risultato e': " + "ciao
-    FD" $(3+4);
+    -->! "Il risultato e': " + "ciao";
     <-- "Vuoi continuare? (1 yes/0 no): " $(answer) ;
 
     if answer = 1 then
@@ -46,6 +45,7 @@ endproc
 
 
 proc somma(input1: integer, input2: integer, out result: integer):
+    <-- "Vuoi continuare? (1 yes/0 no): " $(answer);
     result ^= input1 + input2;
 endproc
 
@@ -55,7 +55,7 @@ endproc
 
 func moltiplicazione(input1: integer, input2: integer) -> integer:
     var result : integer;\
-
+    <-- "Vuoi continuare? (1 yes/0 no): " $(result);
     result ^= input1 * input2;
     return result;
 endfunc

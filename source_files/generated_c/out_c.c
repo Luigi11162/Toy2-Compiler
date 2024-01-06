@@ -53,6 +53,9 @@ void sottrazione (int input1, int input2, int* result);
 
 int moltiplicazione (int input1, int input2) {
 int result;
+printf("Vuoi continuare? (1 yes/0 no): ");
+fflush(stdin);
+scanf("%d", &result);
 result = input1*input2;
 return result;
 }
@@ -144,8 +147,7 @@ else
  {
  printf("%s %s", "Operazione non consentita", "\n");
 }
- printf("%s %d %s", str_concat("Il risultato e': ", "ciao
-    FD"), 3+4, "\n");
+ printf("%s %s", str_concat("Il risultato e': ", "ciao"), "\n");
 printf("Vuoi continuare? (1 yes/0 no): ");
 fflush(stdin);
 scanf("%d", &answer);
@@ -160,6 +162,9 @@ flag = false;
 valore = stampa(str_concat("ed è pari a", integer_to_str(result)));
 }
 void somma (int input1, int input2, int* result) {
+printf("Vuoi continuare? (1 yes/0 no): ");
+fflush(stdin);
+scanf("%d", &answer);
 *result = input1+input2;
 }
 void sottrazione (int input1, int input2, int* result) {
