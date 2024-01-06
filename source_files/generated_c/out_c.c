@@ -164,10 +164,13 @@ valore = stampa(str_concat("ed è pari a", integer_to_str(result)));
 void somma (int input1, int input2, int* result) {
 printf("Vuoi continuare? (1 yes/0 no): ");
 fflush(stdin);
-scanf("%d", &answer);
+scanf("%d", &input1);
 *result = input1+input2;
 }
 void sottrazione (int input1, int input2, int* result) {
+printf("Vuoi continuare? (1 yes/0 no): ");
+fflush(stdin);
+scanf("%d", &input1);
 *result = input1-input2;
 }
 

@@ -74,7 +74,6 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
     public boolean checkAssign(ID id) {
         Optional<SymbolRow> symbolRow = this.getSymbolRowList().stream().filter(symRow -> symRow.getName().equals(id.getValue())).findFirst();
         if (symbolRow.isPresent()) {
-            System.out.println(this.getName());
             return !symbolRow.get().getProperties().equals("in");
         } else if (this.father != null) {
             return this.father.checkAssign(id);

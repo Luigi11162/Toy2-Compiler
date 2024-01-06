@@ -45,7 +45,6 @@ endproc
 
 
 proc somma(input1: integer, input2: integer, out result: integer):
-    <-- "Vuoi continuare? (1 yes/0 no): " $(answer);
     result ^= input1 + input2;
 endproc
 

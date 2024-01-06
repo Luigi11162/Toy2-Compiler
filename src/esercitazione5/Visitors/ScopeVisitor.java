@@ -111,6 +111,7 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(FunOp funOp) {
+        SymbolTable symbolTableFather = symbolTableStatic;
         SymbolTable symbolTable = new SymbolTable(symbolTableStatic, "Func", new ArrayList<>());
         if (funOp.getSymbolTable() == null) {
             funOp.setSymbolTable(symbolTable);
@@ -133,11 +134,13 @@ public class ScopeVisitor implements Visitor {
 
         symbolTableStatic = funOp.getSymbolTable();
         funOp.getBodyOp().accept(this);
+        symbolTableStatic = symbolTableFather;
         return null;
     }
 
     @Override
     public Object visit(ProcOp procOp) {
+        SymbolTable symbolTableFather = symbolTableStatic;
         SymbolTable symbolTable = new SymbolTable(symbolTableStatic, "Proc", new ArrayList<>());
         if (procOp.getSymbolTable() == null) {
             procOp.setSymbolTable(symbolTable);
@@ -160,7 +163,7 @@ public class ScopeVisitor implements Visitor {
 
         symbolTableStatic = procOp.getSymbolTable();
         procOp.getBodyOp().accept(this);
-
+        symbolTableStatic = symbolTableFather;
         return null;
     }
 
@@ -184,11 +187,12 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(ElifOp elifOp) {
+        SymbolTable symbolTableFather = symbolTableStatic;
         symbolTableStatic = new SymbolTable(symbolTableStatic, "Elif", new ArrayList<>());
 
         elifOp.getExpr().accept(this);
         elifOp.getBodyOp().accept(this);
-
+        symbolTableStatic = symbolTableFather;
         return null;
     }
 
@@ -216,18 +220,21 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(IfStatOp ifStatOp) {
+        SymbolTable symbolTableFather = symbolTableStatic;
         symbolTableStatic = new SymbolTable(symbolTableStatic, "If", new ArrayList<>());
 
         ifStatOp.getExpr().accept(this);
 
         ifStatOp.getBodyOp().accept(this);
 
+        symbolTableStatic = symbolTableFather;
         ifStatOp.getElifOpList().forEach(elifOp -> elifOp.accept(this));
 
         symbolTableStatic = new SymbolTable(symbolTableStatic, "Else", new ArrayList<>());
 
         ifStatOp.getBodyOp2().accept(this);
 
+        symbolTableStatic = symbolTableFather;
         return null;
     }
 
@@ -252,10 +259,13 @@ public class ScopeVisitor implements Visitor {
 
     @Override
     public Object visit(WhileOp whileOp) {
+        SymbolTable symbolTableFather = symbolTableStatic;
         symbolTableStatic = new SymbolTable(symbolTableStatic, "While", new ArrayList<>());
 
         whileOp.getExpr().accept(this);
         whileOp.getBodyOp().accept(this);
+
+        symbolTableStatic = symbolTableFather;
 
         return null;
     }
