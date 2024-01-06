@@ -103,7 +103,7 @@ Error = [^]
     {Digits} {return symbol(sym.INTEGER_CONST, yytext());}
     {Numbers} {return symbol(sym.REAL_CONST, yytext());}
     {WhiteSpace} {}
-    {Comment} {} //{return "Commento";}
+    {Comment} {}
 }
 
 <YYINITIAL> {Error} {throw new Error("Errore al carattere: "+yychar+" nella linea: "+yyline+" e colonna: "+yycolumn);}
