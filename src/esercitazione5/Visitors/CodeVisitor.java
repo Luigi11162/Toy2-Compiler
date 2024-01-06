@@ -5,7 +5,6 @@ import esercitazione5.Nodes.Expr.*;
 import esercitazione5.Nodes.Stat.*;
 import esercitazione5.SymbolTable.SymbolTable;
 import esercitazione5.SymbolTable.SymbolType;
-import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
 import java.io.File;
 import java.io.FileWriter;
