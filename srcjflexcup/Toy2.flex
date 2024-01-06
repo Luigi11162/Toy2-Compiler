@@ -105,6 +105,7 @@ Error = [^]
     {WhiteSpace} {}
     {Comment} {} //{return "Commento";}
 }
+
 <YYINITIAL> {Error} {throw new Error("Errore al carattere: "+yychar+" nella linea: "+yyline+" e colonna: "+yycolumn);}
 <YYINITIAL> {String_Error} {throw new Error("Stringa costante non completata al carattere: "+yychar+" nella linea: "+yyline+" e colonna: "+yycolumn);}
 <YYINITIAL> {Comment_Error} {throw new Error("Commento non chiuso al carattere: "+yychar+" nella linea: "+yyline+" e colonna: "+yycolumn);}
