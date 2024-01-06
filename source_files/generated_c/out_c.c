@@ -89,6 +89,8 @@ functionStructReturnValue.value3 = moltiplicazione(1, 2);
 return functionStructReturnValue;
 }
 char* stampa (char* stringa) {
+char* s = malloc(MAXCHAR);
+s = strncpy(s,"ciao", MAXCHAR);
 return stringa;
 }
 
@@ -142,7 +144,8 @@ else
  {
  printf("%s %s", "Operazione non consentita", "\n");
 }
- printf("%s %d %s", str_concat("Il risultato e': ", "ciao"), 3+4, "\n");
+ printf("%s %d %s", str_concat("Il risultato e': ", "ciao\n
+    FD"), 3+4, "\n");
 printf("Vuoi continuare? (1 yes/0 no): ");
 fflush(stdin);
 scanf("%d", &answer);

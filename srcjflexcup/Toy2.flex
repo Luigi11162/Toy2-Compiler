@@ -47,8 +47,6 @@ Error = [^]
     }
 %}
 
-%state STRING
-
 %%
 
 <YYINITIAL> "var" {return symbol(sym.VAR);}
@@ -106,7 +104,10 @@ Error = [^]
     {Numbers} {return symbol(sym.REAL_CONST, yytext());}
     {WhiteSpace} {}
     {Comment} {} //{return "Commento";}
-    {String_Error} {return symbol(sym.error, "Stringa costante non completata");}
-    {Comment_Error} {return symbol(sym.error, "Commento non chiuso");}
-    {Error} {return symbol(sym.error, "Error at char: "+yychar+" in line: "+yyline+" and column: "+yycolumn);}
 }
+<YYINITIAL> {Error} {throw new Error("Errore al carattere: "+yychar+" nella linea: "+yyline+" e colonna: "+yycolumn);}
+<YYINITIAL> {String_Error} {throw new Error("Stringa costante non completata al carattere: "+yychar+" nella linea: "+yyline+" e colonna: "+yycolumn);}
+<YYINITIAL> {Comment_Error} {throw new Error("Commento non chiuso al carattere: "+yychar+" nella linea: "+yyline+" e colonna: "+yycolumn);}
+
+
+

@@ -28,8 +28,8 @@ proc main():
         -->! "Operazione non consentita";
     endif;
 
-
-    -->! "Il risultato e': " + "ciao" $(3+4);
+    -->! "Il risultato e': " + "ciao\n
+    FD" $(3+4);
     <-- "Vuoi continuare? (1 yes/0 no): " $(answer) ;
 
     if answer = 1 then
@@ -41,9 +41,9 @@ proc main():
     endwhile;
     var resultReal : real;\
     var valore : string;\
-    valore ^= stampa("ed è pari a"+result);
+    valore ^= stampa("ed è pari a" +result);
 endproc
-%%
+
 
 proc somma(input1: integer, input2: integer, out result: integer):
     result ^= input1 + input2;
@@ -92,5 +92,7 @@ return moltiplicazione(1,2),moltiplicazione(1,2), moltiplicazione(1,2), moltipli
 endfunc
 
 func stampa(stringa: string)->string:
+var s ^= "ciao";\
 return stringa;
 endfunc
+
