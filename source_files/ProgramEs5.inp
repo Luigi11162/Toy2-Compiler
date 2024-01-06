@@ -28,7 +28,7 @@ proc main():
         -->! "Operazione non consentita";
     endif;
 
-    -->! "Il risultato e': " + "ciao\n
+    -->! "Il risultato e': " + "ciao
     FD" $(3+4);
     <-- "Vuoi continuare? (1 yes/0 no): " $(answer) ;
 

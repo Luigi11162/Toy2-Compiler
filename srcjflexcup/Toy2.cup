@@ -62,7 +62,7 @@ precedence left LE, GE, GT, LT;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
 precedence right NOT, UMINUS;
-precedence nonassoc PAR;
+precedence left PAR;
 
 
 Program ::= IterNoProcedure:program1 Procedure:procedure Iter:program2 {: ArrayList<VarDeclOp> varDeclList = new ArrayList<>();
