@@ -884,6 +884,7 @@ public class CodeVisitor implements Visitor {
             String nameType;
             //Il type visitor restituisce il tipo se l'espressione è un'operazione
             TypeVisitor typeVisitor = new TypeVisitor();
+            TypeVisitor.symbolTable =symbolTable;
             if (expr instanceof Const const1)
                 nameType = const1.getType().getName();
             else if (expr instanceof ID id)

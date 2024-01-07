@@ -35,21 +35,28 @@ char* result=malloc(sizeof(char)*MAXCHAR);
 result=strcat(result,str1);
 result=strcat(result,str2);
 return result;}
-void converti (double *gradi);
+void stampa_tabellina (int max_value);
 
 
 
-void converti (double *gradi) {
-*gradi = *gradi*9/5+32;
+void stampa_tabellina (int max_value) {
+int i = 1;
+int j = 1;
+while(i<=max_value)  {
+while(j<=max_value)  {
+ printf("%d ", i*j);
+j = j+1;
+}
+j = 1;
+i = i+1;
+ printf("%s %s", "", "\n");
+}
 }
 void main () {
-double temperatura_celsius;
-double buffer;
-printf("Inserire temperatura Celsius: ");
+int size_tabellina;
+printf("Inserisci la grandezza della tabellina: ");
 fflush(stdin);
-scanf("%lf", &temperatura_celsius);
-buffer = temperatura_celsius;
-converti(&temperatura_celsius);
- printf("%lf %s %lf %s", buffer, "celsius equivalgono a: ", temperatura_celsius, "\n");
+scanf("%d", &size_tabellina);
+stampa_tabellina(size_tabellina);
 }
 
