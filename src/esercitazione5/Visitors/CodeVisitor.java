@@ -67,6 +67,7 @@ public class CodeVisitor implements Visitor {
             //creo le firme dei metodi
             programOp.getFunOpList().forEach(funOp -> {
                         try {
+                            symbolTable = funOp.getSymbolTable();
                             if (funOp.getTypeList().size() > 1) {
                                 funOp.getId().accept(this);
                                 fileWriter.write("Struct");
@@ -94,6 +95,7 @@ public class CodeVisitor implements Visitor {
 
             programOp.getProcOpList().forEach(procOp -> {
                         try {
+                            symbolTable = procOp.getSymbolTable();
                             if (procOp.getId().getValue().equals("main"))
                                 return;
                             fileWriter.write("void ");
@@ -116,6 +118,8 @@ public class CodeVisitor implements Visitor {
                         }
                     }
             );
+
+            symbolTable = programOp.getSymbolTable();
 
             fileWriter.write("\n");
             programOp.getVarDeclOpList().forEach(varDeclOp -> varDeclOp.accept(this));
@@ -277,7 +281,6 @@ public class CodeVisitor implements Visitor {
     public Object visit(ProcFunParamOp procFunParamOp) {
         try {
             procFunParamOp.getType().accept(this);
-            procFunParamOp.getMode().accept(this);
             fileWriter.write(" ");
             procFunParamOp.getId().accept(this);
         } catch (IOException e) {
@@ -364,8 +367,6 @@ public class CodeVisitor implements Visitor {
                     for (int i = 0; i < symbolTable.returnTypeOfId(callFunOp.getId().getValue()).getOutTypeList().size(); i++) {
                         ID id = idIt.next();
                         //Controllo se è un puntatore
-                        if (symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
-                            fileWriter.write("*");
                         id.accept(this);
                         fileWriter.write(" = ");
                         callFunOp.getId().accept(this);
@@ -375,9 +376,6 @@ public class CodeVisitor implements Visitor {
                     j++;
                 } else {
                     ID id = idIt.next();
-                    //Controllo se è un puntatore
-                    if (symbolTable.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
-                        fileWriter.write("*");
                     id.accept(this);
                     fileWriter.write(" = ");
                     expr.accept(this);
@@ -633,12 +631,14 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(ID id) {
         try {
+            //Controllo se ci sono le parentesi
             if (id.getModeExpr() != null && id.getModeExpr().getName().equals("PAR")) {
                 fileWriter.write("(");
                 fileWriter.write(id.getValue());
                 fileWriter.write(")");
-            } else if (id.getMode()!= null && id.getMode().getName().equals("DOLLAR")) {
-                fileWriter.write("%");
+                //Controllo se è un puntatore
+            } else if (symbolTable.checkIfIsOut(id)) {
+                fileWriter.write("*");
                 fileWriter.write(id.getValue());
             } else
                 fileWriter.write(id.getValue());
@@ -730,7 +730,7 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(UOp uOp) {
         try {
-            if (uOp.getModeExpr()!=null && uOp.getModeExpr().getName().equals("PAR"))
+            if (uOp.getModeExpr() != null && uOp.getModeExpr().getName().equals("PAR"))
                 fileWriter.write("(");
             switch (uOp.getName()) {
                 case "UMinusOp":
@@ -744,7 +744,7 @@ public class CodeVisitor implements Visitor {
             }
 
             uOp.getValue().accept(this);
-            if (uOp.getModeExpr()!=null && uOp.getModeExpr().getName().equals("PAR"))
+            if (uOp.getModeExpr() != null && uOp.getModeExpr().getName().equals("PAR"))
                 fileWriter.write(")");
         } catch (IOException e) {
             throw new RuntimeException(e);

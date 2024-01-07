@@ -60,25 +60,29 @@ public class SymbolTable extends HashMap<String, ArrayList<SymbolRow>> {
     //Restituisce il tipo di un dato id
     public SymbolType returnTypeOfId(String name) {
         Optional<SymbolRow> symbolRowOptional = this.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(name)).findFirst();
-        if (symbolRowOptional.isPresent()) {
+        if (symbolRowOptional.isPresent())
             return symbolRowOptional.get().getSymbolType();
-        } else if (this.father != null) {
+        else if (this.father != null)
             return this.father.returnTypeOfId(name);
-        } else {
-            throw new RuntimeException("L'id " + name + " non è stato dichiarato");
-        }
+        throw new RuntimeException("L'id " + name + " non è stato dichiarato");
     }
 
     //Metodo che controlla se id è stato precedentemente dichiarato
     //Restituisce un boolean per indicare se gli può essere assegnato un valore
     public boolean checkAssign(ID id) {
         Optional<SymbolRow> symbolRow = this.getSymbolRowList().stream().filter(symRow -> symRow.getName().equals(id.getValue())).findFirst();
-        if (symbolRow.isPresent()) {
+        if (symbolRow.isPresent())
             return !symbolRow.get().getProperties().equals("in");
-        } else if (this.father != null) {
+        else if (this.father != null)
             return this.father.checkAssign(id);
-        } else {
-            throw new RuntimeException("L'id " + id.getValue() + " non è stato dichiarato");
-        }
+        throw new RuntimeException("L'id " + id.getValue() + " non è stato dichiarato");
+    }
+
+    public boolean checkIfIsOut(ID id) {
+        if (this.getSymbolRowList().stream().filter(symbolRow -> symbolRow.getName().equals(id.getValue())).anyMatch(symbolRow -> symbolRow.getProperties().equals("out")))
+            return true;
+        else if (this.father != null)
+            return father.checkIfIsOut(id);
+        return false;
     }
 }
