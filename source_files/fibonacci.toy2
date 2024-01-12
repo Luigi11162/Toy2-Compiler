@@ -12,7 +12,7 @@ endfunc
 
 
 proc main():
-    var a ^= 3;\
+    var a ^= 25;\
 
     -->! "Fib = " $(fib(a));
 endproc

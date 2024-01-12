@@ -568,9 +568,11 @@ public class CodeVisitor implements Visitor {
             //Non inserisco la virgola
             if (!writeOp.getExprList().isEmpty())
                 writeOp.getExprList().get(writeOp.getExprList().size() - 1).accept(this);
-            if (writeOp.getMode().getName().equals("writeReturn"))
-                fileWriter.write(", \"\\n\");\n");
-            else
+            if (writeOp.getMode().getName().equals("writeReturn")) {
+                if (!writeOp.getExprList().isEmpty())
+                    fileWriter.write(",");
+                fileWriter.write(" \"\\n\");\n");
+            } else
                 fileWriter.write(");\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -884,7 +886,7 @@ public class CodeVisitor implements Visitor {
             String nameType;
             //Il type visitor restituisce il tipo se l'espressione è un'operazione
             TypeVisitor typeVisitor = new TypeVisitor();
-            TypeVisitor.symbolTable =symbolTable;
+            TypeVisitor.symbolTable = symbolTable;
             if (expr instanceof Const const1)
                 nameType = const1.getType().getName();
             else if (expr instanceof ID id)

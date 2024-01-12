@@ -5,8 +5,6 @@ proc main():
     var input1, input2, answer : integer;\
     var flag ^= true;\
     var result : integer;\
-    var ciao ^= "ciao";\
-     ciao ^= true+"ciao" + 8 + true;
 
     while flag = true do
     <-- "Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione): " $(operazione);
@@ -28,7 +26,7 @@ proc main():
         -->! "Operazione non consentita";
     endif;
 
-    -->! "Il risultato e': " + "ciao";
+    -->! "Il risultato e': "  $(result);
     <-- "Vuoi continuare? (1 yes/0 no): " $(answer) ;
 
     if answer = 1 then
@@ -54,7 +52,6 @@ endproc
 
 func moltiplicazione(input1: integer, input2: integer) -> integer:
     var result : integer;\
-    <-- "Vuoi continuare? (1 yes/0 no): " $(result);
     result ^= input1 * input2;
     return result;
 endfunc
