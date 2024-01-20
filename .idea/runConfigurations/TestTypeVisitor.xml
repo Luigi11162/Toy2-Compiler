@@ -2,7 +2,7 @@
   <configuration default="false" name="TestTypeVisitor" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="esercitazione5.Test.TestTypeVisitor" />
     <module name="bacco-valletta_es5" />
-    <option name="PROGRAM_PARAMETERS" value="source_files/ProgramEs5.inp" />
+    <option name="PROGRAM_PARAMETERS" value="source_files/ProgramEs5.toy2" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

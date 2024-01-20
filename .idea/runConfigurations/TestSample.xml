@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="TestCodeVisitor" type="Application" factoryName="Application">
+  <configuration default="false" name="TestSample" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="esercitazione5.Test.TestCodeVisitor" />
     <module name="bacco-valletta_es5" />
-    <option name="PROGRAM_PARAMETERS" value="source_files/ProgramEs5.toy2" />
+    <option name="PROGRAM_PARAMETERS" value="source_files/sample.toy2" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
