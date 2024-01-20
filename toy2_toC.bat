@@ -4,4 +4,4 @@ SET classPath=%~dp0src\esercitazione5
 
 cd %compilerPath%
 
-java TestCodeVisitor.main %toy2Path%
+java TestCodeVisitor %toy2Path%
