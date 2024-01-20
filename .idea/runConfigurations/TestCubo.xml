@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TestCubo" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="esercitazione5.Test.TestCodeVisitor" />
+    <module name="bacco-valletta_es5" />
+    <option name="PROGRAM_PARAMETERS" value="source_files/calcolacubo.toy2" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

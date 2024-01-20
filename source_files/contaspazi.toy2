@@ -1,0 +1,26 @@
+proc contaspazi():
+    var spazi, altri ^= 0, 0;
+    c: string;\
+
+    <-- $(c);
+
+    while c <> "EOF" do
+        if (c = " ") then
+            spazi ^= spazi + 1;
+        else
+            altri ^= altri + 1;
+        endif;
+        <-- $(c);
+    endwhile;
+
+    if(spazi > altri) then
+       -->! "Piu\' spazi";
+    else
+       -->! "Piu\' altri caratteri";
+    endif;
+
+endproc
+
+proc main():
+    contaspazi();
+endproc
