@@ -11,14 +11,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 
 
 public class CodeVisitor implements Visitor {
     private static SymbolTable symbolTable;
     private static FileWriter fileWriter;
-    private static int tabs = 0;
     //Per gestire il return della function
     private static ID funId;
 
