@@ -259,7 +259,6 @@ public class CodeVisitor implements Visitor {
 
     @Override
     public Object visit(BodyOp bodyOp) {
-        ++tabs;
         try {
             if (bodyOp.getSymbolTable() != null)
                 symbolTable = bodyOp.getSymbolTable();
@@ -272,7 +271,6 @@ public class CodeVisitor implements Visitor {
             throw new RuntimeException(e);
         }
         symbolTable = symbolTable.getFather();
-        --tabs;
         return null;
     }
 
