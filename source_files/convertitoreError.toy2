@@ -1,0 +1,17 @@
+%CONVERTITORE CELSIUS TO FAHRENEIT USANDO PASSAGGIO PER RIFERIMENTO%
+
+%Errore: gradi è di tipo integer, ma viene utilizzato come se fosse real%
+proc converti(out gradi : integer):
+    gradi ^= gradi*9/5 +32;
+endproc
+
+proc main():
+    var temperatura_celsius:real;\ var buffer : real;\
+
+    <-- "Inserire temperatura Celsius: " $(temperatura_celsius);
+    buffer ^= temperatura_celsius;
+
+    converti(@temperatura_celsius);
+
+    -->! $(buffer) "celsius equivalgono a: " $(temperatura_celsius);
+endproc

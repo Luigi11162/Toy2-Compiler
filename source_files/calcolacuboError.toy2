@@ -1,0 +1,13 @@
+func cubo(num : integer)->integer:
+    return num*num*num;
+endfunc
+
+proc main():
+    %Errore: endvar mancante%
+    var num : integer;
+
+    <-- $(num);
+
+    -->! $(cubo(num));
+
+endproc
