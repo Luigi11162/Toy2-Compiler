@@ -78,6 +78,37 @@
                         <expectedConflicts>0</expectedConflicts>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <!-- Build an executable JAR -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addClasspath>true</addClasspath>
+                                <classpathPrefix>lib/</classpathPrefix>
+                                <mainClass>esercitazione5.Test.TestCodeVisitor</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <configuration>
+                        <finalName>toy2Compiler</finalName>
+                        <outputDirectory>${project.basedir}/jar_file</outputDirectory>
+                        <archive>
+                            <manifest>
+                                <mainClass>esercitazione5.Test.TestCodeVisitor</mainClass>
+                            </manifest>
+                        </archive>
+                        <descriptorSourceDirectory>${project.basedir}/src</descriptorSourceDirectory>
+                        <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
+                    </configuration>
+                </plugin>
 
             </plugins>
         </build>

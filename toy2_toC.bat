@@ -1,7 +1,13 @@
-SET toy2Path=source_files\ProgramEs5.inp
-SET compilerPath=target//classes//esercitazione5//Test//
-SET classPath=%~dp0src\esercitazione5
+SET toy2Path=..\source_files\ProgramEs5.toy2
+SET compilerPath=jar_file
+SET c_outPath=source_files//generated_c
 
 cd %compilerPath%
 
-java TestCodeVisitor %toy2Path%
+SET jar_file=toy2Compiler-jar-with-dependencies.jar
+
+java -jar %jar_file% %toy2Path%
+
+cd %c_outPath%
+
+gcc out_c.c

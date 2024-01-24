@@ -25,10 +25,11 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(ProgramOp programOp) {
 
-        Path path = Paths.get("source_files" + File.separator + "generated_c" + File.separator);
+        String path = "source_files" + File.separator + "generated_c" + File.separator;
+
         try {
-            if (!Files.exists(path))
-                Files.createDirectory(path);
+            if (!Files.exists(Path.of(path)))
+                new File(path).mkdirs();
 
             File file = new File(path + File.separator + "out_c.c");
 
