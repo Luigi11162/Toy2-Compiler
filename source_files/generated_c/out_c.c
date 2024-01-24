@@ -35,130 +35,74 @@ char* result=malloc(sizeof(char)*MAXCHAR);
 result=strcat(result,str1);
 result=strcat(result,str2);
 return result;}
-typedef struct {
-	int value0;
-	int value1;
-	int value2;
-	int value3;
-} functionStruct;
+char* stampa (char* messaggio);
+void sommac (int a, int d, double b, char* *size, double *result);
 
-int moltiplicazione (int input1, int input2);
-double divisione (int input1, int input2);
-int somma_con_commento (int ac, int b);
-functionStruct function ();
-char* stampa (char* stringa);
-void somma (int input1, int input2, int *result);
-void sottrazione (int input1, int input2, int *result);
+int c = 1;
 
-
-int moltiplicazione (int input1, int input2) {
-int result;
-result = input1*input2;
-return result;
+char* stampa (char* messaggio) {
+int i = 0;
+while(i<4)  {
+i = i+1;
+ printf("%s",  "\n");
 }
-double divisione (int input1, int input2) {
-double result;
-if (input2==0) {
- printf("%s ", "Errore");
-result = 0.0;
-}
-return result;
-}
-int somma_con_commento (int ac, int b) {
-int risultato;
-risultato = ac+b;
-if ((risultato)>4) {
-int c;
-return c;
-}
-else if (ac>5)  {
-return 4;
-}
-else
- {
-int c;
-return c;
-}
-}
-functionStruct function () {
-functionStruct functionStructReturnValue;
-functionStructReturnValue.value0 = moltiplicazione(1, 2);
-functionStructReturnValue.value1 = moltiplicazione(1, 2);
-functionStructReturnValue.value2 = moltiplicazione(1, 2);
-functionStructReturnValue.value3 = moltiplicazione(1, 2);
-return functionStructReturnValue;
-}
-char* stampa (char* stringa) {
-char* s = malloc(MAXCHAR);
-s = strncpy(s,"ciao", MAXCHAR);
-return stringa;
+ printf("%s ", messaggio);
+return "ok";
 }
 
-void main () {
-char* operazione = malloc(MAXCHAR);
-int input1;
-int input2;
-int answer;
-bool flag = true;
-int result;
-double resultReal;
+void sommac (int a, int d, double b, char* *size, double *result) {
+*result = a+b+c+d;
+if (*result>100) {
 char* valore = malloc(MAXCHAR);
-while(flag==true)  {
-int input8;
-printf("Inserisci l'operazione da effettuare (somma, sottrazione, divisione, moltiplicazione): ");
-fflush(stdin);
-scanf("%s", operazione);
-printf("Inserisci il primo input: ");
-fflush(stdin);
-scanf("%d", &input1);
-printf("Inserisci il secondo input: ");
-fflush(stdin);
-scanf("%d", &input2);
-if (strncmp(operazione, "somma", MAXCHAR) == 0) {
-somma(input1, input2, &result);
+valore = strncpy(valore,"grande", MAXCHAR);
+*size = valore;
 }
-else if (strncmp(operazione, "sottrazione", MAXCHAR) == 0)  {
-sottrazione(input1, input2, &result);
-}
-else if (strncmp(operazione, "divisione", MAXCHAR) == 0)  {
-resultReal = divisione(input1, input2);
-}
-else if (strncmp(operazione, "moltiplicazione", MAXCHAR) == 0)  {
-result = moltiplicazione(input1, input2);
-}
-else if (strncmp(operazione, "func", MAXCHAR) == 0)  {
-int res1;
-int res2;
-int res3;
-int res4;
-functionStruct functionReturned0 = function();
-res1 = functionReturned0.value0;
-res2 = functionReturned0.value1;
-res3 = functionReturned0.value2;
-res4 = functionReturned0.value3;
+else if (*result>50)  {
+char* valore = malloc(MAXCHAR);
+valore = strncpy(valore,"media", MAXCHAR);
+*size = valore;
 }
 else
  {
- printf("%s %s", "Operazione non consentita", "\n");
+char* valore = malloc(MAXCHAR);
+valore = strncpy(valore,"piccola", MAXCHAR);
+*size = valore;
 }
- printf("%s %d %s", "Il risultato e': ", result, "\n");
-printf("Vuoi continuare? (1 yes/0 no): ");
+}
+void main () {
+int a = 1;
+double b = 2.2;
+int x = 3;
+char* taglia = malloc(MAXCHAR);
+char* ans1 = malloc(MAXCHAR);
+char* ans = malloc(MAXCHAR);
+ans = strncpy(ans,"no", MAXCHAR);
+double risultato = 0.0;
+char* valore = malloc(MAXCHAR);
+valore = strncpy(valore,"nok", MAXCHAR);
+sommac(a, x, b, &taglia, &risultato);
+valore = stampa(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("la somma di ", integer_to_str(a)), " e "), real_to_str(b)), " incrementata di "), integer_to_str(c)), " è "), taglia));
+valore = stampa(str_concat("ed è pari a ", real_to_str(risultato)));
+printf("vuoi continuare? (si/no) - inserisci due volte la risposta");
 fflush(stdin);
-scanf("%d", &answer);
-if (answer==1) {
-flag = true;
+scanf("%s", ans);
+fflush(stdin);
+scanf("%s", ans1);
+while(strncmp(ans, "si", MAXCHAR) == 0)  {
+printf("inserisci un intero:");
+fflush(stdin);
+scanf("%d", &a);
+printf("inserisci un reale:");
+fflush(stdin);
+scanf("%lf", &b);
+sommac(a, x, b, &taglia, &risultato);
+valore = stampa(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("la somma di ", integer_to_str(a)), " e "), real_to_str(b)), " incrementata di "), integer_to_str(c)), " è "), taglia));
+valore = stampa(str_concat(" ed è pari a ", real_to_str(risultato)));
+printf("vuoi continuare? (si/no):\t");
+fflush(stdin);
+scanf("%s", ans);
 }
-else
- {
-flag = false;
-}
-}
-valore = stampa(str_concat("ed � pari a", integer_to_str(result)));
-}
-void somma (int input1, int input2, int *result) {
-*result = input1+input2;
-}
-void sottrazione (int input1, int input2, int *result) {
-*result = input1-input2;
+ printf("%s",  "\n");
+ printf("%s ", "ciao");
 }
 
