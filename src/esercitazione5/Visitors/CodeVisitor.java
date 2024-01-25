@@ -19,17 +19,22 @@ public class CodeVisitor implements Visitor {
     private static FileWriter fileWriter;
     //Per gestire il return della function
     private static ID funId;
+    private final String fileName;
+
+    public CodeVisitor(String fileName){
+        this.fileName=fileName;
+    }
 
     @Override
     public Object visit(ProgramOp programOp) {
 
-        String path = "source_files" + File.separator + "generated_c" + File.separator;
+        String path = "source_files" + File.separator + "c_out" + File.separator;
 
         try {
             if (!Files.exists(Path.of(path)))
                 new File(path).mkdirs();
 
-            File file = new File(path + File.separator + "out_c.c");
+            File file = new File(path + File.separator + this.fileName+".c");
 
             file.createNewFile();
 

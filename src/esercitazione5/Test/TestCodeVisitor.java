@@ -8,6 +8,7 @@ import esercitazione5.Visitors.TypeVisitor;
 import esercitazione5.parser;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -19,6 +20,8 @@ public class TestCodeVisitor {
             throw new Exception("File mancante");
         }
         String filePath = args[0];
+        File file = new File(filePath);
+
         FileInputStream stream = new FileInputStream(filePath);
         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         Lexer scanner = new Lexer(reader);
@@ -28,7 +31,7 @@ public class TestCodeVisitor {
 
         ((ProgramOp) root).accept(new ScopeVisitor());
         ((ProgramOp) root).accept(new TypeVisitor());
-        ((ProgramOp) root).accept(new CodeVisitor());
+        ((ProgramOp) root).accept(new CodeVisitor(file.getName().substring(0, file.getName().lastIndexOf('.'))));
 
         while (!scanner.yyatEOF()) {
             p.debug_parse();
