@@ -137,7 +137,9 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(ElifOp elifOp) {
-        elifOp.getExpr().accept(this);
+        SymbolType symbolType = (SymbolType) elifOp.getExpr().accept(this);
+        if(!symbolType.getOutTypeList().get(0).getName().equals("Boolean"))
+            throw new RuntimeException("L'espressione non è un booleano");
         elifOp.getBodyOp().accept(this);
         return null;
     }
@@ -193,7 +195,9 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(IfStatOp ifStatOp) {
-        ifStatOp.getExpr().accept(this);
+        SymbolType symbolType = (SymbolType) ifStatOp.getExpr().accept(this);
+        if(!symbolType.getOutTypeList().get(0).getName().equals("Boolean"))
+            throw new RuntimeException("L'espressione non è un booleano");
         ifStatOp.getBodyOp().accept(this);
         ifStatOp.getElifOpList().forEach(elifOp -> elifOp.accept(this));
         ifStatOp.getBodyOp2().accept(this);
@@ -276,7 +280,9 @@ public class TypeVisitor implements Visitor {
 
     @Override
     public Object visit(WhileOp whileOp) {
-        whileOp.getExpr().accept(this);
+        SymbolType symbolType = (SymbolType) whileOp.getExpr().accept(this);
+        if(!symbolType.getOutTypeList().get(0).getName().equals("Boolean"))
+            throw new RuntimeException("L'espressione non è un booleano");
         whileOp.getBodyOp().accept(this);
         return null;
     }
