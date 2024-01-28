@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 public class TestParser {
 
-    public static void main(String[] args) throws Exception {
+    public void parse(String[] args) throws Exception{
         if (args.length != 1){
             throw new Exception("File mancante");
         }

@@ -85,7 +85,7 @@
                         <outputDirectory>${project.basedir}/jar_file</outputDirectory>
                         <archive>
                             <manifest>
-                                <mainClass>esercitazione5.Test.TestCodeVisitor</mainClass>
+                                <mainClass>esercitazione5.Test.Compiler</mainClass>
                             </manifest>
                         </archive>
                         <descriptorSourceDirectory>${project.basedir}/src</descriptorSourceDirectory>
@@ -100,7 +100,7 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>3.0.0</version>
                     <configuration>
-                        <mainClass>esercitazione5.Test.TestCodeVisitor</mainClass>
+                        <mainClass>esercitazione5.Test.Compiler</mainClass>
                     </configuration>
                 </plugin>
             </plugins>
