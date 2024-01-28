@@ -21,21 +21,20 @@ public class Compiler {
         }
         String filePath = args[0];
         File file = new File(filePath);
-        String fileName = file.getName().substring(0, file.getName().lastIndexOf('.'));
 
         FileInputStream stream = new FileInputStream(filePath);
         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         Lexer scanner = new Lexer(reader);
         parser p = new parser(scanner);
 
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode) p.parse().value;
-
         try {
+            DefaultMutableTreeNode root = (DefaultMutableTreeNode) p.parse().value;
+
             ((ProgramOp) root).accept(new ScopeVisitor());
             ((ProgramOp) root).accept(new TypeVisitor());
-            ((ProgramOp) root).accept(new CodeVisitor(fileName));
+            ((ProgramOp) root).accept(new CodeVisitor(file.getName().substring(0, file.getName().lastIndexOf('.'))));
         } catch (Exception e) {
-            System.out.println("Errore di compilazione nel file: " + fileName + "\n" + e.getMessage());
+            System.out.println("Errore di compilazione nel file: " + filePath + "\n" + e.getMessage());
         }
     }
 
