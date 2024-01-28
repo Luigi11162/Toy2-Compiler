@@ -445,7 +445,6 @@ public class CodeVisitor implements Visitor {
             if (readOp.getExprList().size() > 1)
                 for (int i = 0; i < readOp.getExprList().size() - 1; i++) {
                     if (readOp.getExprList().get(i) instanceof ID id) {
-                        fileWriter.write("fflush(stdin);\n");
                         fileWriter.write("scanf(\"");
                         switch (symbolTable.returnTypeOfId(id.getValue()).getOutTypeList().get(0).getName()) {
                             case "String":
