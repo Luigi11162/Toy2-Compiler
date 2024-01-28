@@ -28,7 +28,7 @@ public class CodeVisitor implements Visitor {
     @Override
     public Object visit(ProgramOp programOp) {
 
-        String path = "source_files" + File.separator + "c_out" + File.separator;
+        String path = "test_files" + File.separator + "c_out" + File.separator;
 
         try {
             if (!Files.exists(Path.of(path)))
