@@ -21,6 +21,7 @@ public class Compiler {
         }
         String filePath = args[0];
         File file = new File(filePath);
+        String fileName = file.getName().substring(0, file.getName().lastIndexOf('.'));
 
         FileInputStream stream = new FileInputStream(filePath);
         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
@@ -29,12 +30,12 @@ public class Compiler {
 
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) p.parse().value;
 
-        ((ProgramOp) root).accept(new ScopeVisitor());
-        ((ProgramOp) root).accept(new TypeVisitor());
-        ((ProgramOp) root).accept(new CodeVisitor(file.getName().substring(0, file.getName().lastIndexOf('.'))));
-
-        while (!scanner.yyatEOF()) {
-            p.debug_parse();
+        try {
+            ((ProgramOp) root).accept(new ScopeVisitor());
+            ((ProgramOp) root).accept(new TypeVisitor());
+            ((ProgramOp) root).accept(new CodeVisitor(fileName));
+        } catch (Exception e) {
+            System.out.println("Errore di compilazione nel file: " + fileName + "\n" + e.getMessage());
         }
     }
 
