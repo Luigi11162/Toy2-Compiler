@@ -310,4 +310,25 @@ public class ScopeVisitor implements Visitor {
         uOp.getValue().accept(this);
         return null;
     }
+
+    @Override
+    public Object visit(LetStat letStat) {
+        SymbolTable symbolTableFather = symbolTableStatic;
+        symbolTableStatic = new SymbolTable(symbolTableStatic, "Let", new ArrayList<>());
+        letStat.setSymbolTable(symbolTableStatic);
+
+        letStat.getVarDeclList().forEach(varDeclOp -> varDeclOp.accept(this));
+        letStat.getGoWhenList().forEach(goWhenOp -> goWhenOp.accept(this));
+        letStat.getStatList().forEach(stat -> stat.accept(this));
+
+        symbolTableStatic=symbolTableFather;
+        return null;
+    }
+
+    @Override
+    public Object visit(GoWhenOp goWhenOp) {
+        goWhenOp.getExpr().accept(this);
+        goWhenOp.getStatList().forEach(stat -> stat.accept(this));
+        return null;
+    }
 }

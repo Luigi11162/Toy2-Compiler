@@ -1,0 +1,12 @@
+%Return invalido, deve stare almeno in tutti i when%
+func ritorna_ok()->integer:
+let var a^=1;\;
+go.when(a<10) .loop{a^=a+1;return a;}
+.when(a=10) .loop{a^=32; %return a;%}
+.otherwise.do {-->"a è uguale a" $(a);};
+endfunc
+
+proc main():
+
+--> $(ritorna_ok());
+endproc

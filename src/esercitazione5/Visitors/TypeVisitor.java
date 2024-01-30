@@ -7,7 +7,9 @@ import esercitazione5.SymbolTable.SymbolTable;
 import esercitazione5.SymbolTable.SymbolType;
 import esercitazione5.Visitors.OpTable.OpTableCombinations;
 
+import java.awt.geom.GeneralPath;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TypeVisitor implements Visitor {
 
@@ -40,11 +42,17 @@ public class TypeVisitor implements Visitor {
     public Object visit(FunOp funOp) {
         symbolTable = funOp.getSymbolTable();
         class ReturnCheck {
-            private static boolean checkReturn(BodyOp bodyOp, FunOp funOp, Visitor visitor) {
+            private static boolean checkReturn(BodyOp bodyOp, FunOp funOp, Visitor visitor, ArrayList<Stat> statList) {
                 boolean flag = false;
-                if (bodyOp.getSymbolTable() != null)
-                    symbolTable = bodyOp.getSymbolTable();
-                for (Stat stat : bodyOp.getStatList()) {
+                ArrayList<Stat> statListFor;
+                if(bodyOp!=null) {
+                    if (bodyOp.getSymbolTable() != null)
+                        symbolTable = bodyOp.getSymbolTable();
+                    statListFor=bodyOp.getStatList();
+                }else{
+                    statListFor=statList;
+                }
+                for (Stat stat : statListFor) {
                     //Controlla se tutti i return restituiscono il numero di valori e di tipi corretti
                     if (stat.getName().equals("ReturnOp")) {
                         SymbolType symbolType = (SymbolType) stat.accept(visitor);
@@ -65,19 +73,26 @@ public class TypeVisitor implements Visitor {
                         //Se lo statement è un if controlla che il return, se non è presente nel body,
                         // debba essere presente e debba essere corretto in ogni body dell'if, elseif ed else
                     } else if (stat instanceof IfStatOp ifStatOp) {
-                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor)
-                                && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor)
+                        flag = flag || ReturnCheck.checkReturn(ifStatOp.getBodyOp(), funOp, visitor, null)
+                                && ReturnCheck.checkReturn(ifStatOp.getBodyOp2(), funOp, visitor, null)
                                 && ifStatOp.getElifOpList().stream().allMatch(elifOp ->
-                                ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor));
+                                ReturnCheck.checkReturn(elifOp.getBodyOp(), funOp, visitor, null));
                         //Se lo statement è un while controlla se il return è presente e corretto
                     } else if (stat instanceof WhileOp whileOp) {
-                        flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp(), funOp, visitor);
+                        flag = flag || ReturnCheck.checkReturn(whileOp.getBodyOp(), funOp, visitor,null);
+                    } else if (stat instanceof LetStat letStat){
+                        symbolTable=letStat.getSymbolTable();
+                        flag = flag || ReturnCheck.checkReturn(null, funOp, visitor, letStat.getStatList());
+                        boolean flagWhen=true;
+                        for (GoWhenOp goWhenOp : letStat.getGoWhenList())
+                            flagWhen= flagWhen && ReturnCheck.checkReturn(null, funOp, visitor,goWhenOp.getStatList());
+                        flag = flag || flagWhen;
                     }
                 }
                 return flag;
             }
         }
-        if (!ReturnCheck.checkReturn(funOp.getBodyOp(), funOp, this)) {
+        if (!ReturnCheck.checkReturn(funOp.getBodyOp(), funOp, this, null)) {
             throw new RuntimeException("La funzione: " + funOp.getId().getValue() + " non ha return");
         }
 
@@ -449,5 +464,26 @@ public class TypeVisitor implements Visitor {
             );
             default -> throw new RuntimeException("Operazione non consentita: " + uOp.getName());
         };
+    }
+
+    @Override
+    public Object visit(LetStat letStat) {
+        symbolTable = letStat.getSymbolTable();
+        if(letStat.getGoWhenList().size()<2)
+            throw new RuntimeException("Il numero di When deve essere maggiore di 2");
+        letStat.getVarDeclList().forEach(varDeclOp -> varDeclOp.accept(this));
+        letStat.getGoWhenList().forEach(goWhenOp -> goWhenOp.accept(this));
+        letStat.getStatList().forEach(stat -> stat.accept(this));
+        return null;
+    }
+
+    @Override
+    public Object visit(GoWhenOp goWhenOp) {
+        SymbolType symbolType = (SymbolType) goWhenOp.getExpr().accept(this);
+        if(!symbolType.getOutTypeList().get(0).getName().equals("Boolean"))
+            throw new RuntimeException("L'espressione non è un booleano");
+        goWhenOp.getExpr().accept(this);
+        goWhenOp.getStatList().forEach(stat -> stat.accept(this));
+        return null;
     }
 }

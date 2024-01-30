@@ -6,7 +6,7 @@ import java.util.*;
 
 terminal VAR, COLON, ASSIGN, SEMI, COMMA, RETURN, FUNCTION, TYPERETURN, ENDFUNCTION, LPAR, RPAR, PROCEDURE, ENDPROCEDURE,
           OUT, WRITE, WRITERETURN, DOLLARSIGN, READ, IF, THEN, ELSE, ENDIF, ELIF, WHILE,
-          DO, ENDWHILE, PLUS, MINUS, TIMES, DIV, EQ, NE, LT, LE, GT, GE, AND, OR, NOT, ENDVAR, REF, UMINUS, PAR;
+          DO, ENDWHILE, PLUS, MINUS, TIMES, DIV, EQ, NE, LT, LE, GT, GE, AND, OR, NOT, ENDVAR, REF, UMINUS, PAR, GO, WHEN, OTHERWISE, LOOP, LET, RCPAR, LCPAR;
 
 terminal String REAL_CONST;
 terminal String INTEGER_CONST;
@@ -51,6 +51,9 @@ non terminal FunOp Function;
 non terminal ArrayList<VarDeclOp> Decls;
 non terminal ArrayList<VarDeclOp> VarDecl;
 non terminal ArrayList<VarDeclOp> VarDecls;
+non terminal LetStat LetStat;
+non terminal ArrayList<GoWhenOp> GoWhens;
+non terminal ArrayList<Stat> Stats;
 
 precedence left ID, VAR;
 precedence left COMMA;
@@ -193,7 +196,19 @@ Stat ::= Ids:idList ASSIGN Exprs:exprList SEMI {: RESULT = new AssignOp(idList, 
     | WRITERETURN IOArgs:exprList SEMI {: RESULT = new WriteOp(new Mode("writeReturn"), exprList);:}
     | READ IOArgs:exprList SEMI {: RESULT = new ReadOp(exprList);:}
     | IfStat:ifStat SEMI {: RESULT = ifStat; :}
-    | WhileStat:whileStat SEMI {: RESULT = whileStat; :};
+    | WhileStat:whileStat SEMI {: RESULT = whileStat; :}
+    | LetStat:letStat SEMI {: RESULT = letStat; :};
+
+LetStat::= LET VarDecls:declList SEMI GO GoWhens:goWhenList OTHERWISE LCPAR Stats:statList RCPAR {: RESULT = new LetStat(declList, goWhenList, statList);:};
+
+GoWhens::= WHEN LPAR Expr:expr RPAR LOOP LCPAR Stats:statList RCPAR GoWhens:goWhenList {:RESULT = new ArrayList<GoWhenOp>();
+                                                                                RESULT.add(new GoWhenOp(expr, statList));
+                                                                                RESULT.addAll(goWhenList);:}
+    | /*empty*/ {:RESULT = new ArrayList<GoWhenOp>();:};
+Stats::= Stat:stat Stats:statList {: RESULT = new ArrayList<Stat>();
+                                    RESULT.add(stat);
+                                    RESULT.addAll(statList);:}
+    |/*empty*/ {:RESULT = new ArrayList<Stat>();:};
 
 FunCall ::= ID:value LPAR Exprs:exprList RPAR {: RESULT = new CallFunOp(new ID(value), exprList); :}          /* chiamata con almeno un parametro */
     | ID:value LPAR RPAR {: RESULT = new CallFunOp(new ID(value), new ArrayList<Expr>()); :};                   /* chiamata con nessun parametro */

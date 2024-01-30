@@ -8,12 +8,14 @@ package esercitazione5;
 /** CUP generated interface containing symbol constants. */
 public interface sym {
   /* terminals */
+  public static final int OTHERWISE = 47;
+  public static final int WHEN = 46;
   public static final int FUNCTION = 8;
   public static final int GE = 37;
   public static final int UMINUS = 43;
   public static final int ENDVAR = 41;
-  public static final int INTEGER = 52;
-  public static final int INTEGER_CONST = 46;
+  public static final int INTEGER = 59;
+  public static final int INTEGER_CONST = 53;
   public static final int SEMI = 5;
   public static final int OUT = 15;
   public static final int REF = 42;
@@ -27,42 +29,47 @@ public interface sym {
   public static final int ENDFUNCTION = 10;
   public static final int ENDPROCEDURE = 14;
   public static final int OR = 39;
+  public static final int LCPAR = 51;
   public static final int COMMA = 6;
   public static final int WRITERETURN = 17;
   public static final int DIV = 31;
+  public static final int LOOP = 48;
   public static final int PLUS = 28;
   public static final int ASSIGN = 4;
   public static final int IF = 20;
-  public static final int ID = 50;
+  public static final int ID = 57;
   public static final int ENDWHILE = 27;
   public static final int LE = 35;
-  public static final int BOOLEAN = 54;
+  public static final int BOOLEAN = 61;
   public static final int EOF = 0;
   public static final int RETURN = 7;
-  public static final int TRUE = 48;
+  public static final int TRUE = 55;
   public static final int error = 1;
   public static final int EQ = 32;
   public static final int DOLLARSIGN = 18;
-  public static final int REAL = 51;
+  public static final int REAL = 58;
   public static final int PAR = 44;
   public static final int TIMES = 30;
   public static final int COLON = 3;
   public static final int ENDIF = 23;
   public static final int ELSE = 22;
+  public static final int RCPAR = 50;
   public static final int READ = 19;
   public static final int WHILE = 25;
-  public static final int REAL_CONST = 45;
+  public static final int LET = 49;
+  public static final int REAL_CONST = 52;
   public static final int THEN = 21;
   public static final int NE = 33;
-  public static final int STRING = 53;
+  public static final int STRING = 60;
   public static final int LPAR = 11;
-  public static final int FALSE = 49;
-  public static final int STRING_CONST = 47;
+  public static final int FALSE = 56;
+  public static final int STRING_CONST = 54;
   public static final int GT = 36;
   public static final int VAR = 2;
   public static final int ELIF = 24;
   public static final int PROCEDURE = 13;
   public static final int DO = 26;
+  public static final int GO = 45;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -109,6 +116,13 @@ public interface sym {
   "REF",
   "UMINUS",
   "PAR",
+  "GO",
+  "WHEN",
+  "OTHERWISE",
+  "LOOP",
+  "LET",
+  "RCPAR",
+  "LCPAR",
   "REAL_CONST",
   "INTEGER_CONST",
   "STRING_CONST",

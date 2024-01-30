@@ -1,0 +1,8 @@
+%Espressione mancante nel primo when%
+
+proc main():
+let var a^=1;\;
+go.when() .loop{a^=a+1;}
+.when(a=10) .loop{a^=32;}
+.otherwise.do {-->"a è uguale a" $(a);};
+endproc

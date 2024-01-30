@@ -53,4 +53,6 @@ public interface Visitor {
     public Object visit(Op op);
 
     public Object visit(UOp uOp);
+    public Object visit(LetStat letStat);
+    public Object visit(GoWhenOp goWhenOp);
 }

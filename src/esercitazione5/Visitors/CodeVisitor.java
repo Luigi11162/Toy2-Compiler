@@ -21,8 +21,8 @@ public class CodeVisitor implements Visitor {
     private static ID funId;
     private final String fileName;
 
-    public CodeVisitor(String fileName){
-        this.fileName=fileName;
+    public CodeVisitor(String fileName) {
+        this.fileName = fileName;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class CodeVisitor implements Visitor {
             if (!Files.exists(Path.of(path)))
                 new File(path).mkdirs();
 
-            File file = new File(path + File.separator + this.fileName+".c");
+            File file = new File(path + File.separator + this.fileName + ".c");
 
             file.createNewFile();
 
@@ -749,6 +749,35 @@ public class CodeVisitor implements Visitor {
             uOp.getValue().accept(this);
             if (uOp.getModeExpr() != null && uOp.getModeExpr().getName().equals("PAR"))
                 fileWriter.write(")");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visit(LetStat letStat) {
+        symbolTable = letStat.getSymbolTable();
+        try {
+            fileWriter.write("{\n");
+            letStat.getVarDeclList().forEach(varDeclOp -> varDeclOp.accept(this));
+            letStat.getGoWhenList().forEach(goWhenOp -> goWhenOp.accept(this));
+            letStat.getStatList().forEach(stat -> stat.accept(this));
+            fileWriter.write("}\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visit(GoWhenOp goWhenOp) {
+        try {
+            fileWriter.write("while(");
+            goWhenOp.getExpr().accept(this);
+            fileWriter.write(") {\n");
+            goWhenOp.getStatList().forEach(stat -> stat.accept(this));
+            fileWriter.write("};\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

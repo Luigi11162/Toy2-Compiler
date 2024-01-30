@@ -96,6 +96,13 @@ Error = [^]
 <YYINITIAL> "!" {return symbol(sym.NOT);}
 <YYINITIAL> "\\" {return symbol(sym.ENDVAR);}
 <YYINITIAL> "@" {return symbol(sym.REF);}
+<YYINITIAL> "let" {return symbol(sym.LET);}
+<YYINITIAL> "go" {return symbol(sym.GO);}
+<YYINITIAL> ".when" {return symbol(sym.WHEN);}
+<YYINITIAL> ".loop" {return symbol(sym.LOOP);}
+<YYINITIAL> ".otherwise.do" {return symbol(sym.OTHERWISE);}
+<YYINITIAL> "{" {return symbol(sym.LCPAR);}
+<YYINITIAL> "}" {return symbol(sym.RCPAR);}
 
 <YYINITIAL>{
     {ID} {return installID(yytext());}
