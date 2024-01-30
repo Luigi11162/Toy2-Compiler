@@ -1,5 +1,5 @@
 proc main():
 
-	-->! "Hello World!"
+	-->! "Hello World!";
 
 endproc
