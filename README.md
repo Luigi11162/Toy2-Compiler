@@ -12,3 +12,4 @@ Specifications are written inside Specifiche Toy2.pdf file.
 * Change the toy2Path variable inside the toy2_toC.bat file to the name of your program .toy2
 * Save the modified toy2_toC.bat file
 * Run the toy2_toC.bat file
+* The compiled C program will be generated in the source_files/c_out/ folder with the name of your program
