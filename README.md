@@ -1,7 +1,7 @@
 # Toy2 Compiler
 Compiler built with Java which compiles a program in a fictional language called Toy2 into C language.
 
-Produced for the Compilers courses of Computer Science at University of Salerno.
+Produced for the Compilers course of Computer Science at University of Salerno.
 
 # Specifications
 Specifications are written inside Specifiche Toy2.pdf file.
