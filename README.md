@@ -4,7 +4,8 @@ Compiler built with Java which compiles a program in a fictional language called
 Produced for the Compilers course of Computer Science at University of Salerno.
 
 # Specifications
-Specifications are written inside Specifiche Toy2.pdf file.
+* Language specifications are written inside Specifiche Toy2.pdf file.
+* Built with Java 17
 
 # How to use it
 * Download the project
